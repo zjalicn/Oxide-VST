@@ -1,3 +1,5 @@
+![Readme Img](./readme.jpg)
+
 # 🩻 Oxide-VST
 
 ## Advanced Multi-Algorithm Distortion VST
