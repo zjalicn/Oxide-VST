@@ -1,4 +1,10 @@
 {
   "cmake.configureOnOpen": true,
-  "cmake.buildDirectory": "${workspaceFolder}/build"
+  "cmake.buildDirectory": "${workspaceFolder}/build",
+  "files.associations": {
+    "*.sqlbook": "sql",
+    "*.ndjson": "jsonl",
+    "*.dbclient-js": "javascript",
+    "*.mm": "cpp"
+  }
 }

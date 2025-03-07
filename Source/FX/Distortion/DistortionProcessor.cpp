@@ -7,7 +7,6 @@ DistortionProcessor::DistortionProcessor()
 
 void DistortionProcessor::prepare(double sampleRate)
 {
-    // Any sample-rate dependent setup would go here
 }
 
 void DistortionProcessor::processBlock(juce::AudioBuffer<float>& buffer)
@@ -19,19 +18,16 @@ void DistortionProcessor::processBlock(juce::AudioBuffer<float>& buffer)
     juce::AudioBuffer<float> dryBuffer;
     dryBuffer.makeCopyOf(buffer);
     
-    // Process each channel
     for (int channel = 0; channel < numChannels; ++channel)
     {
         float* channelData = buffer.getWritePointer(channel);
         
-        // Apply distortion to each sample
         for (int sample = 0; sample < numSamples; ++sample)
         {
             channelData[sample] = distort(channelData[sample]);
         }
     }
     
-    // Apply wet/dry mix
     if (mix < 1.0f)
     {
         for (int channel = 0; channel < numChannels; ++channel)
@@ -49,10 +45,8 @@ void DistortionProcessor::processBlock(juce::AudioBuffer<float>& buffer)
 
 float DistortionProcessor::distort(float sample)
 {
-    // Apply drive to increase the signal level before distortion
     float driven = sample * (1.0f + drive * 3.0f);
     
-    // Simple soft clipping formula (tanh-based distortion)
     float distorted = std::tanh(driven);
     
     return distorted;

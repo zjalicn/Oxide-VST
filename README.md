@@ -31,8 +31,8 @@ Oxide is a versatile distortion plugin that combines classic analog-style satura
 3. Build the project
 
    ```
-   cmake .
-   cmake --build .
+   cmake -B build
+   cmake --build build
    ```
 
 4. Copy the plugin to your VST folder
@@ -40,9 +40,7 @@ Oxide is a versatile distortion plugin that combines classic analog-style satura
 5. Afterwards, Clean and Rebuild with:
 
    ```
-    rm -rf build
-    mkdir build
-    cd build
-    cmake ..
-    cmake --build .
+   rm -rf build
+   cmake -B build
+   cmake --build build
    ```

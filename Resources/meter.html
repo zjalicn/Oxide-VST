@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        background-color: #222;
+        color: white;
+        font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        overflow: hidden;
+      }
+      h1 {
+        color: #ff6600;
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 24px;
+        font-weight: normal;
+      }
+      .meters {
+        display: flex;
+        justify-content: center;
+        position: relative;
+        width: 100%;
+      }
+      .meter {
+        margin: 0 2px;
+        text-align: center;
+        position: relative;
+        width: 20px;
+      }
+      .bar-container {
+        height: 120px;
+        width: 14px;
+        background: #2a2a2a;
+        position: relative;
+        margin: 0 auto;
+        border: none;
+        overflow: hidden;
+      }
+      .bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 0%;
+
+        background: linear-gradient(
+          to top,
+          rgb(32, 192, 32) 0%,
+          rgb(32, 192, 32) 55%,
+          /* Green until -6dB */ rgb(192, 192, 32) 60%,
+          /* Yellow around -5dB */ rgb(255, 165, 0) 70%,
+          /* Orange approaching 0dB */ rgb(255, 50, 50) 75%,
+          /* Red at 0dB */ rgb(255, 32, 32) 100%
+        );
+        transition: height 0.1s ease;
+      }
+      .value {
+        font-family: monospace;
+        font-size: 10px;
+        margin-top: 6px;
+        color: #aaa;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>OXIDE</h1>
+    <div class="meters">
+      <div class="meter">
+        <div class="bar-container">
+          <div id="leftBar" class="bar"></div>
+        </div>
+        <div id="leftValue" class="value">−∞</div>
+      </div>
+      <div class="meter">
+        <div class="bar-container">
+          <div id="rightBar" class="bar"></div>
+        </div>
+        <div id="rightValue" class="value">−∞</div>
+      </div>
+    </div>
+    <script>
+      function setAudioLevels(left, right) {
+        document.getElementById("leftBar").style.height = left + "%";
+        document.getElementById("rightBar").style.height = right + "%";
+
+        const leftDb = left > 0 ? 20 * Math.log10(left / 100) : -100;
+        const rightDb = right > 0 ? 20 * Math.log10(right / 100) : -100;
+
+        document.getElementById("leftValue").textContent =
+          leftDb > -50 ? leftDb.toFixed(1) : "−∞";
+        document.getElementById("rightValue").textContent =
+          rightDb > -50 ? rightDb.toFixed(1) : "−∞";
+      }
+      setAudioLevels(0, 0);
+    </script>
+  </body>
+</html>

@@ -16,9 +16,6 @@ public:
     
 private:
     std::unique_ptr<juce::WebBrowserComponent> webView;
-    juce::File tempHtmlFile;
-    
-    void createHtmlContent();
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MeterView)
 };

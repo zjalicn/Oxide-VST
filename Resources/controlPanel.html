@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        background-color: #222;
+        color: white;
+        font-family: "Lucida Grande", Arial, sans-serif;
+        margin: 0;
+        padding: 10px;
+        overflow: hidden;
+      }
+      .control-panel {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+      }
+      .knob-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .knob {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #333, #222);
+        border: 2px solid #444;
+        position: relative;
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+      }
+      .knob-indicator {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 2px;
+        height: 20px;
+        background-color: #ff6600;
+        transform-origin: bottom center;
+        transform: translate(-50%, -100%) rotate(0deg);
+      }
+      .knob-label {
+        margin-top: 10px;
+        font-size: 12px;
+        color: #ddd;
+      }
+      .knob-value {
+        margin-top: 5px;
+        font-size: 10px;
+        color: #999;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="control-panel">
+      <div class="knob-container">
+        <div class="knob">
+          <div id="driveIndicator" class="knob-indicator"></div>
+        </div>
+        <div class="knob-label">Drive</div>
+        <div id="driveValue" class="knob-value">50%</div>
+      </div>
+      <div class="knob-container">
+        <div class="knob">
+          <div id="mixIndicator" class="knob-indicator"></div>
+        </div>
+        <div class="knob-label">Mix</div>
+        <div id="mixValue" class="knob-value">50%</div>
+      </div>
+    </div>
+    <script>
+      // Initialize
+      let driveValue = 0.5;
+      let mixValue = 0.5;
+
+      function updateControls(drive, mix) {
+        driveValue = drive;
+        mixValue = mix;
+
+        // Update knob rotations (0-270 degrees)
+        document.getElementById(
+          "driveIndicator"
+        ).style.transform = `translate(-50%, -100%) rotate(${drive * 270}deg)`;
+        document.getElementById(
+          "mixIndicator"
+        ).style.transform = `translate(-50%, -100%) rotate(${mix * 270}deg)`;
+
+        // Update value displays
+        document.getElementById("driveValue").textContent = `${Math.round(
+          drive * 100
+        )}%`;
+        document.getElementById("mixValue").textContent = `${Math.round(
+          mix * 100
+        )}%`;
+      }
+
+      // Allow for value adjustment through knob interaction
+      document.querySelectorAll(".knob").forEach((knob) => {
+        knob.addEventListener("mousedown", function (e) {
+          const isDrive = this.querySelector("#driveIndicator") !== null;
+          const startY = e.clientY;
+          const startValue = isDriver ? driveValue : mixValue;
+
+          function handleMove(moveEvent) {
+            const deltaY = startY - moveEvent.clientY;
+            const newValue = Math.max(
+              0,
+              Math.min(1, startValue + deltaY / 200)
+            );
+
+            if (isDriver) {
+              window.valueChanged("drive", newValue);
+            } else {
+              window.valueChanged("mix", newValue);
+            }
+          }
+
+          document.addEventListener("mousemove", handleMove);
+          document.addEventListener(
+            "mouseup",
+            () => {
+              document.removeEventListener("mousemove", handleMove);
+            },
+            { once: true }
+          );
+        });
+      });
+
+      // Initialize with default values
+      updateControls(0.5, 0.5);
+    </script>
+  </body>
+</html>
