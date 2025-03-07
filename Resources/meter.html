@@ -89,9 +89,9 @@
         const rightDb = right > 0 ? 20 * Math.log10(right / 100) : -100;
 
         document.getElementById("leftValue").textContent =
-          leftDb > -50 ? leftDb.toFixed(1) : "−∞";
+          leftDb > -50 ? leftDb.toFixed(1) : "";
         document.getElementById("rightValue").textContent =
-          rightDb > -50 ? rightDb.toFixed(1) : "−∞";
+          rightDb > -50 ? rightDb.toFixed(1) : "";
       }
       setAudioLevels(0, 0);
     </script>

@@ -28,6 +28,7 @@
         border: 2px solid #444;
         position: relative;
         box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
       }
       .knob-indicator {
         position: absolute;
@@ -49,41 +50,63 @@
         font-size: 10px;
         color: #999;
       }
+      #debug {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        color: yellow;
+        font-size: 10px;
+        padding: 2px;
+        display: none;
+      }
     </style>
   </head>
   <body>
     <div class="control-panel">
       <div class="knob-container">
-        <div class="knob">
+        <div class="knob" id="driveKnob">
           <div id="driveIndicator" class="knob-indicator"></div>
         </div>
         <div class="knob-label">Drive</div>
         <div id="driveValue" class="knob-value">50%</div>
       </div>
       <div class="knob-container">
-        <div class="knob">
+        <div class="knob" id="mixKnob">
           <div id="mixIndicator" class="knob-indicator"></div>
         </div>
         <div class="knob-label">Mix</div>
         <div id="mixValue" class="knob-value">50%</div>
       </div>
     </div>
+    <div id="debug"></div>
+
     <script>
       // Initialize
       let driveValue = 0.5;
       let mixValue = 0.5;
+      let debug = document.getElementById("debug");
+
+      function log(msg) {
+        debug.innerHTML += msg + "<br>";
+        debug.style.display = "block";
+      }
 
       function updateControls(drive, mix) {
         driveValue = drive;
         mixValue = mix;
 
-        // Update knob rotations (0-270 degrees)
+        // Map 0-1 range to 225-45 degrees (7 o'clock to 3 o'clock)
+        // Start at 225 degrees (7 o'clock) and go 270 degrees clockwise
+        const driveAngle = 225 + drive * 270;
+        const mixAngle = 225 + mix * 270;
+
+        // Update knob rotations
         document.getElementById(
           "driveIndicator"
-        ).style.transform = `translate(-50%, -100%) rotate(${drive * 270}deg)`;
+        ).style.transform = `translate(-50%, -100%) rotate(${driveAngle}deg)`;
         document.getElementById(
           "mixIndicator"
-        ).style.transform = `translate(-50%, -100%) rotate(${mix * 270}deg)`;
+        ).style.transform = `translate(-50%, -100%) rotate(${mixAngle}deg)`;
 
         // Update value displays
         document.getElementById("driveValue").textContent = `${Math.round(
@@ -94,25 +117,113 @@
         )}%`;
       }
 
-      // Allow for value adjustment through knob interaction
+      window.valueChanged = function (param, value) {
+        try {
+          window.location.href = "oxide:" + param + "=" + value;
+        } catch (e) {
+          log("Error in valueChanged: " + e.message);
+        }
+      };
+
+      // Direct click handlers for simpler interaction
+      document
+        .getElementById("driveKnob")
+        .addEventListener("click", function (e) {
+          // Calculate position within the knob
+          const rect = this.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+
+          // Calculate angle based on click position (in radians)
+          const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+
+          // Convert angle to degrees (0 at 3 o'clock, going counterclockwise)
+          let angleDeg = angle * (180 / Math.PI);
+
+          // Adjust to our desired range (225-45 degrees)
+          // First, make 0 degrees at the top (12 o'clock)
+          angleDeg = (angleDeg + 90) % 360;
+          if (angleDeg < 0) angleDeg += 360;
+
+          // Now map this to our 0-1 range based on 225-45 degrees
+          let value;
+          if (angleDeg >= 225 || angleDeg <= 45) {
+            // In the active range
+            value =
+              angleDeg >= 225 ? (angleDeg - 225) / 270 : (angleDeg + 135) / 270;
+          } else {
+            // Outside the active range, clamp to nearest end
+            value = angleDeg < 225 && angleDeg > 45 ? 0 : 1;
+          }
+
+          // Update the model and UI
+          driveValue = value;
+          window.valueChanged("drive", value);
+          updateControls(driveValue, mixValue);
+        });
+
+      document
+        .getElementById("mixKnob")
+        .addEventListener("click", function (e) {
+          // Calculate position within the knob
+          const rect = this.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+
+          // Calculate angle based on click position (in radians)
+          const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+
+          // Convert angle to degrees (0 at 3 o'clock, going counterclockwise)
+          let angleDeg = angle * (180 / Math.PI);
+
+          // Adjust to our desired range (225-45 degrees)
+          // First, make 0 degrees at the top (12 o'clock)
+          angleDeg = (angleDeg + 90) % 360;
+          if (angleDeg < 0) angleDeg += 360;
+
+          // Now map this to our 0-1 range based on 225-45 degrees
+          let value;
+          if (angleDeg >= 225 || angleDeg <= 45) {
+            // In the active range
+            value =
+              angleDeg >= 225 ? (angleDeg - 225) / 270 : (angleDeg + 135) / 270;
+          } else {
+            // Outside the active range, clamp to nearest end
+            value = angleDeg < 225 && angleDeg > 45 ? 0 : 1;
+          }
+
+          // Update the model and UI
+          mixValue = value;
+          window.valueChanged("mix", value);
+          updateControls(driveValue, mixValue);
+        });
+
+      // Also keep the drag functionality
       document.querySelectorAll(".knob").forEach((knob) => {
         knob.addEventListener("mousedown", function (e) {
-          const isDrive = this.querySelector("#driveIndicator") !== null;
+          e.preventDefault();
+          const isDrive = this.id === "driveKnob";
           const startY = e.clientY;
-          const startValue = isDriver ? driveValue : mixValue;
+          const startValue = isDrive ? driveValue : mixValue;
 
           function handleMove(moveEvent) {
+            moveEvent.preventDefault();
+            // More sensitivity for faster response
             const deltaY = startY - moveEvent.clientY;
             const newValue = Math.max(
               0,
-              Math.min(1, startValue + deltaY / 200)
+              Math.min(1, startValue + deltaY / 100)
             );
 
-            if (isDriver) {
+            if (isDrive) {
+              driveValue = newValue;
               window.valueChanged("drive", newValue);
             } else {
+              mixValue = newValue;
               window.valueChanged("mix", newValue);
             }
+
+            updateControls(driveValue, mixValue);
           }
 
           document.addEventListener("mousemove", handleMove);
@@ -128,6 +239,13 @@
 
       // Initialize with default values
       updateControls(0.5, 0.5);
+
+      // Add a simple direct method for C++ to call
+      window.setValues = function (drive, mix) {
+        driveValue = parseFloat(drive);
+        mixValue = parseFloat(mix);
+        updateControls(driveValue, mixValue);
+      };
     </script>
   </body>
 </html>

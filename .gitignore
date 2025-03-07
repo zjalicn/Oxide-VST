@@ -1,16 +1,18 @@
 # JUCE-specific files
 **/Builds/
+/build/
 **/JuceLibraryCode/
-**/JUCE
+**/JUCE */
 **/.DS_Store
 
 # CMake build directories
-**/build/
-**/cmake-build-*/
-**/CMakeFiles/
-**/CMakeCache.txt
-**/CMakeScripts/
-**/compile_commands.json
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+*.cmake
+!CMakeLists.txt
 
 # Xcode
 **/*.xcodeproj

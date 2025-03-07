@@ -4,7 +4,7 @@
 #include "DistortionProcessor.h"
 
 class ControlPanel : public juce::Component,
-                     private juce::Slider::Listener
+                     private juce::Timer
 {
 public:
     ControlPanel(DistortionProcessor& processor);
@@ -13,16 +13,17 @@ public:
     void paint(juce::Graphics& g) override;
     void resized() override;
     
-    void sliderValueChanged(juce::Slider* slider) override;
-    
 private:
     DistortionProcessor& distortionProcessor;
     
-    juce::Slider driveSlider;
-    juce::Slider mixSlider;
+    std::unique_ptr<juce::WebBrowserComponent> webView;
     
-    juce::Label driveLabel;
-    juce::Label mixLabel;
+    // Last known values for change detection
+    float lastDrive;
+    float lastMix;
+    
+    // Timer callback to check for processor changes
+    void timerCallback() override;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ControlPanel)
 };

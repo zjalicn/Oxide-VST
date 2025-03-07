@@ -15,7 +15,6 @@ juce_add_binary_data(OxideResources
     SOURCES
         Resources/meter.html
         Resources/controlPanel.html
-
 )
 
 # Create the plugin target
