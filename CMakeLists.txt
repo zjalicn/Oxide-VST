@@ -11,6 +11,7 @@ add_subdirectory(JUCE)
 juce_add_binary_data(OxideResources 
     SOURCES
         src/resources/bg.jpg
+        src/resources/bg.png
         src/resources/controlPanel.html
         src/resources/header.html
         src/resources/meter.html
