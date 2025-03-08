@@ -1,11 +1,10 @@
 #include "HeaderView.h"
-
 #include "BinaryData.h"
 
-class HeaderWebBrowser : public juce::WebBrowserComponent
+class HeaderBrowserComponent : public juce::WebBrowserComponent
 {
 public:
-    HeaderWebBrowser()
+    HeaderBrowserComponent()
     {
         onPresetSelected = nullptr;
         onSaveClicked = nullptr;
@@ -13,45 +12,44 @@ public:
 
     bool pageAboutToLoad(const juce::String &url) override
     {
-
-        if (url.endsWith("/global.css"))
+        // Handle oxide: protocol for control messages
+        if (url.startsWith("oxide:"))
         {
-            juce::Logger::writeToLog("CSS file requested");
+            juce::String params = url.fromFirstOccurrenceOf("oxide:", false, true);
 
-            // Get CSS content from binary resources
-            juce::MemoryOutputStream cssData;
-
-            // Assuming the CSS file is in binary resources as "global_css"
-            int size = 0;
-            const char *data = BinaryData::getNamedResource("global_css", size);
-
-            if (data != nullptr && size > 0)
+            if (params.startsWith("preset="))
             {
-                juce::Logger::writeToLog("CSS found in binary resources, size: " +
-                                         juce::String(size));
-
-                // Serve the CSS content
-                juce::String cssContent = juce::String(data, size);
-                goToURL("data:text/css;charset=utf-8," + cssContent);
-                return false; // We handled this URL
+                juce::String presetName = params.fromFirstOccurrenceOf("preset=", false, true);
+                if (onPresetSelected)
+                    onPresetSelected(presetName);
+                return false;
+            }
+            else if (params.startsWith("action=save"))
+            {
+                if (onSaveClicked)
+                    onSaveClicked();
+                return false;
             }
 
-            juce::Logger::writeToLog("CSS not found in binary resources");
+            return false; // We handled this URL
         }
 
-        // Let the browser handle other URLs
-        return true;
+        return true; // We didn't handle this URL
     }
 
+    // Callback for when a preset is selected
     std::function<void(const juce::String &)> onPresetSelected;
+
+    // Callback for when save is clicked
     std::function<void()> onSaveClicked;
 };
 
 HeaderView::HeaderView()
 {
-    // Create the web view - disable keyboard focus
-    auto browser = new HeaderWebBrowser();
+    // Create the browser with the resource handler
+    auto browser = new HeaderBrowserComponent();
     webView.reset(browser);
+    webView->setOpaque(false);
     webView->setWantsKeyboardFocus(false);
     webView->setFocusContainer(false);
     addAndMakeVisible(webView.get());
@@ -69,13 +67,22 @@ HeaderView::HeaderView()
             onSaveClicked();
     };
 
+    // Get the HTML content
     juce::String htmlContent = juce::String(BinaryData::header_html, BinaryData::header_htmlSize);
+
+    // Inject CSS directly into HTML head
+    juce::String cssContent = juce::String(BinaryData::header_css, BinaryData::header_cssSize);
+    htmlContent = htmlContent.replace(
+        "<link rel=\"stylesheet\" href=\"./global.css\" />",
+        "<style>" + cssContent + "</style>");
+
+    // Load the combined HTML content
     webView->goToURL("data:text/html;charset=utf-8," + htmlContent);
 }
 
 HeaderView::~HeaderView()
 {
-    webView->setOpaque(false);
+    webView = nullptr;
 }
 
 void HeaderView::paint(juce::Graphics &g)

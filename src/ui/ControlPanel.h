@@ -7,23 +7,23 @@ class ControlPanel : public juce::Component,
                      private juce::Timer
 {
 public:
-    ControlPanel(DistortionProcessor& processor);
+    ControlPanel(DistortionProcessor &processor);
     ~ControlPanel() override;
-    
-    void paint(juce::Graphics& g) override;
+
+    void paint(juce::Graphics &g) override;
     void resized() override;
-    
+
 private:
-    DistortionProcessor& distortionProcessor;
-    
+    DistortionProcessor &distortionProcessor;
+
     std::unique_ptr<juce::WebBrowserComponent> webView;
-    
+
     // Last known values for change detection
     float lastDrive;
     float lastMix;
-    
+
     // Timer callback to check for processor changes
     void timerCallback() override;
-    
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ControlPanel)
 };

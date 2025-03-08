@@ -6,7 +6,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Make compile_scss.sh executable
 execute_process(
     COMMAND chmod +x ${CMAKE_CURRENT_SOURCE_DIR}/compile_scss.sh
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
@@ -14,10 +13,19 @@ execute_process(
 
 add_subdirectory(JUCE)
 
+add_custom_target(CompileSCSS
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/compile_scss.sh
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Compiling SCSS to CSS"
+    BYPRODUCTS 
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/resources/css/header.css
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/resources/css/control-panel.css
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/resources/css/meters.css
+)
+
 juce_add_binary_data(OxideResources 
     SOURCES
         # Images
-        src/resources/bg.jpg
         src/resources/bg.png
 
         # HTML files
@@ -26,17 +34,11 @@ juce_add_binary_data(OxideResources
         src/resources/meters.html
 
         # CSS files
-        src/resources/global.css
+        src/resources/css/header.css
+        src/resources/css/control-panel.css
+        src/resources/css/meters.css
 )
-
-# SCSS compilation pre-build before OxideResources build
-add_custom_command(
-    TARGET OxideResources
-    PRE_BUILD
-    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/compile_scss.sh
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    COMMENT "Compiling SCSS to CSS"
-)
+add_dependencies(OxideResources CompileSCSS)
 
 juce_add_plugin(Oxide
     PRODUCT_NAME "Oxide"
@@ -77,7 +79,7 @@ target_sources(Oxide
         src/ui/MeterView.cpp
         src/ui/MeterView.h
 
-        # FX
+        # DSP
         src/dsp/distortion/DistortionProcessor.cpp
         src/dsp/distortion/DistortionProcessor.h
 )
