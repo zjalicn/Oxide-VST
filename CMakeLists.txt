@@ -13,10 +13,10 @@ add_subdirectory(JUCE)
 
 juce_add_binary_data(OxideResources 
     SOURCES
-        Resources/meter.html
+        Resources/bg.jpg
         Resources/controlPanel.html
         Resources/header.html
-        Resources/bg.jpg
+        Resources/meter.html
 )
 
 # Create the plugin target

@@ -61,6 +61,7 @@ ControlPanel::ControlPanel(DistortionProcessor& processor)
 
 ControlPanel::~ControlPanel()
 {
+    webView->setOpaque(false);
     stopTimer();
 }
 

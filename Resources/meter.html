@@ -11,7 +11,7 @@
         overflow: hidden;
       }
       .container {
-        padding: 30px 20px 0 20px;
+        padding: 40px 10px 0 10px;
         box-sizing: border-box;
         width: 100%;
         height: 100%;
@@ -27,32 +27,30 @@
       .meters {
         display: flex;
         position: relative;
-        gap: 0; /* No gap between L/R channels */
+        gap: 0;
       }
       .meter {
-        margin: 0; /* No margin between meters */
+        margin: 0;
         text-align: center;
         position: relative;
-        width: 10px; /* Even thinner bars */
+        width: 10px;
       }
       .bar-container {
         height: 180px;
-        width: 8px; /* Keep same bar width */
-        margin: 0 1px; /* Just 1px margin on sides */
-        background: #1a1a1a; /* Darker background */
+        width: 8px;
+        margin: 0 1px;
+        background: #1a1a1a;
         position: relative;
         margin: 0 auto;
         border: none;
         overflow: hidden;
       }
-      /* Use a single div for each bar with gradient background */
       .bar {
         position: absolute;
         bottom: 0;
         left: 0;
         width: 100%;
         height: 0%;
-        /* Fixed gradient that shows correctly at all heights */
         background: linear-gradient(
           to top,
           rgb(32, 192, 32) 0%,
@@ -75,7 +73,6 @@
           rgb(255, 32, 32) 100%
         );
       }
-      /* Bar scale markings */
       .bar-markers {
         position: absolute;
         top: 0;
@@ -103,16 +100,11 @@
       .marker-10 {
         bottom: 25%;
       }
-
-      .value {
-        display: none; /* Hide the dB values */
-      }
-      /* Knob styles */
       .knobs-container {
         display: flex;
         justify-content: center;
         gap: 15px;
-        margin-top: 4px; /* Adjusted to 4px as requested */
+        margin-top: 4px;
       }
       .knob-wrapper {
         display: flex;
@@ -120,8 +112,8 @@
         align-items: center;
       }
       .knob {
-        width: 10px; /* Width adjusted for smaller spacing */
-        height: 10px; /* Keep proportional */
+        width: 10px;
+        height: 10px;
         border-radius: 50%;
         background: linear-gradient(135deg, #333, #222);
         border: 2px solid #444;
@@ -133,17 +125,11 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        width: 1px; /* Thinner indicator */
-        height: 4px; /* Shorter indicator to stay within knob */
+        width: 1px;
+        height: 4px;
         background-color: #ff6600;
         transform-origin: bottom center;
         transform: translate(-50%, -100%) rotate(0deg);
-      }
-      .knob-label {
-        display: none; /* Hide the IN/OUT labels */
-      }
-      .knob-value {
-        display: none; /* Hide the dB values */
       }
       .tooltip {
         position: absolute;
@@ -175,7 +161,6 @@
                 <div class="marker marker-10"></div>
               </div>
             </div>
-            <div id="leftValue" class="value"></div>
           </div>
           <div class="meter">
             <div class="bar-container">
@@ -187,7 +172,6 @@
                 <div class="marker marker-10"></div>
               </div>
             </div>
-            <div id="rightValue" class="value"></div>
           </div>
         </div>
         <div class="knobs-container">
@@ -195,8 +179,6 @@
             <div class="knob" id="inputGainKnob">
               <div id="inputGainIndicator" class="knob-indicator"></div>
             </div>
-            <div class="knob-label">IN</div>
-            <div id="inputGainValue" class="knob-value">0.0 dB</div>
           </div>
         </div>
       </div>
@@ -214,7 +196,6 @@
                 <div class="marker marker-10"></div>
               </div>
             </div>
-            <div id="outLeftValue" class="value"></div>
           </div>
           <div class="meter">
             <div class="bar-container">
@@ -226,7 +207,6 @@
                 <div class="marker marker-10"></div>
               </div>
             </div>
-            <div id="outRightValue" class="value"></div>
           </div>
         </div>
         <div class="knobs-container">
@@ -234,8 +214,6 @@
             <div class="knob" id="outputGainKnob">
               <div id="outputGainIndicator" class="knob-indicator"></div>
             </div>
-            <div class="knob-label">OUT</div>
-            <div id="outputGainValue" class="knob-value">0.0 dB</div>
           </div>
         </div>
       </div>
@@ -245,8 +223,9 @@
       // Initialize gain values (in dB)
       let inputGain = 0; // 0dB = unity gain
       let outputGain = 0; // 0dB = unity gain
-
-      // Debug functionality removed
+      let isDragging = false;
+      let activeKnob = null;
+      let lastClickTime = 0; // Track the last click time for double-click detection
 
       function setAudioLevels(inLeft, inRight, outLeft, outRight) {
         try {
@@ -275,22 +254,6 @@
             document.getElementById("outRightBar").style.height =
               inRight <= 0.01 ? "0" : inRight + "%";
           }
-
-          // Calculate and display dB values
-          const leftDb = inLeft > 0 ? 20 * Math.log10(inLeft / 100) : -100;
-          const rightDb = inRight > 0 ? 20 * Math.log10(inRight / 100) : -100;
-          const outLeftDb = outLeft > 0 ? 20 * Math.log10(outLeft / 100) : -100;
-          const outRightDb =
-            outRight > 0 ? 20 * Math.log10(outRight / 100) : -100;
-
-          document.getElementById("leftValue").textContent =
-            leftDb > -50 ? leftDb.toFixed(1) : "";
-          document.getElementById("rightValue").textContent =
-            rightDb > -50 ? rightDb.toFixed(1) : "";
-          document.getElementById("outLeftValue").textContent =
-            outLeftDb > -50 ? outLeftDb.toFixed(1) : "";
-          document.getElementById("outRightValue").textContent =
-            outRightDb > -50 ? outRightDb.toFixed(1) : "";
         } catch (e) {
           // Error handling silently to avoid console errors
         }
@@ -302,15 +265,66 @@
       // Tooltip functionality
       const tooltip = document.getElementById("tooltip");
 
-      function showTooltip(event, text) {
+      function showTooltip(event, text, knobElement = null) {
         tooltip.textContent = text;
+
+        // First make the tooltip visible to calculate its dimensions
         tooltip.style.opacity = "1";
-        tooltip.style.left = event.clientX + 10 + "px";
-        tooltip.style.top = event.clientY - 25 + "px";
+        tooltip.style.left = "0px";
+        tooltip.style.top = "0px";
+
+        // Get tooltip dimensions
+        const tooltipWidth = tooltip.offsetWidth;
+        const tooltipHeight = tooltip.offsetHeight;
+
+        // Calculate position
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        let leftPos, topPos;
+
+        if (knobElement) {
+          // Position above the knob if a knob element is provided
+          const rect = knobElement.getBoundingClientRect();
+          leftPos = rect.left + rect.width / 2 - tooltipWidth / 2;
+          topPos = rect.top - tooltipHeight - 5;
+        } else {
+          // Otherwise, position relative to the cursor
+          leftPos = event.clientX + 10;
+          topPos = event.clientY - tooltipHeight - 5;
+        }
+
+        // Adjust if tooltip would go off the right edge
+        if (leftPos + tooltipWidth > viewportWidth) {
+          leftPos = viewportWidth - tooltipWidth - 5;
+        }
+
+        // Adjust if tooltip would go off the left edge
+        if (leftPos < 5) {
+          leftPos = 5;
+        }
+
+        // If tooltip would go off the top edge, place it below the cursor/knob
+        if (topPos < 5) {
+          topPos = knobElement
+            ? knobElement.getBoundingClientRect().bottom + 5
+            : event.clientY + 15;
+        }
+
+        // If tooltip would go off the bottom edge, adjust upward
+        if (topPos + tooltipHeight > viewportHeight) {
+          topPos = viewportHeight - tooltipHeight - 5;
+        }
+
+        // Apply the calculated position
+        tooltip.style.left = leftPos + "px";
+        tooltip.style.top = topPos + "px";
       }
 
       function hideTooltip() {
-        tooltip.style.opacity = "0";
+        if (!isDragging) {
+          tooltip.style.opacity = "0";
+        }
       }
 
       // Utility function to update knob visuals
@@ -329,9 +343,17 @@
             "outputGainIndicator"
           ).style.transform = `translate(-50%, -100%) rotate(${outputAngle}deg)`;
 
-          // Update value displays for tooltip and internal tracking
-          inputGain = parseFloat(inGain);
-          outputGain = parseFloat(outGain);
+          // Update tooltip if dragging
+          if (isDragging && activeKnob) {
+            const value = activeKnob === "inputGain" ? inputGain : outputGain;
+            const displayValue = `${value > 0 ? "+" : ""}${value.toFixed(
+              1
+            )} dB`;
+            const knobElement = document.getElementById(
+              activeKnob === "inputGain" ? "inputGainKnob" : "outputGainKnob"
+            );
+            showTooltip(null, displayValue, knobElement);
+          }
         } catch (e) {
           // Silent error handling
         }
@@ -373,52 +395,53 @@
         }
       };
 
+      // Checks if the event is a double-click (two clicks within 300ms)
+      function isDoubleClick() {
+        const currentTime = new Date().getTime();
+        const isDouble = currentTime - lastClickTime < 300;
+        lastClickTime = currentTime;
+        return isDouble;
+      }
+
+      // Reset knob to 0dB
+      function resetKnob(paramName) {
+        window.valueChanged(paramName, 0);
+        if (paramName === "inputGain") {
+          inputGain = 0;
+        } else {
+          outputGain = 0;
+        }
+        updateKnobVisuals();
+      }
+
       // Knob interaction handlers
       function setupKnobInteraction(knobId, paramName) {
         const knob = document.getElementById(knobId);
 
-        // Click handler for instant position
-        knob.addEventListener("click", function (e) {
-          const rect = this.getBoundingClientRect();
-          const centerX = rect.left + rect.width / 2;
-          const centerY = rect.top + rect.height / 2;
-
-          // Calculate angle based on click position
-          const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
-          let angleDeg = (angle * (180 / Math.PI) + 90) % 360;
-          if (angleDeg < 0) angleDeg += 360;
-
-          // Map angle to our gain range (-12 to +12 dB)
-          let newGain;
-          if (angleDeg >= 225 || angleDeg <= 45) {
-            newGain =
-              (angleDeg >= 225
-                ? (angleDeg - 225) / 270
-                : (angleDeg + 135) / 270) *
-                24 -
-              12;
-          } else {
-            newGain = angleDeg < 225 && angleDeg > 45 ? -12 : 12;
-          }
-
-          // Send the value to C++
-          window.valueChanged(paramName, newGain);
-
-          // Update local state (the C++ will reflect this back)
-          if (paramName === "inputGain") {
-            inputGain = newGain;
-          } else {
-            outputGain = newGain;
-          }
-          updateKnobVisuals();
-        });
-
-        // Drag handler for continuous adjustment
+        // Click handler for instant position or double-click reset
         knob.addEventListener("mousedown", function (e) {
+          // Check for double-click first
+          if (isDoubleClick()) {
+            e.preventDefault();
+            resetKnob(paramName);
+            const knobElement = document.getElementById(knobId);
+            showTooltip(e, "0.0 dB", knobElement);
+            setTimeout(hideTooltip, 1000); // Hide tooltip after 1 second
+            return;
+          }
+
+          // For single click, prepare for dragging
           e.preventDefault();
+          isDragging = true;
+          activeKnob = paramName;
           const isInputGain = paramName === "inputGain";
           const startY = e.clientY;
           const startValue = isInputGain ? inputGain : outputGain;
+
+          // Show tooltip immediately
+          const value = isInputGain ? inputGain : outputGain;
+          const displayValue = `${value > 0 ? "+" : ""}${value.toFixed(1)} dB`;
+          showTooltip(e, displayValue, this);
 
           function handleMove(moveEvent) {
             moveEvent.preventDefault();
@@ -439,36 +462,48 @@
             updateKnobVisuals();
           }
 
+          function handleMouseUp() {
+            document.removeEventListener("mousemove", handleMove);
+            isDragging = false;
+            activeKnob = null;
+            hideTooltip();
+          }
+
           document.addEventListener("mousemove", handleMove);
-          document.addEventListener(
-            "mouseup",
-            () => {
-              document.removeEventListener("mousemove", handleMove);
-            },
-            { once: true }
-          );
+          document.addEventListener("mouseup", handleMouseUp, { once: true });
         });
       }
 
       // Set up both knobs
       function setupKnobTooltip(knobId, paramName) {
         const knob = document.getElementById(knobId);
-        const gainValue = paramName === "inputGain" ? inputGain : outputGain;
 
         // Add tooltip for hover
         knob.addEventListener("mouseenter", function (e) {
-          const value = paramName === "inputGain" ? inputGain : outputGain;
-          const displayValue = `${value > 0 ? "+" : ""}${value.toFixed(1)} dB`;
-          showTooltip(e, displayValue);
+          if (!isDragging) {
+            const value = paramName === "inputGain" ? inputGain : outputGain;
+            const displayValue = `${value > 0 ? "+" : ""}${value.toFixed(
+              1
+            )} dB`;
+            showTooltip(e, displayValue, this);
+          }
         });
 
         knob.addEventListener("mousemove", function (e) {
-          const value = paramName === "inputGain" ? inputGain : outputGain;
-          const displayValue = `${value > 0 ? "+" : ""}${value.toFixed(1)} dB`;
-          showTooltip(e, displayValue);
+          if (!isDragging) {
+            const value = paramName === "inputGain" ? inputGain : outputGain;
+            const displayValue = `${value > 0 ? "+" : ""}${value.toFixed(
+              1
+            )} dB`;
+            showTooltip(e, displayValue, this);
+          }
         });
 
-        knob.addEventListener("mouseleave", hideTooltip);
+        knob.addEventListener("mouseleave", function () {
+          if (!isDragging) {
+            hideTooltip();
+          }
+        });
       }
 
       setupKnobInteraction("inputGainKnob", "inputGain");
@@ -479,8 +514,6 @@
 
       // Initialize knob visuals
       updateKnobVisuals();
-
-      // Debug testing removed
 
       // Signal that we're ready to the parent
       if (window.parent) {

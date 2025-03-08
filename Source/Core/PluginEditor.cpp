@@ -97,27 +97,25 @@ void OxideAudioProcessorEditor::paint(juce::Graphics& g)
 void OxideAudioProcessorEditor::resized()
 {
     auto bounds = getLocalBounds();
+    auto fullBounds = bounds; // Store the full bounds
     
     // Header height
     auto headerHeight = 60;
     
+    // Background fills the entire area (including behind the header)
+    background.setBounds(fullBounds);
+    
     // Header at the top
     headerView.setBounds(bounds.removeFromTop(headerHeight));
-    
-    // Background fills everything below the header
-    background.setBounds(bounds);
     
     // Control panel height
     auto controlHeight = 150;
     
-    // The remaining area for controls
-    auto contentBounds = bounds;
-    
     // Position the control panel at the bottom
-    controlPanel.setBounds(contentBounds.removeFromBottom(controlHeight));
+    controlPanel.setBounds(bounds.removeFromBottom(controlHeight));
     
     // The meter view takes the remaining space
-    meterView.setBounds(contentBounds);
+    meterView.setBounds(bounds);
 }
 
 void OxideAudioProcessorEditor::timerCallback()

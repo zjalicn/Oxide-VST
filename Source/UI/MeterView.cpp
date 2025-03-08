@@ -46,6 +46,7 @@ MeterView::MeterView()
       pageLoaded(false)
 {
     webView.reset(new MeterWebBrowser(*this));
+    webView->setOpaque(false);
     webView->setWantsKeyboardFocus(false);
     webView->setFocusContainer(false);
     addAndMakeVisible(webView.get());

@@ -8,24 +8,19 @@ public:
     Background()
     {
         setOpaque(true);
-
-        // Try to load the background image from binary resources
         loadBackgroundImage();
     }
 
     void paint(juce::Graphics& g) override
     {
-        // Fill with a gradient as a fallback
-        juce::ColourGradient gradient(juce::Colour(0xff222222), 0.0f, 0.0f, 
-                                     juce::Colour(0xff111111), 0.0f, (float)getHeight(), false);
-        g.setGradientFill(gradient);
-        g.fillAll();
+        // Fallback dark background in case image doesn't load
+        g.fillAll(juce::Colour(0xff1e1e1e));
         
-        // Draw the background image if valid
+        // Draw the background image if it loaded successfully
         if (backgroundImage.isValid())
         {
             g.drawImageWithin(backgroundImage, 0, 0, getWidth(), getHeight(), 
-                              juce::RectanglePlacement::stretchToFit);
+                             juce::RectanglePlacement::stretchToFit);
         }
     }
 
@@ -34,47 +29,46 @@ private:
 
     void loadBackgroundImage()
     {
-        // First, try to load using the filename we expect
-        const char* bgData = nullptr;
-        int bgSize = 0;
+        // Get the current executable directory
+        juce::File exeFile = juce::File::getSpecialLocation(juce::File::currentApplicationFile);
+        juce::File exeDir = exeFile.getParentDirectory();
         
-        // Check if the background resource exists with any of these names
-        const char* possibleNames[] = {
-            "bg_jpg", "bg", "background", "bg_png", "background_jpg", "background_png"
-        };
+        // Check several potential locations for the Resources folder
+        juce::Array<juce::File> possibleResourceDirs;
         
-        for (const auto& name : possibleNames)
+        // 1. Resources in the same directory as the executable
+        possibleResourceDirs.add(exeDir.getChildFile("Resources"));
+        
+        // 2. Resources in the parent directory
+        possibleResourceDirs.add(exeDir.getParentDirectory().getChildFile("Resources"));
+        
+        // 3. Current working directory
+        possibleResourceDirs.add(juce::File::getCurrentWorkingDirectory().getChildFile("Resources"));
+        
+        // 4. One level up from current directory
+        possibleResourceDirs.add(juce::File::getCurrentWorkingDirectory().getParentDirectory().getChildFile("Resources"));
+        
+        // Try each location
+        for (const auto& resourceDir : possibleResourceDirs)
         {
-            if (BinaryData::getNamedResourceOriginalFilename(name) != nullptr)
+            if (resourceDir.isDirectory())
             {
-                bgData = BinaryData::getNamedResource(name, bgSize);
-                if (bgData != nullptr && bgSize > 0)
-                    break;
-            }
-        }
-
-        // Directly try using Resources bg.jpg
-        if (bgData == nullptr)
-        {
-            try {
-                File resourceDir = File::getCurrentWorkingDirectory().getChildFile("Resources");
-                File bgFile = resourceDir.getChildFile("bg.jpg");
-                
+                juce::File bgFile = resourceDir.getChildFile("bg.jpg");
                 if (bgFile.existsAsFile())
                 {
                     backgroundImage = juce::ImageFileFormat::loadFrom(bgFile);
-                    return;
+                    if (backgroundImage.isValid())
+                        return;
                 }
-            }
-            catch (...) {
-                // Silent catch if file loading fails
             }
         }
         
-        // If we found binary data, load it
-        if (bgData != nullptr && bgSize > 0)
+        // If we get here, we couldn't find the image file
+        // Check if it's in BinaryData
+        int size = 0;
+        if (auto* data = BinaryData::getNamedResource("bg_jpg", size))
         {
-            backgroundImage = juce::ImageFileFormat::loadFrom(bgData, bgSize);
+            backgroundImage = juce::ImageFileFormat::loadFrom(data, size);
         }
     }
 

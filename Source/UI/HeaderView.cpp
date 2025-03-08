@@ -70,6 +70,7 @@ HeaderView::HeaderView()
 
 HeaderView::~HeaderView()
 {
+    webView->setOpaque(false);
 }
 
 void HeaderView::paint(juce::Graphics& g)
