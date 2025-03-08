@@ -53,8 +53,8 @@ MeterView::MeterView()
     juce::String htmlContent = juce::String(BinaryData::meter_html, BinaryData::meter_htmlSize);
     webView->goToURL("data:text/html;charset=utf-8," + htmlContent);
     
-    // Start a timer to check if page is loaded
-    startTimer(100);
+    // Explicitly initialize with zero values and push an immediate update to the HTML
+    startTimer(50);  // Start a timer to periodically check the page status
 }
 
 MeterView::~MeterView()
@@ -64,13 +64,24 @@ MeterView::~MeterView()
 
 void MeterView::timerCallback()
 {
-    // After a short delay, assume page is loaded and set flag
-    stopTimer();
-    pageLoaded = true;
+    static int loadingCounter = 0;
+    loadingCounter++;
     
-    // Force an initial update to make sure meters show correctly
-    updateLevels(5.0f, 5.0f); // Send a test signal
-    updateLevels(lastLeftLevel, lastRightLevel);
+    // After a short delay, assume page is loaded and set flag
+    if (loadingCounter >= 5) {  // About 250ms
+        stopTimer();
+        pageLoaded = true;
+        
+        // Force an initial update with explicit zero values to ensure meters are empty
+        juce::String script = "window.setAudioLevels(0, 0, 0, 0)";
+        webView->evaluateJavascript(script);
+        
+        // Also explicitly update our internal state
+        lastLeftLevel = 0.0f;
+        lastRightLevel = 0.0f;
+        outLeftLevel = 0.0f;
+        outRightLevel = 0.0f;
+    }
 }
 
 void MeterView::paint(juce::Graphics& g)
@@ -91,34 +102,46 @@ void MeterView::updateLevels(float leftLevel, float rightLevel)
     lastLeftLevel = leftLevel;
     lastRightLevel = rightLevel;
     
-    // Make sure we have reasonable values to display
-    // Apply a minimum threshold to make faint signals visible
-    leftLevel = std::max(leftLevel, 0.1f);
-    rightLevel = std::max(rightLevel, 0.1f);
+    // If signal is very close to zero, explicitly set it to zero to ensure bars disappear
+    if (leftLevel < 0.01f) leftLevel = 0.0f;
+    if (rightLevel < 0.01f) rightLevel = 0.0f;
     
     // Calculate output levels based on input levels and output gain
     float gainMultiplier = std::pow(10.0f, outputGain / 20.0f);
     outLeftLevel = leftLevel * gainMultiplier;
     outRightLevel = rightLevel * gainMultiplier;
     
-    // Ensure minimums for output too
-    outLeftLevel = std::max(outLeftLevel, 0.1f);
-    outRightLevel = std::max(outRightLevel, 0.1f);
+    // Also ensure output can be completely empty
+    if (outLeftLevel < 0.01f) outLeftLevel = 0.0f;
+    if (outRightLevel < 0.01f) outRightLevel = 0.0f;
     
     // Clamp output levels to 0-100%
     outLeftLevel = juce::jlimit(0.0f, 100.0f, outLeftLevel);
     outRightLevel = juce::jlimit(0.0f, 100.0f, outRightLevel);
     
-    // Send all levels and gain values to the web view
-    juce::String script = "setAudioState(" + 
-                         juce::String(leftLevel) + ", " + 
-                         juce::String(rightLevel) + ", " + 
-                         juce::String(outLeftLevel) + ", " + 
-                         juce::String(outRightLevel) + ", " + 
-                         juce::String(inputGain) + ", " + 
-                         juce::String(outputGain) + ")";
-    
-    webView->evaluateJavascript(script);
+    // Use try-catch to handle potential JavaScript errors
+    try {
+        // Ensure values are valid by using String conversion with proper decimal formatting
+        juce::String script = "window.setAudioState(" + 
+                            juce::String(leftLevel, 1) + ", " + 
+                            juce::String(rightLevel, 1) + ", " + 
+                            juce::String(outLeftLevel, 1) + ", " + 
+                            juce::String(outRightLevel, 1) + ", " + 
+                            juce::String(inputGain, 1) + ", " + 
+                            juce::String(outputGain, 1) + ")";
+        
+        webView->evaluateJavascript(script);
+    }
+    catch (const std::exception& e) {
+        // Log any errors for debugging
+        juce::Logger::writeToLog("JavaScript error in meters: " + juce::String(e.what()));
+        
+        // Fall back to the older, simpler method if available
+        juce::String fallbackScript = "window.setAudioLevels(" + 
+                                    juce::String(leftLevel, 1) + ", " + 
+                                    juce::String(rightLevel, 1) + ")";
+        webView->evaluateJavascript(fallbackScript);
+    }
 }
 
 void MeterView::setInputGain(float newGain)

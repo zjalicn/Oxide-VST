@@ -126,22 +126,6 @@ void OxideAudioProcessorEditor::timerCallback()
     float leftLevel = audioProcessor.getLeftLevel();
     float rightLevel = audioProcessor.getRightLevel();
     
-    // If there's no signal, make sure we still see something for testing
-    // Remove this for production if you don't want artificial signals
-    if (leftLevel < 0.01f && rightLevel < 0.01f)
-    {
-        // Generate a slow pulsing test signal if no real signal is detected
-        static float counter = 0.0f;
-        counter += 0.02f;
-        if (counter > juce::MathConstants<float>::twoPi)
-            counter -= juce::MathConstants<float>::twoPi;
-            
-        // Create a mild pulsing sine wave for the meters
-        float pulse = (std::sin(counter) * 0.4f + 0.6f) * 15.0f;
-        leftLevel = pulse;
-        rightLevel = pulse * 0.8f;
-    }
-    
     // Apply input gain to the displayed levels to match the actual processing
     float inputGainLinear = std::pow(10.0f, audioProcessor.getDistortionProcessor().getInputGain() / 20.0f);
     leftLevel *= inputGainLinear;
@@ -155,9 +139,9 @@ void OxideAudioProcessorEditor::timerCallback()
     leftLevel = juce::jlimit(0.0f, 100.0f, leftLevel);
     rightLevel = juce::jlimit(0.0f, 100.0f, rightLevel);
     
-    // Make sure we have visible meter movement
-    if (leftLevel < 5.0f) leftLevel = 5.0f;
-    if (rightLevel < 5.0f) rightLevel = 5.0f;
+    // Allow small values to show as completely empty
+    if (leftLevel < 0.1f) leftLevel = 0.0f;
+    if (rightLevel < 0.1f) rightLevel = 0.0f;
     
     // Update the meter display
     meterView.updateLevels(leftLevel, rightLevel);
