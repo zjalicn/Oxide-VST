@@ -1,0 +1,111 @@
+.container {
+  padding: 150px 5px 0 5px; /* Add top padding to push meters down a bit */
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start; /* Back to top alignment with padding */
+  background-color: transparent;
+}
+
+.meters-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.meters {
+  display: flex;
+  position: relative;
+  gap: 0;
+}
+
+.meter {
+  margin: 0;
+  text-align: center;
+  position: relative;
+  width: 10px;
+}
+
+.bar-container {
+  height: 180px;
+  width: 8px;
+  margin: 0 1px;
+  background: rgba(26, 26, 26, 0.7);
+  position: relative;
+  margin: 0 auto;
+  border: none;
+  overflow: hidden;
+}
+
+.bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  background: linear-gradient(
+    to top,
+    rgb(32, 192, 32) 0%,
+    rgb(32, 192, 32) 55%,
+    rgb(192, 192, 32) 60%,
+    rgb(255, 165, 0) 70%,
+    rgb(255, 50, 50) 75%,
+    rgb(255, 32, 32) 100%
+  );
+  transition: height 0.1s ease;
+}
+
+.output-bar {
+  background: linear-gradient(
+    to top,
+    rgb(32, 192, 32) 0%,
+    rgb(32, 192, 32) 55%,
+    rgb(192, 192, 32) 60%,
+    rgb(255, 165, 0) 70%,
+    rgb(255, 50, 50) 75%,
+    rgb(255, 32, 32) 100%
+  );
+}
+
+.bar-markers {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.marker {
+  position: absolute;
+  left: 0;
+  width: 4px;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.marker-0 {
+  bottom: 75%;
+}
+
+.marker-3 {
+  bottom: 60%;
+}
+
+.marker-6 {
+  bottom: 45%;
+}
+
+.marker-10 {
+  bottom: 25%;
+}
+
+/* Meter bg styles */
+body.meter-view {
+  background-image: url("/bg.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}

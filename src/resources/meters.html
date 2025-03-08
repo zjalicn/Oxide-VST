@@ -1,156 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <style>
-      body {
-        background-color: transparent;
-        background-image: url("/bg.png");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        color: white;
-        font-family: "Lucida Grande", "Lucida Sans Unicode", Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-      }
-      .container {
-        padding: 150px 5px 0 5px; /* Add top padding to push meters down a bit */
-        box-sizing: border-box;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start; /* Back to top alignment with padding */
-      }
-      .meters-column {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      .meters {
-        display: flex;
-        position: relative;
-        gap: 0;
-      }
-      .meter {
-        margin: 0;
-        text-align: center;
-        position: relative;
-        width: 10px;
-      }
-      .bar-container {
-        height: 180px;
-        width: 8px;
-        margin: 0 1px;
-        background: rgba(26, 26, 26, 0.7);
-        position: relative;
-        margin: 0 auto;
-        border: none;
-        overflow: hidden;
-      }
-      .bar {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 0%;
-        background: linear-gradient(
-          to top,
-          rgb(32, 192, 32) 0%,
-          rgb(32, 192, 32) 55%,
-          rgb(192, 192, 32) 60%,
-          rgb(255, 165, 0) 70%,
-          rgb(255, 50, 50) 75%,
-          rgb(255, 32, 32) 100%
-        );
-        transition: height 0.1s ease;
-      }
-      .output-bar {
-        background: linear-gradient(
-          to top,
-          rgb(32, 192, 32) 0%,
-          rgb(32, 192, 32) 55%,
-          rgb(192, 192, 32) 60%,
-          rgb(255, 165, 0) 70%,
-          rgb(255, 50, 50) 75%,
-          rgb(255, 32, 32) 100%
-        );
-      }
-      .bar-markers {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-      }
-      .marker {
-        position: absolute;
-        left: 0;
-        width: 4px;
-        height: 1px;
-        background-color: rgba(255, 255, 255, 0.4);
-      }
-      .marker-0 {
-        bottom: 75%;
-      }
-      .marker-3 {
-        bottom: 60%;
-      }
-      .marker-6 {
-        bottom: 45%;
-      }
-      .marker-10 {
-        bottom: 25%;
-      }
-      .knobs-container {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        margin-top: 4px;
-      }
-      .knob-wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      .knob {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #333, #222);
-        border: 2px solid #444;
-        position: relative;
-        box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
-        cursor: pointer;
-      }
-      .knob-indicator {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 1px;
-        height: 4px;
-        background-color: #ff6600;
-        transform-origin: bottom center;
-        transform: translate(-50%, -100%) rotate(0deg);
-      }
-      .tooltip {
-        position: absolute;
-        background-color: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 10px;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.2s ease;
-        z-index: 1000;
-        white-space: nowrap;
-      }
-    </style>
+    <link rel="stylesheet" href="/global.css" />
   </head>
-  <body>
+  <body class="meter-view">
     <div class="container">
       <!-- Input Meters Section -->
       <div class="meters-column">
@@ -180,8 +33,8 @@
         </div>
         <div class="knobs-container">
           <div class="knob-wrapper">
-            <div class="knob" id="inputGainKnob">
-              <div id="inputGainIndicator" class="knob-indicator"></div>
+            <div class="knob-small" id="inputGainKnob">
+              <div id="inputGainIndicator" class="knob-indicator-small"></div>
             </div>
           </div>
         </div>
@@ -215,8 +68,8 @@
         </div>
         <div class="knobs-container">
           <div class="knob-wrapper">
-            <div class="knob" id="outputGainKnob">
-              <div id="outputGainIndicator" class="knob-indicator"></div>
+            <div class="knob-small" id="outputGainKnob">
+              <div id="outputGainIndicator" class="knob-indicator-small"></div>
             </div>
           </div>
         </div>
@@ -230,6 +83,11 @@
       let isDragging = false;
       let activeKnob = null;
       let lastClickTime = 0; // Track the last click time for double-click detection
+      let pageLoaded = false;
+      let lastLeftLevel = 0;
+      let lastRightLevel = 0;
+      let outLeftLevel = 0;
+      let outRightLevel = 0;
 
       function setAudioLevels(inLeft, inRight, outLeft, outRight) {
         try {
@@ -238,6 +96,12 @@
           inRight = parseFloat(inRight) || 0;
           outLeft = parseFloat(outLeft) || 0;
           outRight = parseFloat(outRight) || 0;
+
+          // Store the last known levels
+          lastLeftLevel = inLeft;
+          lastRightLevel = inRight;
+          outLeftLevel = outLeft;
+          outRightLevel = outRight;
 
           // Update input meters
           // For truly zero values, set height to empty string to ensure they're completely gone
@@ -527,6 +391,13 @@
           // Ignore any errors here
         }
       }
+
+      // Initialize as loaded after a delay to ensure all resources are ready
+      setTimeout(() => {
+        pageLoaded = true;
+        // Force an initial update with explicit zero values
+        setAudioLevels(0, 0, 0, 0);
+      }, 250);
     </script>
   </body>
 </html>

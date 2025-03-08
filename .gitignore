@@ -5,6 +5,10 @@
 **/JUCE */
 **/.DS_Store
 
+# Compiled CSS
+src/resources/global.css
+src/resources/global.css.map
+
 # CMake build directories
 # CMake generated files
 CMakeFiles/

@@ -6,15 +6,36 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Make compile_scss.sh executable
+execute_process(
+    COMMAND chmod +x ${CMAKE_CURRENT_SOURCE_DIR}/compile_scss.sh
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
 add_subdirectory(JUCE)
 
 juce_add_binary_data(OxideResources 
     SOURCES
+        # Images
         src/resources/bg.jpg
         src/resources/bg.png
+
+        # HTML files
         src/resources/controlPanel.html
         src/resources/header.html
-        src/resources/meter.html
+        src/resources/meters.html
+
+        # CSS files
+        src/resources/global.css
+)
+
+# SCSS compilation pre-build before OxideResources build
+add_custom_command(
+    TARGET OxideResources
+    PRE_BUILD
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/compile_scss.sh
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Compiling SCSS to CSS"
 )
 
 juce_add_plugin(Oxide

@@ -1,0 +1,10 @@
+.control-panel {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  padding: 10px;
+}
+
+body.control-panel-view {
+  padding: 10px;
+}

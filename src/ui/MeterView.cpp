@@ -51,7 +51,7 @@ MeterView::MeterView()
     webView->setFocusContainer(false);
     addAndMakeVisible(webView.get());
     
-    juce::String htmlContent = juce::String(BinaryData::meter_html, BinaryData::meter_htmlSize);
+    juce::String htmlContent = juce::String(BinaryData::meters_html, BinaryData::meters_htmlSize);
     webView->goToURL("data:text/html;charset=utf-8," + htmlContent);
     
     // Explicitly initialize with zero values and push an immediate update to the HTML
