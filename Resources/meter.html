@@ -11,88 +11,400 @@
         overflow: hidden;
       }
       .container {
-        padding: 30px 0 0 30px;
+        padding: 30px 20px 0 20px;
         box-sizing: border-box;
         width: 100%;
         height: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+      .meters-column {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
       }
       .meters {
         display: flex;
-        width: auto;
         position: relative;
+        gap: 0; /* No gap between L/R channels */
       }
       .meter {
-        margin: 0 2px;
+        margin: 0; /* No margin between meters */
         text-align: center;
         position: relative;
-        width: 20px;
+        width: 18px; /* Reduced width for thinner bars */
       }
       .bar-container {
-        height: 120px;
-        width: 14px;
-        background: #2a2a2a;
+        height: 180px;
+        width: 14px; /* Thinner bars */
+        background: #1a1a1a; /* Darker background */
         position: relative;
         margin: 0 auto;
         border: none;
         overflow: hidden;
       }
+      /* Use a single div for each bar with gradient background */
       .bar {
         position: absolute;
         bottom: 0;
         left: 0;
         width: 100%;
         height: 0%;
-
+        /* Fixed gradient that shows correctly at all heights */
         background: linear-gradient(
           to top,
           rgb(32, 192, 32) 0%,
           rgb(32, 192, 32) 55%,
-          /* Green until -6dB */ rgb(192, 192, 32) 60%,
-          /* Yellow around -5dB */ rgb(255, 165, 0) 70%,
-          /* Orange approaching 0dB */ rgb(255, 50, 50) 75%,
-          /* Red at 0dB */ rgb(255, 32, 32) 100%
+          rgb(192, 192, 32) 60%,
+          rgb(255, 165, 0) 70%,
+          rgb(255, 50, 50) 75%,
+          rgb(255, 32, 32) 100%
         );
         transition: height 0.1s ease;
       }
+      .output-bar {
+        background: linear-gradient(
+          to top,
+          rgb(64, 144, 255) 0%,
+          rgb(64, 144, 255) 55%,
+          rgb(100, 170, 255) 60%,
+          rgb(150, 200, 255) 70%,
+          rgb(200, 230, 255) 75%,
+          rgb(220, 240, 255) 100%
+        );
+      }
+      /* Bar scale markings */
+      .bar-markers {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+      }
+      .marker {
+        position: absolute;
+        left: 0;
+        width: 4px;
+        height: 1px;
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+      .marker-0 {
+        bottom: 75%;
+      }
+      .marker-3 {
+        bottom: 60%;
+      }
+      .marker-6 {
+        bottom: 45%;
+      }
+      .marker-10 {
+        bottom: 25%;
+      }
+
       .value {
         font-family: monospace;
-        font-size: 10px;
-        margin-top: 6px;
+        font-size: 10px; /* Smaller font */
+        margin-top: 6px; /* Reduced margin */
         color: #aaa;
+      }
+      /* Knob styles */
+      .knobs-container {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 4px; /* Reduced margin to move knob closer to bars */
+      }
+      .knob-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .knob {
+        width: 28px; /* Smaller knob */
+        height: 28px; /* Smaller knob */
+        border-radius: 50%;
+        background: linear-gradient(135deg, #333, #222);
+        border: 2px solid #444;
+        position: relative;
+        box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+      }
+      .knob-indicator {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 1.5px; /* Thinner indicator */
+        height: 9px; /* Shorter indicator */
+        background-color: #ff6600;
+        transform-origin: bottom center;
+        transform: translate(-50%, -100%) rotate(0deg);
+      }
+      .knob-label {
+        font-size: 9px; /* Smaller label */
+        color: #bbb;
+        margin-top: 4px;
+      }
+      .knob-value {
+        font-size: 9px; /* Smaller value */
+        color: #888;
+        margin-top: 1px;
+        font-family: monospace;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <div class="meters">
-        <div class="meter">
-          <div class="bar-container">
-            <div id="leftBar" class="bar"></div>
+      <!-- Input Meters Section -->
+      <div class="meters-column">
+        <div class="meters">
+          <div class="meter">
+            <div class="bar-container">
+              <div id="leftBar" class="bar"></div>
+              <div class="bar-markers">
+                <div class="marker marker-0"></div>
+                <div class="marker marker-3"></div>
+                <div class="marker marker-6"></div>
+                <div class="marker marker-10"></div>
+              </div>
+            </div>
+            <div id="leftValue" class="value"></div>
           </div>
-          <div id="leftValue" class="value"></div>
+          <div class="meter">
+            <div class="bar-container">
+              <div id="rightBar" class="bar"></div>
+              <div class="bar-markers">
+                <div class="marker marker-0"></div>
+                <div class="marker marker-3"></div>
+                <div class="marker marker-6"></div>
+                <div class="marker marker-10"></div>
+              </div>
+            </div>
+            <div id="rightValue" class="value"></div>
+          </div>
         </div>
-        <div class="meter">
-          <div class="bar-container">
-            <div id="rightBar" class="bar"></div>
+        <div class="knobs-container">
+          <div class="knob-wrapper">
+            <div class="knob" id="inputGainKnob">
+              <div id="inputGainIndicator" class="knob-indicator"></div>
+            </div>
+            <div class="knob-label">IN</div>
+            <div id="inputGainValue" class="knob-value">0.0 dB</div>
           </div>
-          <div id="rightValue" class="value"></div>
+        </div>
+      </div>
+
+      <!-- Output Meter Section -->
+      <div class="meters-column">
+        <div class="meters">
+          <div class="meter">
+            <div class="bar-container">
+              <div id="outLeftBar" class="bar output-bar"></div>
+              <div class="bar-markers">
+                <div class="marker marker-0"></div>
+                <div class="marker marker-3"></div>
+                <div class="marker marker-6"></div>
+                <div class="marker marker-10"></div>
+              </div>
+            </div>
+            <div id="outLeftValue" class="value"></div>
+          </div>
+          <div class="meter">
+            <div class="bar-container">
+              <div id="outRightBar" class="bar output-bar"></div>
+              <div class="bar-markers">
+                <div class="marker marker-0"></div>
+                <div class="marker marker-3"></div>
+                <div class="marker marker-6"></div>
+                <div class="marker marker-10"></div>
+              </div>
+            </div>
+            <div id="outRightValue" class="value"></div>
+          </div>
+        </div>
+        <div class="knobs-container">
+          <div class="knob-wrapper">
+            <div class="knob" id="outputGainKnob">
+              <div id="outputGainIndicator" class="knob-indicator"></div>
+            </div>
+            <div class="knob-label">OUT</div>
+            <div id="outputGainValue" class="knob-value">0.0 dB</div>
+          </div>
         </div>
       </div>
     </div>
     <script>
-      function setAudioLevels(left, right) {
-        document.getElementById("leftBar").style.height = left + "%";
-        document.getElementById("rightBar").style.height = right + "%";
+      // Initialize gain values (in dB)
+      let inputGain = 0; // 0dB = unity gain
+      let outputGain = 0; // 0dB = unity gain
 
-        const leftDb = left > 0 ? 20 * Math.log10(left / 100) : -100;
-        const rightDb = right > 0 ? 20 * Math.log10(right / 100) : -100;
+      function setAudioLevels(inLeft, inRight, outLeft, outRight) {
+        // Update input meters
+        document.getElementById("leftBar").style.height = inLeft + "%";
+        document.getElementById("rightBar").style.height = inRight + "%";
+
+        // Update output meters
+        document.getElementById("outLeftBar").style.height = outLeft + "%";
+        document.getElementById("outRightBar").style.height = outRight + "%";
+
+        // Calculate and display dB values
+        const leftDb = inLeft > 0 ? 20 * Math.log10(inLeft / 100) : -100;
+        const rightDb = inRight > 0 ? 20 * Math.log10(inRight / 100) : -100;
+        const outLeftDb = outLeft > 0 ? 20 * Math.log10(outLeft / 100) : -100;
+        const outRightDb =
+          outRight > 0 ? 20 * Math.log10(outRight / 100) : -100;
 
         document.getElementById("leftValue").textContent =
           leftDb > -50 ? leftDb.toFixed(1) : "";
         document.getElementById("rightValue").textContent =
           rightDb > -50 ? rightDb.toFixed(1) : "";
+        document.getElementById("outLeftValue").textContent =
+          outLeftDb > -50 ? outLeftDb.toFixed(1) : "";
+        document.getElementById("outRightValue").textContent =
+          outRightDb > -50 ? outRightDb.toFixed(1) : "";
       }
-      setAudioLevels(0, 0);
+
+      // Initialize meters with zeros
+      setAudioLevels(0, 0, 0, 0);
+
+      // Utility function to update knob visuals
+      function updateKnobVisuals() {
+        // Map dB range (-12 to +12) to angle (225 to 45 degrees)
+        // Map -12 to 225, +12 to 45
+        const inputAngle = 225 + ((inputGain + 12) / 24) * 270;
+        const outputAngle = 225 + ((outputGain + 12) / 24) * 270;
+
+        // Rotate the knob indicators
+        document.getElementById(
+          "inputGainIndicator"
+        ).style.transform = `translate(-50%, -100%) rotate(${inputAngle}deg)`;
+        document.getElementById(
+          "outputGainIndicator"
+        ).style.transform = `translate(-50%, -100%) rotate(${outputAngle}deg)`;
+
+        // Update value displays
+        document.getElementById("inputGainValue").textContent = `${
+          inputGain > 0 ? "+" : ""
+        }${inputGain.toFixed(1)} dB`;
+        document.getElementById("outputGainValue").textContent = `${
+          outputGain > 0 ? "+" : ""
+        }${outputGain.toFixed(1)} dB`;
+      }
+
+      // Function to be called from C++ to set both levels and gain values
+      window.setAudioState = function (
+        inLeft,
+        inRight,
+        outLeft,
+        outRight,
+        inGain,
+        outGain
+      ) {
+        inputGain = inGain;
+        outputGain = outGain;
+
+        setAudioLevels(inLeft, inRight, outLeft, outRight);
+        updateKnobVisuals();
+      };
+
+      // Simplified function for backward compatibility
+      window.setAudioLevels = function (inLeft, inRight) {
+        setAudioLevels(inLeft, inRight, inLeft, inRight);
+      };
+
+      // Value change handler to send values back to C++
+      window.valueChanged = function (param, value) {
+        try {
+          window.location.href = "oxide:" + param + "=" + value;
+        } catch (e) {
+          // Silent error handling
+        }
+      };
+
+      // Knob interaction handlers
+      function setupKnobInteraction(knobId, paramName) {
+        const knob = document.getElementById(knobId);
+
+        // Click handler for instant position
+        knob.addEventListener("click", function (e) {
+          const rect = this.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+
+          // Calculate angle based on click position
+          const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+          let angleDeg = (angle * (180 / Math.PI) + 90) % 360;
+          if (angleDeg < 0) angleDeg += 360;
+
+          // Map angle to our gain range (-12 to +12 dB)
+          let newGain;
+          if (angleDeg >= 225 || angleDeg <= 45) {
+            newGain =
+              (angleDeg >= 225
+                ? (angleDeg - 225) / 270
+                : (angleDeg + 135) / 270) *
+                24 -
+              12;
+          } else {
+            newGain = angleDeg < 225 && angleDeg > 45 ? -12 : 12;
+          }
+
+          // Send the value to C++
+          window.valueChanged(paramName, newGain);
+
+          // Update local state (the C++ will reflect this back)
+          if (paramName === "inputGain") {
+            inputGain = newGain;
+          } else {
+            outputGain = newGain;
+          }
+          updateKnobVisuals();
+        });
+
+        // Drag handler for continuous adjustment
+        knob.addEventListener("mousedown", function (e) {
+          e.preventDefault();
+          const isInputGain = paramName === "inputGain";
+          const startY = e.clientY;
+          const startValue = isInputGain ? inputGain : outputGain;
+
+          function handleMove(moveEvent) {
+            moveEvent.preventDefault();
+
+            // Calculate vertical movement, scale for sensitivity
+            const deltaY = (startY - moveEvent.clientY) * 0.1;
+            const newValue = Math.max(-12, Math.min(12, startValue + deltaY));
+
+            // Send value to C++
+            window.valueChanged(paramName, newValue);
+
+            // Update local state
+            if (isInputGain) {
+              inputGain = newValue;
+            } else {
+              outputGain = newValue;
+            }
+            updateKnobVisuals();
+          }
+
+          document.addEventListener("mousemove", handleMove);
+          document.addEventListener(
+            "mouseup",
+            () => {
+              document.removeEventListener("mousemove", handleMove);
+            },
+            { once: true }
+          );
+        });
+      }
+
+      // Set up both knobs
+      setupKnobInteraction("inputGainKnob", "inputGain");
+      setupKnobInteraction("outputGainKnob", "outputGain");
+
+      // Initialize knob visuals
+      updateKnobVisuals();
     </script>
   </body>
 </html>

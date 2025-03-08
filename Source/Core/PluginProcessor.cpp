@@ -133,6 +133,8 @@ void OxideAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
     
     stream.writeFloat(distortionProcessor.getDrive());
     stream.writeFloat(distortionProcessor.getMix());
+    stream.writeFloat(distortionProcessor.getInputGain());
+    stream.writeFloat(distortionProcessor.getOutputGain());
 }
 
 void OxideAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
@@ -140,13 +142,28 @@ void OxideAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
     // Restore plugin state (parameters) here
     juce::MemoryInputStream stream(data, static_cast<size_t>(sizeInBytes), false);
     
-    if (stream.getNumBytesRemaining() >= sizeof(float) * 2)
+    if (stream.getNumBytesRemaining() >= sizeof(float) * 4)
     {
+        float drive = stream.readFloat();
+        float mix = stream.readFloat();
+        float inputGain = stream.readFloat();
+        float outputGain = stream.readFloat();
+        
+        distortionProcessor.setDrive(drive);
+        distortionProcessor.setMix(mix);
+        distortionProcessor.setInputGain(inputGain);
+        distortionProcessor.setOutputGain(outputGain);
+    }
+    else if (stream.getNumBytesRemaining() >= sizeof(float) * 2)
+    {
+        // Backward compatibility with older plugin versions
         float drive = stream.readFloat();
         float mix = stream.readFloat();
         
         distortionProcessor.setDrive(drive);
         distortionProcessor.setMix(mix);
+        distortionProcessor.setInputGain(0.0f);
+        distortionProcessor.setOutputGain(0.0f);
     }
 }
 
