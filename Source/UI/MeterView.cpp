@@ -3,11 +3,11 @@
 
 MeterView::MeterView()
 {
-    // Create the web view
     webView.reset(new juce::WebBrowserComponent());
+    webView->setWantsKeyboardFocus(false);
+    webView->setFocusContainer(false);
     addAndMakeVisible(webView.get());
     
-    // Load HTML from binary resources
     juce::String htmlContent = juce::String(BinaryData::meter_html, BinaryData::meter_htmlSize);
     webView->goToURL("data:text/html;charset=utf-8," + htmlContent);
 }
@@ -18,7 +18,6 @@ MeterView::~MeterView()
 
 void MeterView::paint(juce::Graphics& g)
 {
-    // No additional painting needed
 }
 
 void MeterView::resized()
@@ -28,7 +27,6 @@ void MeterView::resized()
 
 void MeterView::updateLevels(float leftLevel, float rightLevel)
 {
-    // Limit and scale the levels
     leftLevel = juce::jlimit(0.0f, 100.0f, leftLevel);
     rightLevel = juce::jlimit(0.0f, 100.0f, rightLevel);
     

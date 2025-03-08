@@ -15,6 +15,8 @@ juce_add_binary_data(OxideResources
     SOURCES
         Resources/meter.html
         Resources/controlPanel.html
+        Resources/header.html
+        Resources/bg.jpg
 )
 
 # Create the plugin target
@@ -50,8 +52,11 @@ target_sources(Oxide
         Source/Core/PluginEditor.h
 
         # UI
+        Source/UI/Background.h
         Source/UI/ControlPanel.cpp
         Source/UI/ControlPanel.h
+        Source/UI/HeaderView.cpp
+        Source/UI/HeaderView.h
         Source/UI/MeterView.cpp
         Source/UI/MeterView.h
 

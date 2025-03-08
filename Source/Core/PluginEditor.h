@@ -4,6 +4,8 @@
 #include "PluginProcessor.h"
 #include "ControlPanel.h"
 #include "MeterView.h"
+#include "HeaderView.h"
+#include "Background.h"
 
 class OxideAudioProcessorEditor : public juce::AudioProcessorEditor,
                                   private juce::Timer
@@ -18,6 +20,8 @@ public:
 private:
     OxideAudioProcessor& audioProcessor;
     
+    Background background;
+    HeaderView headerView;
     MeterView meterView;
     ControlPanel controlPanel;
     

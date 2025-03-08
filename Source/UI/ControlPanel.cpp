@@ -48,15 +48,14 @@ ControlPanel::ControlPanel(DistortionProcessor& processor)
       lastDrive(processor.getDrive()),
       lastMix(processor.getMix())
 {
-    // Create the custom web view
     webView.reset(new OxideWebBrowser(distortionProcessor));
+    webView->setWantsKeyboardFocus(false);
+    webView->setFocusContainer(false);
     addAndMakeVisible(webView.get());
     
-    // Load HTML from binary resources
     juce::String htmlContent = juce::String(BinaryData::controlPanel_html, BinaryData::controlPanel_htmlSize);
     webView->goToURL("data:text/html;charset=utf-8," + htmlContent);
     
-    // Start timer to check for processor changes
     startTimer(50);
 }
 
@@ -67,7 +66,6 @@ ControlPanel::~ControlPanel()
 
 void ControlPanel::paint(juce::Graphics& g)
 {
-    g.fillAll(juce::Colour(0xff222222));
 }
 
 void ControlPanel::resized()
@@ -77,7 +75,6 @@ void ControlPanel::resized()
 
 void ControlPanel::timerCallback()
 {
-    // Check if processor values have changed
     float drive = distortionProcessor.getDrive();
     float mix = distortionProcessor.getMix();
     
