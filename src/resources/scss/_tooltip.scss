@@ -1,13 +1,15 @@
+@use "theme" as *;
+
 .tooltip {
   position: absolute;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 10px;
+  background-color: rgba($background-darker, 0.8);
+  color: $text-primary;
+  padding: $spacing-xs $spacing-xs * 2;
+  border-radius: $border-radius-sm;
+  font-size: $font-size-tiny;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity $transition-standard ease;
   z-index: 1000;
   white-space: nowrap;
 }

@@ -1,0 +1,68 @@
+// Color Palette
+$primary-color: #e73c0c; // Main accent color (red-orange)
+$primary-hover: #ff4d23; // Lighter red-orange for hover states
+$background-dark: #1e1e1e; // Dark background
+$background-darker: #121212; // Even darker background for contrast
+$surface-color: #333333; // UI element surface color
+$surface-highlight: #444444; // Lighter surfaces for highlighting
+
+// Text Colors
+$text-primary: #ffffff; // Main text color (white)
+$text-secondary: #dddddd; // Secondary text (light gray)
+$text-muted: #999999; // Muted text (gray)
+
+// Functional Colors
+$success-color: #20c020; // Green for positive indicators
+$warning-color: #ffb400; // Darker yellow for warnings
+$danger-color: #ff2200; // Redder alert/error color
+
+// Meter Gradient Colors
+$meter-gradient: linear-gradient(
+  to top,
+  $success-color 0%,
+  $success-color 55%,
+  $warning-color 60%,
+  #ff3300 70%,
+  // More red-orange in the middle
+  $danger-color 75%,
+  $danger-color 100%
+);
+
+// Knob Styles
+$knob-background: linear-gradient(135deg, #333, #222);
+$knob-border: $surface-highlight;
+$knob-indicator: $primary-color;
+$knob-shadow: rgba(0, 0, 0, 0.3);
+
+// UI Element Dimensions
+$header-height: 60px;
+$control-panel-height: 150px;
+$knob-size-large: 60px;
+$knob-size-small: 10px;
+$meter-width: 8px;
+$meter-height: 180px;
+
+// Typography
+$font-family: "Lucida Grande", Arial, sans-serif;
+$font-size-title: 24px;
+$font-size-label: 14px;
+$font-size-small: 12px;
+$font-size-tiny: 10px;
+
+// Spacing
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// Borders & Radiuses
+$border-radius-sm: 3px;
+$border-radius-lg: 6px;
+$border-width: 1px;
+$border-color: #333333;
+
+// Animations & Transitions
+$transition-quick: 0.1s;
+$transition-standard: 0.2s;
+$transition-slow: 0.3s;

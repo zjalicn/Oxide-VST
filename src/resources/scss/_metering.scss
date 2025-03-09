@@ -1,11 +1,13 @@
+@use "theme" as *;
+
 .container {
-  padding: 150px 5px 0 5px; /* Add top padding to push meters down a bit */
+  padding: 150px 5px 0 5px;
   box-sizing: border-box;
   width: 100%;
   height: 100%;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start; /* Back to top alignment with padding */
+  align-items: flex-start;
   background-color: transparent;
 }
 
@@ -25,14 +27,14 @@
   margin: 0;
   text-align: center;
   position: relative;
-  width: 10px;
+  width: $meter-width + 2;
 }
 
 .bar-container {
-  height: 180px;
-  width: 8px;
+  height: $meter-height;
+  width: $meter-width;
   margin: 0 1px;
-  background: rgba(26, 26, 26, 0.7);
+  background: rgba($background-darker, 0.7);
   position: relative;
   margin: 0 auto;
   border: none;
@@ -45,28 +47,12 @@
   left: 0;
   width: 100%;
   height: 0%;
-  background: linear-gradient(
-    to top,
-    rgb(32, 192, 32) 0%,
-    rgb(32, 192, 32) 55%,
-    rgb(192, 192, 32) 60%,
-    rgb(255, 165, 0) 70%,
-    rgb(255, 50, 50) 75%,
-    rgb(255, 32, 32) 100%
-  );
-  transition: height 0.1s ease;
+  background: $meter-gradient;
+  transition: height $transition-quick ease;
 }
 
 .output-bar {
-  background: linear-gradient(
-    to top,
-    rgb(32, 192, 32) 0%,
-    rgb(32, 192, 32) 55%,
-    rgb(192, 192, 32) 60%,
-    rgb(255, 165, 0) 70%,
-    rgb(255, 50, 50) 75%,
-    rgb(255, 32, 32) 100%
-  );
+  background: $meter-gradient;
 }
 
 .bar-markers {
@@ -83,7 +69,7 @@
   left: 0;
   width: 4px;
   height: 1px;
-  background-color: rgba(255, 255, 255, 0.4);
+  background-color: rgba($text-primary, 0.4);
 }
 
 .marker-0 {
@@ -100,12 +86,4 @@
 
 .marker-10 {
   bottom: 25%;
-}
-
-/* Meter bg styles */
-body.meter-view {
-  background-image: url("/bg.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
 }

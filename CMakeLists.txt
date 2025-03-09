@@ -37,6 +37,9 @@ juce_add_binary_data(OxideResources
         src/resources/css/header.css
         src/resources/css/control-panel.css
         src/resources/css/meters.css
+
+        # Fonts
+        src/resources/fonts/old_english_hearts.ttf
 )
 add_dependencies(OxideResources CompileSCSS)
 
@@ -74,11 +77,12 @@ target_sources(Oxide
         src/ui/Background.h
         src/ui/ControlPanel.cpp
         src/ui/ControlPanel.h
+        src/ui/CustomFonts.h
         src/ui/HeaderView.cpp
         src/ui/HeaderView.h
         src/ui/MeterView.cpp
         src/ui/MeterView.h
-
+        
         # DSP
         src/dsp/distortion/DistortionProcessor.cpp
         src/dsp/distortion/DistortionProcessor.h

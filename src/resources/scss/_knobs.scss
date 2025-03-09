@@ -1,8 +1,10 @@
+@use "theme" as *;
+
 .knobs-container {
   display: flex;
   justify-content: center;
-  gap: 15px;
-  margin-top: 4px;
+  gap: $spacing-md - 1;
+  margin-top: $spacing-xs;
 }
 
 .knob-wrapper {
@@ -18,24 +20,24 @@
 }
 
 .knob {
-  width: 60px;
-  height: 60px;
+  width: $knob-size-large;
+  height: $knob-size-large;
   border-radius: 50%;
-  background: linear-gradient(135deg, #333, #222);
-  border: 2px solid #444;
+  background: $knob-background;
+  border: 2px solid $knob-border;
   position: relative;
-  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 3px 5px $knob-shadow;
   cursor: pointer;
 }
 
 .knob-small {
-  width: 10px;
-  height: 10px;
+  width: $knob-size-small;
+  height: $knob-size-small;
   border-radius: 50%;
-  background: linear-gradient(135deg, #333, #222);
-  border: 2px solid #444;
+  background: $knob-background;
+  border: 2px solid $knob-border;
   position: relative;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 3px $knob-shadow;
   cursor: pointer;
 }
 
@@ -45,31 +47,30 @@
   left: 50%;
   width: 2px;
   height: 20px;
-  background-color: #ff6600;
+  background-color: $knob-indicator;
   transform-origin: bottom center;
   transform: translate(-50%, -100%) rotate(0deg);
 }
 
-/* Small knob indicator */
 .knob-indicator-small {
   position: absolute;
   top: 50%;
   left: 50%;
   width: 1px;
   height: 4px;
-  background-color: #ff6600;
+  background-color: $knob-indicator;
   transform-origin: bottom center;
   transform: translate(-50%, -100%) rotate(0deg);
 }
 
 .knob-label {
-  margin-top: 10px;
-  font-size: 12px;
-  color: #ddd;
+  margin-top: $spacing-sm + 2;
+  font-size: $font-size-small;
+  color: $text-secondary;
 }
 
 .knob-value {
-  margin-top: 5px;
-  font-size: 10px;
-  color: #999;
+  margin-top: $spacing-xs + 1;
+  font-size: $font-size-tiny;
+  color: $text-muted;
 }

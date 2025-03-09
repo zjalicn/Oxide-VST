@@ -1,7 +1,9 @@
+@use "theme" as *;
+
 body {
   background-color: transparent;
-  color: white;
-  font-family: "Lucida Grande", Arial, sans-serif;
+  color: $text-primary;
+  font-family: $font-family;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -11,8 +13,8 @@ body {
   position: fixed;
   bottom: 0;
   left: 0;
-  color: yellow;
-  font-size: 10px;
-  padding: 2px;
+  color: $warning-color;
+  font-size: $font-size-tiny;
+  padding: $spacing-xs;
   display: none;
 }
