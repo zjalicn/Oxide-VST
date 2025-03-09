@@ -1,12 +1,73 @@
 @use "theme" as *;
 
 .control-panel-view {
-  padding: $spacing-sm + 2;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .control-panel {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
-  gap: $spacing-xl - 2;
-  padding: $spacing-sm + 2;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.distortion-section {
+  background: linear-gradient(145deg, $background-dark, $surface-color);
+  border: $border-width solid $border-color;
+  border-radius: $border-radius-sm;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  padding: $spacing-xs;
+  margin: $spacing-xs auto;
+  box-sizing: border-box;
+  display: inline-block;
+  max-width: 240px;
+}
+
+.distortion-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: $spacing-xs;
+  height: 20px;
+}
+
+.distortion-title {
+  font-size: 10px;
+  font-weight: bold;
+  color: $primary-color;
+  margin-left: $spacing-xs;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+.algorithm-selector {
+  background-color: $background-darker;
+  color: $text-primary;
+  border: $border-width solid $border-color;
+  padding: 2px 4px;
+  border-radius: $border-radius-sm;
+  font-size: 9px;
+  width: 75px;
+  outline: none;
+  cursor: pointer;
+  margin-left: auto;
+  margin-right: $spacing-xs;
+}
+
+.algorithm-selector:focus {
+  border-color: $primary-color;
+}
+
+.knobs-row {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-md;
+  padding-top: $spacing-xs;
+  align-items: flex-start;
+  margin-bottom: $spacing-xs;
 }

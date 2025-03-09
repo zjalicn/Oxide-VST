@@ -18,6 +18,7 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
             audioProcessor.getDistortionProcessor().setMix(0.5f);
             audioProcessor.getDistortionProcessor().setInputGain(0.0f);
             audioProcessor.getDistortionProcessor().setOutputGain(0.0f);
+            audioProcessor.getDistortionProcessor().setAlgorithm(DistortionAlgorithm::SoftClip);
         }
         else if (presetName == "heavy_metal")
         {
@@ -25,6 +26,7 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
             audioProcessor.getDistortionProcessor().setMix(0.7f);
             audioProcessor.getDistortionProcessor().setInputGain(3.0f);
             audioProcessor.getDistortionProcessor().setOutputGain(2.0f);
+            audioProcessor.getDistortionProcessor().setAlgorithm(DistortionAlgorithm::HardClip);
         }
         else if (presetName == "fuzz")
         {
@@ -32,6 +34,7 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
             audioProcessor.getDistortionProcessor().setMix(1.0f);
             audioProcessor.getDistortionProcessor().setInputGain(6.0f);
             audioProcessor.getDistortionProcessor().setOutputGain(-3.0f);
+            audioProcessor.getDistortionProcessor().setAlgorithm(DistortionAlgorithm::Foldback);
         }
         else if (presetName == "warm_tape")
         {
@@ -39,6 +42,7 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
             audioProcessor.getDistortionProcessor().setMix(0.4f);
             audioProcessor.getDistortionProcessor().setInputGain(1.5f);
             audioProcessor.getDistortionProcessor().setOutputGain(0.0f);
+            audioProcessor.getDistortionProcessor().setAlgorithm(DistortionAlgorithm::Waveshaper);
         }
         else
         { // default
@@ -46,34 +50,13 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
             audioProcessor.getDistortionProcessor().setMix(0.5f);
             audioProcessor.getDistortionProcessor().setInputGain(0.0f);
             audioProcessor.getDistortionProcessor().setOutputGain(0.0f);
+            audioProcessor.getDistortionProcessor().setAlgorithm(DistortionAlgorithm::SoftClip);
         }
 
         // Update the UI to reflect the new values
         meterView.setInputGain(audioProcessor.getDistortionProcessor().getInputGain());
         meterView.setOutputGain(audioProcessor.getDistortionProcessor().getOutputGain());
     };
-
-    headerView.onSaveClicked = [this]()
-    {
-        // Here you would implement saving the current settings
-        // For example, you could show a file save dialog
-        // and save the current state as a preset file
-    };
-
-    // Set up callbacks for input/output gain changes from the UI
-    meterView.onInputGainChanged = [this](float newGain)
-    {
-        audioProcessor.getDistortionProcessor().setInputGain(newGain);
-    };
-
-    meterView.onOutputGainChanged = [this](float newGain)
-    {
-        audioProcessor.getDistortionProcessor().setOutputGain(newGain);
-    };
-
-    // Initialize the meter with the current gain values
-    meterView.setInputGain(audioProcessor.getDistortionProcessor().getInputGain());
-    meterView.setOutputGain(audioProcessor.getDistortionProcessor().getOutputGain());
 
     // Start the timer for meter updates
     startTimerHz(30);

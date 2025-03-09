@@ -1,23 +1,41 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <link rel="stylesheet" href="./global.css" />
   </head>
   <body class="control-panel-view">
     <div class="control-panel">
-      <div class="knob-container">
-        <div class="knob" id="driveKnob">
-          <div id="driveIndicator" class="knob-indicator"></div>
+      <div class="distortion-section">
+        <div class="distortion-header">
+          <div class="distortion-title">DIST.</div>
+          <select class="algorithm-selector" id="algorithmSelector">
+            <option value="soft_clip">Soft Clip</option>
+            <option value="hard_clip">Hard Clip</option>
+            <option value="foldback">Foldback</option>
+            <option value="waveshaper">Waveshaper</option>
+            <option value="bitcrusher">Bitcrusher</option>
+          </select>
         </div>
-        <div class="knob-label">Drive</div>
-        <div id="driveValue" class="knob-value">50%</div>
-      </div>
-      <div class="knob-container">
-        <div class="knob" id="mixKnob">
-          <div id="mixIndicator" class="knob-indicator"></div>
+        <div class="knobs-row">
+          <div class="knob-container">
+            <div class="knob" id="driveKnob">
+              <div id="driveIndicator" class="knob-indicator"></div>
+            </div>
+            <div class="knob-label">Drive</div>
+            <div id="driveValue" class="knob-value">50%</div>
+          </div>
+          <div class="knob-container">
+            <div class="knob" id="mixKnob">
+              <div id="mixIndicator" class="knob-indicator"></div>
+            </div>
+            <div class="knob-label">Mix</div>
+            <div id="mixValue" class="knob-value">50%</div>
+          </div>
         </div>
-        <div class="knob-label">Mix</div>
-        <div id="mixValue" class="knob-value">50%</div>
       </div>
     </div>
     <div id="debug"></div>
@@ -26,6 +44,7 @@
       // Initialize
       let driveValue = 0.5;
       let mixValue = 0.5;
+      let algorithm = "soft_clip";
       let debug = document.getElementById("debug");
 
       function log(msg) {
@@ -33,9 +52,14 @@
         debug.style.display = "block";
       }
 
-      function updateControls(drive, mix) {
+      function updateControls(drive, mix, alg) {
         driveValue = drive;
         mixValue = mix;
+
+        if (alg) {
+          algorithm = alg;
+          document.getElementById("algorithmSelector").value = alg;
+        }
 
         // Map 0-1 range to 225-45 degrees (7 o'clock to 3 o'clock)
         // Start at 225 degrees (7 o'clock) and go 270 degrees clockwise
@@ -66,6 +90,14 @@
           log("Error in valueChanged: " + e.message);
         }
       };
+
+      // Add algorithm selector change handler
+      document
+        .getElementById("algorithmSelector")
+        .addEventListener("change", function () {
+          algorithm = this.value;
+          window.valueChanged("algorithm", algorithm);
+        });
 
       // Direct click handlers for simpler interaction
       document
@@ -180,13 +212,15 @@
       });
 
       // Initialize with default values
-      updateControls(0.5, 0.5);
+      updateControls(0.5, 0.5, "soft_clip");
 
       // Add a simple direct method for C++ to call
-      window.setValues = function (drive, mix) {
+      window.setValues = function (drive, mix, alg) {
         driveValue = parseFloat(drive);
         mixValue = parseFloat(mix);
-        updateControls(driveValue, mixValue);
+
+        // Only update algorithm if provided
+        updateControls(driveValue, mixValue, alg);
       };
     </script>
   </body>

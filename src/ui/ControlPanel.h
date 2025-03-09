@@ -21,6 +21,7 @@ private:
     // Last known values for change detection
     float lastDrive;
     float lastMix;
+    juce::String lastAlgorithm;
 
     // Timer callback to check for processor changes
     void timerCallback() override;

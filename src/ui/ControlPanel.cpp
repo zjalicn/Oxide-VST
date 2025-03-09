@@ -26,6 +26,12 @@ public:
                 processor.setMix(value);
                 return false;
             }
+            else if (params.startsWith("algorithm="))
+            {
+                juce::String value = params.fromFirstOccurrenceOf("algorithm=", false, true);
+                processor.setAlgorithm(value);
+                return false;
+            }
 
             return false; // We handled this URL
         }
@@ -40,7 +46,8 @@ private:
 ControlPanel::ControlPanel(DistortionProcessor &processor)
     : distortionProcessor(processor),
       lastDrive(processor.getDrive()),
-      lastMix(processor.getMix())
+      lastMix(processor.getMix()),
+      lastAlgorithm(processor.getAlgorithmName())
 {
     // Create the browser with the resource handler
     auto browser = new ControlPanelBrowserComponent(distortionProcessor);
@@ -55,6 +62,12 @@ ControlPanel::ControlPanel(DistortionProcessor &processor)
 
     // Inject CSS directly into HTML head
     juce::String cssContent = juce::String(BinaryData::controlpanel_css, BinaryData::controlpanel_cssSize);
+
+    // Add viewport meta tag for better sizing
+    htmlContent = htmlContent.replace(
+        "<head>",
+        "<head>\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no\">");
+
     htmlContent = htmlContent.replace(
         "<link rel=\"stylesheet\" href=\"./global.css\" />",
         "<style>" + cssContent + "</style>");
@@ -78,6 +91,7 @@ void ControlPanel::paint(juce::Graphics &g)
 
 void ControlPanel::resized()
 {
+    // Make sure the webView takes up the exact same area as this component
     webView->setBounds(getLocalBounds());
 }
 
@@ -85,14 +99,24 @@ void ControlPanel::timerCallback()
 {
     float drive = distortionProcessor.getDrive();
     float mix = distortionProcessor.getMix();
+    juce::String algorithm = distortionProcessor.getAlgorithmName();
 
-    if (std::abs(drive - lastDrive) > 0.001f || std::abs(mix - lastMix) > 0.001f)
+    bool valuesChanged = std::abs(drive - lastDrive) > 0.001f ||
+                         std::abs(mix - lastMix) > 0.001f ||
+                         algorithm != lastAlgorithm;
+
+    if (valuesChanged)
     {
         // Update the UI with current parameter values
-        juce::String script = "window.setValues(" + juce::String(drive) + ", " + juce::String(mix) + ")";
+        juce::String script = "window.setValues(" +
+                              juce::String(drive) + ", " +
+                              juce::String(mix) + ", '" +
+                              algorithm + "')";
+
         webView->evaluateJavascript(script);
 
         lastDrive = drive;
         lastMix = mix;
+        lastAlgorithm = algorithm;
     }
 }
