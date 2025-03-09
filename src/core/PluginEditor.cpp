@@ -1,13 +1,10 @@
 #include "PluginEditor.h"
-#include "CustomFonts.h"
 
 OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
     : AudioProcessorEditor(&p),
       audioProcessor(p),
       controlPanel(p.getDistortionProcessor())
 {
-    CustomFonts::getOldEnglishFont();
-
     addAndMakeVisible(background);
     addAndMakeVisible(headerView);
     addAndMakeVisible(meterView);

@@ -4,6 +4,7 @@
 **/JuceLibraryCode/
 **/JUCE */
 **/.DS_Store
+JUCE
 
 src/resources/css
 
