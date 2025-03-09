@@ -24,7 +24,6 @@
     </div>
 
     <script>
-      // Get references to our UI elements
       const presetDropdown = document.getElementById("presetDropdown");
       const saveButton = document.getElementById("saveButton");
 
@@ -58,16 +57,13 @@
 
       presetDropdown.addEventListener("change", function () {
         const presetName = this.value;
-        // Use the oxide: URL scheme to communicate with C++
         window.location.href = "oxide:preset=" + presetName;
 
         // Immediately blur to prevent focus issues
         this.blur();
       });
 
-      // Handle save button click
       saveButton.addEventListener("click", function () {
-        // Use the oxide: URL scheme to communicate with C++
         window.location.href = "oxide:action=save";
       });
     </script>

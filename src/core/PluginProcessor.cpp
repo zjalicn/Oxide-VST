@@ -113,6 +113,12 @@ void OxideAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::M
 
     // Process the distortion
     distortionProcessor.processBlock(buffer);
+
+    // Store post-processed buffer for oscilloscope
+    {
+        juce::ScopedLock lock(outputBufferLock);
+        outputBuffer.makeCopyOf(buffer);
+    }
 }
 
 bool OxideAudioProcessor::hasEditor() const

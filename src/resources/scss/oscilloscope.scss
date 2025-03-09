@@ -1,0 +1,29 @@
+@use "common" as *;
+@use "theme" as *;
+
+.oscilloscope-view {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.oscilloscope-container {
+  width: 90%;
+  height: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-color: rgba($background-darker, 0.7);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.oscilloscope-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}

@@ -3,12 +3,17 @@
 OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
     : AudioProcessorEditor(&p),
       audioProcessor(p),
-      controlPanel(p.getDistortionProcessor())
+      controlPanel(p.getDistortionProcessor()),
+      oscilloscopeView(p.getDistortionProcessor())
 {
     addAndMakeVisible(background);
     addAndMakeVisible(headerView);
     addAndMakeVisible(meterView);
+    addAndMakeVisible(oscilloscopeView);
     addAndMakeVisible(controlPanel);
+
+    // Oscilloscope update (in timerCallback)
+    oscilloscopeView.updateBuffer(p.getOutputBuffer());
 
     headerView.onPresetSelected = [this](const juce::String &presetName)
     {
@@ -58,6 +63,28 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
         meterView.setOutputGain(audioProcessor.getDistortionProcessor().getOutputGain());
     };
 
+    headerView.onSaveClicked = [this]()
+    {
+        // Here you would implement saving the current settings
+        // For example, you could show a file save dialog
+        // and save the current state as a preset file
+    };
+
+    // Set up callbacks for input/output gain changes from the UI
+    meterView.onInputGainChanged = [this](float newGain)
+    {
+        audioProcessor.getDistortionProcessor().setInputGain(newGain);
+    };
+
+    meterView.onOutputGainChanged = [this](float newGain)
+    {
+        audioProcessor.getDistortionProcessor().setOutputGain(newGain);
+    };
+
+    // Initialize the meter with the current gain values
+    meterView.setInputGain(audioProcessor.getDistortionProcessor().getInputGain());
+    meterView.setOutputGain(audioProcessor.getDistortionProcessor().getOutputGain());
+
     // Start the timer for meter updates
     startTimerHz(30);
 
@@ -95,7 +122,16 @@ void OxideAudioProcessorEditor::resized()
     // Position the control panel at the bottom
     controlPanel.setBounds(bounds.removeFromBottom(controlHeight));
 
-    // The meter view takes the remaining space
+    // Now split the remaining area for meter and oscilloscope
+    int oscilloscopeSize = std::min(bounds.getHeight(), bounds.getWidth() / 3);
+
+    // Center the oscilloscope
+    int oscilloscopeX = bounds.getX() + (bounds.getWidth() - oscilloscopeSize) / 2;
+    int oscilloscopeY = bounds.getY() + (bounds.getHeight() - oscilloscopeSize) / 2;
+
+    oscilloscopeView.setBounds(oscilloscopeX, oscilloscopeY, oscilloscopeSize, oscilloscopeSize);
+
+    // Meter view spans the full width
     meterView.setBounds(bounds);
 }
 
@@ -126,4 +162,7 @@ void OxideAudioProcessorEditor::timerCallback()
 
     // Update the meter display
     meterView.updateLevels(leftLevel, rightLevel);
+
+    // Update the oscilloscope with latest audio buffer
+    oscilloscopeView.updateBuffer(audioProcessor.getOutputBuffer());
 }

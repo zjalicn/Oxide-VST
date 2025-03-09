@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <link rel="stylesheet" href="./global.css" />
+  </head>
+  <body class="oscilloscope-view">
+    <div class="oscilloscope-container">
+      <canvas id="oscilloscopeCanvas" class="oscilloscope-canvas"></canvas>
+    </div>
+
+    <script>
+      const canvas = document.getElementById("oscilloscopeCanvas");
+      const ctx = canvas.getContext("2d");
+      let canvasSize = 0;
+      let audioData = [];
+
+      // Default buffer size for the oscilloscope
+      const BUFFER_SIZE = 128;
+
+      // Initialize with some empty data
+      for (let i = 0; i < BUFFER_SIZE; i++) {
+        audioData.push(0);
+      }
+
+      function resizeCanvas() {
+        // Get the container size
+        const container = document.querySelector(".oscilloscope-container");
+        canvasSize = Math.min(container.clientWidth, container.clientHeight);
+
+        // Set canvas size
+        canvas.width = canvasSize;
+        canvas.height = canvasSize;
+
+        // Force a redraw
+        drawOscilloscope();
+      }
+
+      function drawOscilloscope() {
+        if (!ctx || canvasSize === 0) return;
+
+        // Clear canvas
+        ctx.clearRect(0, 0, canvasSize, canvasSize);
+
+        // Draw circular border
+        ctx.beginPath();
+        ctx.arc(
+          canvasSize / 2,
+          canvasSize / 2,
+          canvasSize / 2 - 2,
+          0,
+          Math.PI * 2
+        );
+        ctx.strokeStyle = "#333333"; // Dark theme color for border
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // Draw 0dB reference lines
+        ctx.beginPath();
+        ctx.moveTo(canvasSize / 2 - canvasSize / 2 + 10, canvasSize / 2);
+        ctx.lineTo(canvasSize / 2 + canvasSize / 2 - 10, canvasSize / 2);
+        ctx.strokeStyle = "#666666"; // Muted color for reference line
+        ctx.lineWidth = 1;
+        ctx.setLineDash([2, 2]); // Dashed line
+        ctx.stroke();
+        ctx.setLineDash([]); // Reset to solid line
+
+        // Draw the waveform
+        if (audioData.length > 0) {
+          ctx.beginPath();
+
+          // Calculate how much space to leave as margin
+          const margin = 10;
+          const radius = canvasSize / 2 - margin;
+
+          // Start at the left edge
+          const firstPoint = {
+            x: margin,
+            y: canvasSize / 2 + audioData[0] * radius,
+          };
+
+          ctx.moveTo(firstPoint.x, firstPoint.y);
+
+          // Draw the rest of the waveform
+          for (let i = 1; i < audioData.length; i++) {
+            const x =
+              margin + (i / (audioData.length - 1)) * (canvasSize - margin * 2);
+            const y = canvasSize / 2 + audioData[i] * radius;
+            ctx.lineTo(x, y);
+          }
+
+          ctx.strokeStyle = "#e73c0c"; // Primary theme color for waveform
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+      }
+
+      // Function to update audio data from C++
+      window.updateOscilloscopeData = function (dataArray) {
+        try {
+          if (typeof dataArray === "string") {
+            // Parse if it's a JSON string
+            audioData = JSON.parse(dataArray);
+          } else {
+            audioData = dataArray;
+          }
+          drawOscilloscope();
+        } catch (e) {
+          console.error("Error updating oscilloscope data:", e);
+        }
+      };
+
+      // Initialize and start
+      window.addEventListener("resize", resizeCanvas);
+      resizeCanvas();
+
+      // Function to check if the view is ready
+      window.oscilloscopeReady = function () {
+        return true;
+      };
+    </script>
+  </body>
+</html>

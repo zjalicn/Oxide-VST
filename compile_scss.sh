@@ -1,5 +1,5 @@
 #!/bin/bash
-COMPONENTS=("header" "control-panel" "meters") # CSS Files to compile
+COMPONENTS=("header" "control-panel" "meters" "oscilloscope") # CSS Files to compile
 
 if ! command -v sass &> /dev/null; then
     echo "Sass not found, installing..."

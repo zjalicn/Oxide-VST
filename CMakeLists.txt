@@ -32,11 +32,13 @@ juce_add_binary_data(OxideResources
         src/resources/controlPanel.html
         src/resources/header.html
         src/resources/meters.html
+        src/resources/oscilloscope.html
 
         # CSS files
         src/resources/css/header.css
         src/resources/css/control-panel.css
         src/resources/css/meters.css
+        src/resources/css/oscilloscope.css
 
         # Fonts
         # src/resources/fonts/old_english_hearts.ttf
@@ -81,7 +83,9 @@ target_sources(Oxide
         src/ui/HeaderView.h
         src/ui/MeterView.cpp
         src/ui/MeterView.h
-        
+        src/ui/OscilloscopeView.cpp
+        src/ui/OscilloscopeView.h
+
         # DSP
         src/dsp/distortion/DistortionProcessor.cpp
         src/dsp/distortion/DistortionProcessor.h
