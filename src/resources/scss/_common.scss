@@ -1,20 +1,11 @@
 @use "theme" as *;
 
 body {
-  background-color: transparent;
+  background-color: transparent !important;
+  background: transparent !important;
   color: $text-primary;
   font-family: $font-family;
   margin: 0;
   padding: 0;
   overflow: hidden;
-}
-
-#debug {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  color: $warning-color;
-  font-size: $font-size-tiny;
-  padding: $spacing-xs;
-  display: none;
 }

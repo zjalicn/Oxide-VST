@@ -46,8 +46,6 @@ MeterView::MeterView()
     // Create the browser with the resource handler
     auto browser = new MeterViewBrowserComponent(*this);
     webView.reset(browser);
-    webView->setOpaque(false);
-    webView->setWantsKeyboardFocus(false);
     webView->setFocusContainer(false);
     addAndMakeVisible(webView.get());
 

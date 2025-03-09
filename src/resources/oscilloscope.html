@@ -5,21 +5,62 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <link rel="stylesheet" href="./global.css" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="transparent" />
+    <style>
+      body,
+      html {
+        background-color: transparent !important;
+        background: transparent !important;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      .oscilloscope-view {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        background-color: transparent !important;
+      }
+
+      .oscilloscope-container {
+        width: 90%;
+        height: 90%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 50%;
+        background-color: transparent !important;
+      }
+
+      .oscilloscope-canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+      }
+    </style>
   </head>
-  <body class="oscilloscope-view">
+  <body
+    class="oscilloscope-view"
+    style="background-color: transparent !important"
+  >
     <div class="oscilloscope-container">
       <canvas id="oscilloscopeCanvas" class="oscilloscope-canvas"></canvas>
     </div>
 
     <script>
       const canvas = document.getElementById("oscilloscopeCanvas");
-      const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext("2d", { alpha: true });
       let canvasSize = 0;
       let audioData = [];
 
       // Default buffer size for the oscilloscope
-      const BUFFER_SIZE = 128;
+      const BUFFER_SIZE = 256; // Increased sample count for more detail
 
       // Initialize with some empty data
       for (let i = 0; i < BUFFER_SIZE; i++) {
@@ -42,53 +83,64 @@
       function drawOscilloscope() {
         if (!ctx || canvasSize === 0) return;
 
-        // Clear canvas
+        // Clear canvas with transparency
         ctx.clearRect(0, 0, canvasSize, canvasSize);
 
-        // Draw circular border
-        ctx.beginPath();
-        ctx.arc(
-          canvasSize / 2,
-          canvasSize / 2,
-          canvasSize / 2 - 2,
-          0,
-          Math.PI * 2
-        );
-        ctx.strokeStyle = "#333333"; // Dark theme color for border
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        const centerX = canvasSize / 2;
+        const centerY = canvasSize / 2;
+        const radius = canvasSize / 2 - 2; // Slightly smaller than full canvas
+        const innerRadius = radius - 3; // Even smaller radius for the waveform to ensure it stays inside the border
 
-        // Draw 0dB reference lines
+        // First create a clipping path that's a circle slightly smaller than the border
+        // This ensures the waveform never extends beyond the inner edge of the border
+        ctx.save();
         ctx.beginPath();
-        ctx.moveTo(canvasSize / 2 - canvasSize / 2 + 10, canvasSize / 2);
-        ctx.lineTo(canvasSize / 2 + canvasSize / 2 - 10, canvasSize / 2);
+        ctx.arc(centerX, centerY, innerRadius, 0, Math.PI * 2);
+        ctx.clip();
+
+        // Draw 0dB reference line (horizontal through the center)
+        ctx.beginPath();
+        ctx.moveTo(centerX - innerRadius, centerY);
+        ctx.lineTo(centerX + innerRadius, centerY);
         ctx.strokeStyle = "#666666"; // Muted color for reference line
         ctx.lineWidth = 1;
         ctx.setLineDash([2, 2]); // Dashed line
         ctx.stroke();
         ctx.setLineDash([]); // Reset to solid line
 
-        // Draw the waveform
+        // Draw the waveform only if we have data
         if (audioData.length > 0) {
           ctx.beginPath();
 
-          // Calculate how much space to leave as margin
-          const margin = 10;
-          const radius = canvasSize / 2 - margin;
+          // Apply scaling to the amplitude
+          function scaleAmplitude(value) {
+            // Scale so that a nominal signal (around 0dB) fills about 85% of the available height
+            // Apply a mild non-linear curve to emphasize medium signals while keeping small signals visible
+            const sign = Math.sign(value);
+            const absValue = Math.abs(value);
 
-          // Start at the left edge
-          const firstPoint = {
-            x: margin,
-            y: canvasSize / 2 + audioData[0] * radius,
-          };
+            // Reduce the power curve factor to make it more linear (0.8)
+            // and reduce the multiplier to 0.6 so nominal signals don't hit the edges
+            return sign * Math.pow(absValue, 0.8) * 0.6;
+          }
 
-          ctx.moveTo(firstPoint.x, firstPoint.y);
+          // Calculate how much horizontal space we have for the waveform
+          const waveWidth = innerRadius * 2;
 
-          // Draw the rest of the waveform
+          // Start at the left edge of the inner circle
+          const firstX = centerX - innerRadius;
+          const firstY = centerY + scaleAmplitude(audioData[0]) * innerRadius;
+          ctx.moveTo(firstX, firstY);
+
+          // Draw the waveform from left to right
           for (let i = 1; i < audioData.length; i++) {
-            const x =
-              margin + (i / (audioData.length - 1)) * (canvasSize - margin * 2);
-            const y = canvasSize / 2 + audioData[i] * radius;
+            // Calculate x position - linear from left to right across inner circle
+            const x = firstX + (i / (audioData.length - 1)) * waveWidth;
+
+            // Calculate y position with amplitude scaled
+            const scaledValue = scaleAmplitude(audioData[i]);
+            const y = centerY + scaledValue * innerRadius;
+
             ctx.lineTo(x, y);
           }
 
@@ -96,6 +148,17 @@
           ctx.lineWidth = 2;
           ctx.stroke();
         }
+
+        // Restore the canvas context to remove the clipping path
+        ctx.restore();
+
+        // Draw circular border AFTER the waveform and after removing the clip path
+        // This ensures the border is drawn on top
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.strokeStyle = "#333333"; // Dark theme color for border
+        ctx.lineWidth = 3; // Slightly thicker border for better visibility
+        ctx.stroke();
       }
 
       // Function to update audio data from C++

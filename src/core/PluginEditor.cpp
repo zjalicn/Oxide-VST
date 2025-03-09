@@ -105,39 +105,26 @@ void OxideAudioProcessorEditor::paint(juce::Graphics &g)
 void OxideAudioProcessorEditor::resized()
 {
     auto bounds = getLocalBounds();
-    auto fullBounds = bounds; // Store the full bounds
 
-    // Header height
+    // LAYOUT
+    background.setBounds(bounds);
     auto headerHeight = 60;
-
-    // Background fills the entire area (including behind the header)
-    background.setBounds(fullBounds);
-
-    // Header at the top
     headerView.setBounds(bounds.removeFromTop(headerHeight));
+    // meterView.setBounds(bounds);
 
-    // Control panel height
-    auto controlHeight = 150;
-
-    // Position the control panel at the bottom
-    controlPanel.setBounds(bounds.removeFromBottom(controlHeight));
-
-    // Now split the remaining area for meter and oscilloscope
+    // OSCILLOSCOPE
     int oscilloscopeSize = std::min(bounds.getHeight(), bounds.getWidth() / 3);
-
-    // Center the oscilloscope
     int oscilloscopeX = bounds.getX() + (bounds.getWidth() - oscilloscopeSize) / 2;
-    int oscilloscopeY = bounds.getY() + (bounds.getHeight() - oscilloscopeSize) / 2;
-
+    int oscilloscopeY = bounds.getY() + (bounds.getHeight() - oscilloscopeSize) * 0.33;
     oscilloscopeView.setBounds(oscilloscopeX, oscilloscopeY, oscilloscopeSize, oscilloscopeSize);
 
-    // Meter view spans the full width
-    meterView.setBounds(bounds);
+    // DISTORTION
+    auto controlHeight = 150;
+    controlPanel.setBounds(bounds.removeFromBottom(controlHeight + 10));
 }
 
 void OxideAudioProcessorEditor::timerCallback()
 {
-    // Get raw levels from the processor
     float leftLevel = audioProcessor.getLeftLevel();
     float rightLevel = audioProcessor.getRightLevel();
 

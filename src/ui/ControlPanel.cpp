@@ -52,8 +52,6 @@ ControlPanel::ControlPanel(DistortionProcessor &processor)
     // Create the browser with the resource handler
     auto browser = new ControlPanelBrowserComponent(distortionProcessor);
     webView.reset(browser);
-    webView->setOpaque(false);
-    webView->setWantsKeyboardFocus(false);
     webView->setFocusContainer(false);
     addAndMakeVisible(webView.get());
 

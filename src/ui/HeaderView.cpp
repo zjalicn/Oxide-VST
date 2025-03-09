@@ -61,10 +61,7 @@ HeaderView::HeaderView()
             onSaveClicked();
     };
 
-    // Get the HTML content
     juce::String htmlContent = juce::String(BinaryData::header_html, BinaryData::header_htmlSize);
-
-    // Get the CSS content
     juce::String cssContent = juce::String(BinaryData::header_css, BinaryData::header_cssSize);
 
     // Inject CSS into HTML
@@ -72,7 +69,6 @@ HeaderView::HeaderView()
         "<link rel=\"stylesheet\" href=\"./global.css\" />",
         "<style>\n" + cssContent + "\n</style>");
 
-    // Load the HTML content
     webView->goToURL("data:text/html;charset=utf-8," + htmlContent);
 }
 
@@ -83,7 +79,6 @@ HeaderView::~HeaderView()
 
 void HeaderView::paint(juce::Graphics &g)
 {
-    g.fillAll(juce::Colour(0xff1e1e1e));
 }
 
 void HeaderView::resized()
