@@ -2,6 +2,7 @@
 
 #include <JuceHeader.h>
 #include "DistortionProcessor.h"
+#include "DelayProcessor.h"
 
 class OxideAudioProcessor : public juce::AudioProcessor
 {
@@ -36,6 +37,7 @@ public:
     void setStateInformation(const void *data, int sizeInBytes) override;
 
     DistortionProcessor &getDistortionProcessor() { return distortionProcessor; }
+    DelayProcessor &getDelayProcessor() { return delayProcessor; }
 
     float getLeftLevel() const { return levelLeft.getCurrentValue(); }
     float getRightLevel() const { return levelRight.getCurrentValue(); }
@@ -47,6 +49,7 @@ public:
     }
 
 private:
+    DelayProcessor delayProcessor;
     DistortionProcessor distortionProcessor;
     juce::LinearSmoothedValue<float> levelLeft, levelRight;
 

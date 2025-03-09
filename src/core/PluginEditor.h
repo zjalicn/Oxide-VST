@@ -3,6 +3,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 #include "ControlPanel.h"
+#include "DelayControlPanel.h"
 #include "MeterView.h"
 #include "HeaderView.h"
 #include "Background.h"
@@ -25,6 +26,7 @@ private:
     HeaderView headerView;
     MeterView meterView;
     ControlPanel controlPanel;
+    DelayControlPanel delayControlPanel;
     OscilloscopeView oscilloscopeView;
 
     void timerCallback() override;

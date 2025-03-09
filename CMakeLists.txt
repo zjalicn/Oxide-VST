@@ -20,7 +20,9 @@ add_custom_target(CompileSCSS
     BYPRODUCTS 
         ${CMAKE_CURRENT_SOURCE_DIR}/src/resources/css/header.css
         ${CMAKE_CURRENT_SOURCE_DIR}/src/resources/css/control-panel.css
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/resources/css/fx-delay.css
         ${CMAKE_CURRENT_SOURCE_DIR}/src/resources/css/meters.css
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/resources/css/oscilloscope.css
 )
 
 juce_add_binary_data(OxideResources 
@@ -30,6 +32,7 @@ juce_add_binary_data(OxideResources
 
         # HTML files
         src/resources/controlPanel.html
+        src/resources/fx-delay.html
         src/resources/header.html
         src/resources/meters.html
         src/resources/oscilloscope.html
@@ -37,9 +40,10 @@ juce_add_binary_data(OxideResources
         # CSS files
         src/resources/css/header.css
         src/resources/css/control-panel.css
+        src/resources/css/fx-delay.css
         src/resources/css/meters.css
         src/resources/css/oscilloscope.css
-
+        
         # Fonts
         # src/resources/fonts/old_english_hearts.ttf
 )
@@ -79,6 +83,8 @@ target_sources(Oxide
         src/ui/Background.h
         src/ui/ControlPanel.cpp
         src/ui/ControlPanel.h
+        src/ui/DelayControlPanel.cpp
+        src/ui/DelayControlPanel.h
         src/ui/HeaderView.cpp
         src/ui/HeaderView.h
         src/ui/MeterView.cpp
@@ -89,6 +95,8 @@ target_sources(Oxide
         # DSP
         src/dsp/distortion/DistortionProcessor.cpp
         src/dsp/distortion/DistortionProcessor.h
+        src/dsp/delay/DelayProcessor.cpp
+        src/dsp/delay/DelayProcessor.h
 )
 
 target_include_directories(Oxide
@@ -97,6 +105,7 @@ target_include_directories(Oxide
         ${CMAKE_CURRENT_SOURCE_DIR}/src/core
         ${CMAKE_CURRENT_SOURCE_DIR}/src/ui
         ${CMAKE_CURRENT_SOURCE_DIR}/src/dsp/distortion
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/dsp/delay
 )
 
 target_compile_definitions(Oxide

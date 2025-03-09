@@ -66,6 +66,7 @@ void OxideAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     levelRight.reset(sampleRate, 0.1);
 
     distortionProcessor.prepare(sampleRate);
+    delayProcessor.prepare(sampleRate, samplesPerBlock);
 }
 
 void OxideAudioProcessor::releaseResources()
@@ -195,8 +196,7 @@ void OxideAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
     }
 }
 
-// This creates the plugin instance
 juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter()
 {
-    return new OxideAudioProcessor();
+    return static_cast<juce::AudioProcessor *>(new OxideAudioProcessor());
 }

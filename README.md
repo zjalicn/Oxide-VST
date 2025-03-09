@@ -2,21 +2,35 @@
 
 ![Readme Img](./readme.jpg)
 
-## Advanced Multi-Algorithm Distortion VST
+## Oxide
 
-Oxide is a versatile distortion plugin that combines classic analog-style saturation with modern sound design features. Built with surgical precision using JUCE's DSP modules, it offers five distinct distortion algorithms and comprehensive sound shaping capabilities.
+Oxide is a distortion + delay plugin that combines classic analog-style saturation with repeating echoes. Built with surgical precision using JUCE's DSP modules, it offers five distinct distortion algorithms and comprehensive sound shaping capabilities.
 
-### Core Features
+- Built in C++ using JUCE framework
+- Compiled with CMake
+- WebView Component Integration for UI
+- SASS for better organization and a templated theming system
+
+### Features
 
 - Five distortion algorithms: Soft Clip, Hard Clip, Foldback, Waveshaper, and Bitcrusher
 - Real-time waveform and spectrum visualization
-- Advanced oversampling (2x/4x/8x) with high-quality IIR filtering
+- Input/Output gain staging
+
+### Future Features
+
+##### Tech
+
+- templated html
+  - knockout? or some caveman simple option
+  - react-juce?
+  - transparent webview components?
+
+##### Features
+
 - Pre and post filters with variable resonance
 - Modulation system with LFO and envelope follower
 - Mid/Side processing with stereo width control
-- Input/Output gain staging
-- 64-bit processing
-- Built in C++ using JUCE framework
 
 ## Installation
 
@@ -31,7 +45,7 @@ Oxide is a versatile distortion plugin that combines classic analog-style satura
 3. Build the project
 
    ```
-   cmake -B build
+   cmake -B build (first time only i think?)
    cmake --build build
    ```
 

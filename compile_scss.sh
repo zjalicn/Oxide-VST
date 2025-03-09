@@ -1,5 +1,5 @@
 #!/bin/bash
-COMPONENTS=("header" "control-panel" "meters" "oscilloscope") # CSS Files to compile
+COMPONENTS=("header" "control-panel" "meters" "oscilloscope", "fx-delay")
 
 if ! command -v sass &> /dev/null; then
     echo "Sass not found, installing..."
@@ -9,7 +9,6 @@ fi
 mkdir -p src/resources/scss
 mkdir -p src/resources/css
 
-# Process each component
 for component in "${COMPONENTS[@]}"; do
     # Check if SCSS exists, create if not
     if [ ! -f "src/resources/scss/${component}.scss" ]; then
@@ -21,7 +20,7 @@ for component in "${COMPONENTS[@]}"; do
     sass "src/resources/scss/${component}.scss" "src/resources/css/${component}.css" --style compressed
 done
 
-# Check if all files were compiled successfully
+# Check if all files compiled successfully
 all_compiled=true
 for component in "${COMPONENTS[@]}"; do
     if [ ! -f "src/resources/css/${component}.css" ]; then

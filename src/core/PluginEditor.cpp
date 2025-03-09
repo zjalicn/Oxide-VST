@@ -4,6 +4,7 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
     : AudioProcessorEditor(&p),
       audioProcessor(p),
       controlPanel(p.getDistortionProcessor()),
+      delayControlPanel(p.getDelayProcessor()),
       oscilloscopeView(p.getDistortionProcessor())
 {
     addAndMakeVisible(background);
@@ -11,6 +12,7 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
     addAndMakeVisible(meterView);
     addAndMakeVisible(oscilloscopeView);
     addAndMakeVisible(controlPanel);
+    addAndMakeVisible(delayControlPanel);
 
     // Oscilloscope update (in timerCallback)
     oscilloscopeView.updateBuffer(p.getOutputBuffer());
@@ -113,14 +115,18 @@ void OxideAudioProcessorEditor::resized()
     // meterView.setBounds(bounds);
 
     // OSCILLOSCOPE
-    int oscilloscopeSize = std::min(bounds.getHeight(), bounds.getWidth() / 3);
+    int oscilloscopeSize = std::min(bounds.getHeight(), bounds.getWidth() / 4);
     int oscilloscopeX = bounds.getX() + (bounds.getWidth() - oscilloscopeSize) / 2;
     int oscilloscopeY = bounds.getY() + (bounds.getHeight() - oscilloscopeSize) * 0.33;
     oscilloscopeView.setBounds(oscilloscopeX, oscilloscopeY, oscilloscopeSize, oscilloscopeSize);
 
-    // DISTORTION
-    auto controlHeight = 150;
-    controlPanel.setBounds(bounds.removeFromBottom(controlHeight + 10));
+    // // DISTORTION
+    // auto controlHeight = 150;
+    // controlPanel.setBounds(bounds.removeFromBottom(controlHeight + 10));
+
+    // DELAY
+    auto delayHeight = 150;
+    delayControlPanel.setBounds(bounds.removeFromBottom(delayHeight + 50));
 }
 
 void OxideAudioProcessorEditor::timerCallback()
