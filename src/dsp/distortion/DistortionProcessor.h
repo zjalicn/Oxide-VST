@@ -4,11 +4,11 @@
 
 enum class DistortionAlgorithm
 {
-    SoftClip,   // Smooth, tape-like saturation
-    HardClip,   // More aggressive clipping, similar to pedals
-    Foldback,   // Signal folding for more harmonics
-    Waveshaper, // Custom waveshaping curve
-    Bitcrusher  // Digital distortion with sample rate/bit reduction
+    SoftClip,
+    HardClip,
+    Foldback,
+    Waveshaper,
+    Bitcrusher
 };
 
 class DistortionProcessor

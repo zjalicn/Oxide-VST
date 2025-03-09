@@ -13,6 +13,7 @@ Oxide is a distortion + delay plugin that combines classic analog-style saturati
 
 ### Features
 
+- 0ms latency
 - Five distortion algorithms: Soft Clip, Hard Clip, Foldback, Waveshaper, and Bitcrusher
 - Real-time waveform and spectrum visualization
 - Input/Output gain staging
