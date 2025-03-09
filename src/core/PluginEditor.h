@@ -2,12 +2,8 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
-#include "ControlPanel.h"
-#include "DelayControlPanel.h"
-#include "MeterView.h"
-#include "HeaderView.h"
+#include "LayoutView.h"
 #include "Background.h"
-#include "OscilloscopeView.h"
 
 class OxideAudioProcessorEditor : public juce::AudioProcessorEditor,
                                   private juce::Timer
@@ -16,18 +12,14 @@ public:
     OxideAudioProcessorEditor(OxideAudioProcessor &);
     ~OxideAudioProcessorEditor() override;
 
-    void paint(juce::Graphics &) override;
+    void paint(juce::Graphics &g) override;
     void resized() override;
 
 private:
     OxideAudioProcessor &audioProcessor;
 
     Background background;
-    HeaderView headerView;
-    MeterView meterView;
-    ControlPanel controlPanel;
-    DelayControlPanel delayControlPanel;
-    OscilloscopeView oscilloscopeView;
+    LayoutView layoutView;
 
     void timerCallback() override;
 

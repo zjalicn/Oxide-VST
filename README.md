@@ -32,6 +32,8 @@ Oxide is a distortion + delay plugin that combines classic analog-style saturati
 - Modulation system with LFO and envelope follower
 - Mid/Side processing with stereo width control
 
+Ideally delay -> chorus OR reverb -> distortion -> ducking
+
 ## Installation
 
 1. Clone the repository

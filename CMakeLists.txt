@@ -27,22 +27,10 @@ add_custom_target(CompileSCSS
 
 juce_add_binary_data(OxideResources 
     SOURCES
-        # Images
+        # Resources
         src/resources/bg.png
-
-        # HTML files
-        src/resources/controlPanel.html
-        src/resources/fx-delay.html
-        src/resources/header.html
-        src/resources/meters.html
-        src/resources/oscilloscope.html
-
-        # CSS files
-        src/resources/css/header.css
-        src/resources/css/control-panel.css
-        src/resources/css/fx-delay.css
-        src/resources/css/meters.css
-        src/resources/css/oscilloscope.css
+        src/resources/layout.html
+        src/resources/layout.css
         
         # Fonts
         # src/resources/fonts/old_english_hearts.ttf
@@ -81,16 +69,8 @@ target_sources(Oxide
 
         # UI
         src/ui/Background.h
-        src/ui/ControlPanel.cpp
-        src/ui/ControlPanel.h
-        src/ui/DelayControlPanel.cpp
-        src/ui/DelayControlPanel.h
-        src/ui/HeaderView.cpp
-        src/ui/HeaderView.h
-        src/ui/MeterView.cpp
-        src/ui/MeterView.h
-        src/ui/OscilloscopeView.cpp
-        src/ui/OscilloscopeView.h
+        src/ui/LayoutView.cpp
+        src/ui/LayoutView.h
 
         # DSP
         src/dsp/distortion/DistortionProcessor.cpp

@@ -93,27 +93,25 @@ void OxideAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::M
     auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // Clear any output channels that didn't contain input data
+    // Clear output channels that didn't contain input data
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear(i, 0, buffer.getNumSamples());
 
     // Calculate input levels for the meters
     float newLevelLeft = 0.0f;
     float newLevelRight = 0.0f;
-
     if (totalNumInputChannels > 0)
         newLevelLeft = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
-
     if (totalNumInputChannels > 1)
         newLevelRight = buffer.getRMSLevel(1, 0, buffer.getNumSamples());
-
     levelLeft.setTargetValue(newLevelLeft);
     levelRight.setTargetValue(newLevelRight);
     levelLeft.skip(buffer.getNumSamples());
     levelRight.skip(buffer.getNumSamples());
 
-    // Process the distortion
+    // Process audio
     distortionProcessor.processBlock(buffer);
+    delayProcessor.processBlock(buffer);
 
     // Store post-processed buffer for oscilloscope
     {

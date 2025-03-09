@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="transparent" />
+    <link rel="stylesheet" href="./layout.css" />
+  </head>
+  <body>
+    <div class="plugin-container">
+      <!-- Header Section -->
+      <div class="header">
+        <div class="title">Oxide</div>
+        <div class="preset-container">
+          <div class="preset-label">Preset:</div>
+          <select
+            class="preset-dropdown"
+            id="presetDropdown"
+            onfocus="this.blur();"
+          >
+            <option value="default">Default</option>
+            <option value="light_drive">Light Drive</option>
+            <option value="heavy_metal">Heavy Metal</option>
+            <option value="fuzz">Fuzz</option>
+            <option value="warm_tape">Warm Tape</option>
+          </select>
+        </div>
+        <button class="save-button" id="saveButton">Save</button>
+      </div>
+
+      <!-- Main Content Section -->
+      <div class="main-content">
+        <!-- Top Row: Meters and Oscilloscope Section -->
+        <div class="top-row">
+          <!-- Input Meters -->
+          <div class="meters-column input-meters">
+            <div class="meters">
+              <div class="meter">
+                <div class="bar-container">
+                  <div id="leftBar" class="bar"></div>
+                  <div class="bar-markers">
+                    <div class="marker marker-0"></div>
+                    <div class="marker marker-3"></div>
+                    <div class="marker marker-6"></div>
+                    <div class="marker marker-10"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="meter">
+                <div class="bar-container">
+                  <div id="rightBar" class="bar"></div>
+                  <div class="bar-markers">
+                    <div class="marker marker-0"></div>
+                    <div class="marker marker-3"></div>
+                    <div class="marker marker-6"></div>
+                    <div class="marker marker-10"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="knobs-container">
+              <div class="knob-wrapper">
+                <div class="knob-small" id="inputGainKnob">
+                  <div
+                    id="inputGainIndicator"
+                    class="knob-indicator-small"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Oscilloscope in the middle -->
+          <div class="oscilloscope-section">
+            <div class="oscilloscope-container">
+              <canvas
+                id="oscilloscopeCanvas"
+                class="oscilloscope-canvas"
+              ></canvas>
+            </div>
+          </div>
+
+          <!-- Output Meters -->
+          <div class="meters-column output-meters">
+            <div class="meters">
+              <div class="meter">
+                <div class="bar-container">
+                  <div id="outLeftBar" class="bar output-bar"></div>
+                  <div class="bar-markers">
+                    <div class="marker marker-0"></div>
+                    <div class="marker marker-3"></div>
+                    <div class="marker marker-6"></div>
+                    <div class="marker marker-10"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="meter">
+                <div class="bar-container">
+                  <div id="outRightBar" class="bar output-bar"></div>
+                  <div class="bar-markers">
+                    <div class="marker marker-0"></div>
+                    <div class="marker marker-3"></div>
+                    <div class="marker marker-6"></div>
+                    <div class="marker marker-10"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="knobs-container">
+              <div class="knob-wrapper">
+                <div class="knob-small" id="outputGainKnob">
+                  <div
+                    id="outputGainIndicator"
+                    class="knob-indicator-small"
+                  ></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Row: Effects Chain (Delay → Distortion) -->
+        <div class="fx-chain">
+          <!-- Delay Control Panel (First in the chain) -->
+          <div class="delay-panel">
+            <div class="delay-header">
+              <div class="delay-title">DELAY</div>
+            </div>
+            <div class="delay-knobs-row">
+              <div class="knob-container">
+                <div class="knob" id="timeKnob">
+                  <div id="timeIndicator" class="knob-indicator"></div>
+                </div>
+                <div class="knob-label">Time</div>
+                <div id="timeValue" class="knob-value">500ms</div>
+              </div>
+              <div class="knob-container">
+                <div class="knob" id="feedbackKnob">
+                  <div id="feedbackIndicator" class="knob-indicator"></div>
+                </div>
+                <div class="knob-label">Feedback</div>
+                <div id="feedbackValue" class="knob-value">40%</div>
+              </div>
+              <div class="knob-container">
+                <div class="knob" id="mixDelayKnob">
+                  <div id="mixDelayIndicator" class="knob-indicator"></div>
+                </div>
+                <div class="knob-label">Mix</div>
+                <div id="mixDelayValue" class="knob-value">30%</div>
+              </div>
+            </div>
+            <div class="filter-container">
+              <div class="filter-label">Filter</div>
+              <input
+                type="range"
+                min="20"
+                max="20000"
+                value="5000"
+                class="filter-slider"
+                id="filterSlider"
+              />
+              <div id="filterValue" class="filter-value">5.0 kHz</div>
+            </div>
+            <div class="delay-toggle">
+              <div class="toggle-label">Ping Pong</div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="pingPongToggle" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Distortion Control Panel (Second in the chain) -->
+          <div class="distortion-section">
+            <div class="distortion-header">
+              <div class="distortion-title">DIST.</div>
+              <select class="algorithm-selector" id="algorithmSelector">
+                <option value="soft_clip">Soft Clip</option>
+                <option value="hard_clip">Hard Clip</option>
+                <option value="foldback">Foldback</option>
+                <option value="waveshaper">Waveshaper</option>
+                <option value="bitcrusher">Bitcrusher</option>
+              </select>
+            </div>
+            <div class="knobs-row">
+              <div class="knob-container">
+                <div class="knob" id="driveKnob">
+                  <div id="driveIndicator" class="knob-indicator"></div>
+                </div>
+                <div class="knob-label">Drive</div>
+                <div id="driveValue" class="knob-value">50%</div>
+              </div>
+              <div class="knob-container">
+                <div class="knob" id="mixKnob">
+                  <div id="mixIndicator" class="knob-indicator"></div>
+                </div>
+                <div class="knob-label">Mix</div>
+                <div id="mixValue" class="knob-value">50%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tooltip" class="tooltip"></div>
+    <div id="debug"></div>
+
+    <script>
+      // Initialize state variables
+      const state = {
+        distortion: {
+          drive: 0.5,
+          mix: 0.5,
+          algorithm: "soft_clip",
+        },
+        delay: {
+          time: 0.5,
+          feedback: 0.4,
+          mix: 0.3,
+          filterFreq: 5000,
+          pingPong: false,
+        },
+        meters: {
+          inputGain: 0,
+          outputGain: 0,
+          lastLeftLevel: 0,
+          lastRightLevel: 0,
+          outLeftLevel: 0,
+          outRightLevel: 0,
+        },
+        oscilloscope: {
+          data: [],
+        },
+      };
+
+      let isDragging = false;
+      let activeKnob = null;
+      let lastClickTime = 0;
+
+      // =======================
+      // Utility Functions
+      // =======================
+
+      function log(msg) {
+        const debug = document.getElementById("debug");
+        debug.innerHTML += msg + "<br>";
+        debug.style.display = "block";
+      }
+
+      // Protocol handler to send values back to C++
+      window.valueChanged = function (module, param, value) {
+        try {
+          let url;
+          if (module === "delay") {
+            url = "oxide:delay:" + param + "=" + value;
+          } else {
+            url = "oxide:" + param + "=" + value;
+          }
+          window.location.href = url;
+        } catch (e) {
+          log("Error in valueChanged: " + e.message);
+        }
+      };
+
+      // =======================
+      // Header & Presets
+      // =======================
+
+      const presetDropdown = document.getElementById("presetDropdown");
+      const saveButton = document.getElementById("saveButton");
+
+      // Prevent focus on dropdown
+      document.addEventListener("mousedown", function (e) {
+        if (e.target.tagName === "SELECT") {
+          e.preventDefault();
+          var event = document.createEvent("MouseEvents");
+          event.initMouseEvent(
+            "mousedown",
+            true,
+            true,
+            window,
+            0,
+            0,
+            0,
+            0,
+            0,
+            false,
+            false,
+            false,
+            false,
+            0,
+            null
+          );
+          e.target.dispatchEvent(event);
+        }
+      });
+
+      presetDropdown.addEventListener("change", function () {
+        const presetName = this.value;
+        window.location.href = "oxide:preset=" + presetName;
+        this.blur();
+      });
+
+      saveButton.addEventListener("click", function () {
+        window.location.href = "oxide:action=save";
+      });
+
+      // =======================
+      // Distortion Module
+      // =======================
+
+      function updateDistortionUI(drive, mix, alg) {
+        if (drive !== undefined) state.distortion.drive = parseFloat(drive);
+        if (mix !== undefined) state.distortion.mix = parseFloat(mix);
+        if (alg) state.distortion.algorithm = alg;
+
+        // Update algorithm dropdown
+        document.getElementById("algorithmSelector").value =
+          state.distortion.algorithm;
+
+        // Map 0-1 range to 225-45 degrees (7 o'clock to 3 o'clock)
+        const driveAngle = 225 + state.distortion.drive * 270;
+        const mixAngle = 225 + state.distortion.mix * 270;
+
+        // Update knob rotations
+        document.getElementById(
+          "driveIndicator"
+        ).style.transform = `translate(-50%, -100%) rotate(${driveAngle}deg)`;
+        document.getElementById(
+          "mixIndicator"
+        ).style.transform = `translate(-50%, -100%) rotate(${mixAngle}deg)`;
+
+        // Update value displays
+        document.getElementById("driveValue").textContent = `${Math.round(
+          state.distortion.drive * 100
+        )}%`;
+        document.getElementById("mixValue").textContent = `${Math.round(
+          state.distortion.mix * 100
+        )}%`;
+      }
+
+      // Add algorithm selector change handler
+      document
+        .getElementById("algorithmSelector")
+        .addEventListener("change", function () {
+          state.distortion.algorithm = this.value;
+          window.valueChanged(
+            "distortion",
+            "algorithm",
+            state.distortion.algorithm
+          );
+        });
+
+      // Set up distortion knobs
+      document
+        .getElementById("driveKnob")
+        .addEventListener("mousedown", function (e) {
+          e.preventDefault();
+          isDragging = true;
+          activeKnob = "drive";
+          const startY = e.clientY;
+          const startValue = state.distortion.drive;
+
+          function handleMove(moveEvent) {
+            moveEvent.preventDefault();
+            const deltaY = startY - moveEvent.clientY;
+            const newValue = Math.max(
+              0,
+              Math.min(1, startValue + deltaY / 100)
+            );
+
+            state.distortion.drive = newValue;
+            window.valueChanged("distortion", "drive", newValue);
+            updateDistortionUI();
+          }
+
+          document.addEventListener("mousemove", handleMove);
+          document.addEventListener(
+            "mouseup",
+            () => {
+              document.removeEventListener("mousemove", handleMove);
+              isDragging = false;
+              activeKnob = null;
+            },
+            { once: true }
+          );
+        });
+
+      document
+        .getElementById("mixKnob")
+        .addEventListener("mousedown", function (e) {
+          e.preventDefault();
+          isDragging = true;
+          activeKnob = "mix";
+          const startY = e.clientY;
+          const startValue = state.distortion.mix;
+
+          function handleMove(moveEvent) {
+            moveEvent.preventDefault();
+            const deltaY = startY - moveEvent.clientY;
+            const newValue = Math.max(
+              0,
+              Math.min(1, startValue + deltaY / 100)
+            );
+
+            state.distortion.mix = newValue;
+            window.valueChanged("distortion", "mix", newValue);
+            updateDistortionUI();
+          }
+
+          document.addEventListener("mousemove", handleMove);
+          document.addEventListener(
+            "mouseup",
+            () => {
+              document.removeEventListener("mousemove", handleMove);
+              isDragging = false;
+              activeKnob = null;
+            },
+            { once: true }
+          );
+        });
+
+      // =======================
+      // Delay Module
+      // =======================
+
+      function updateDelayUI(time, feedback, mix, filterFreq, pingPong) {
+        if (time !== undefined) state.delay.time = parseFloat(time);
+        if (feedback !== undefined) state.delay.feedback = parseFloat(feedback);
+        if (mix !== undefined) state.delay.mix = parseFloat(mix);
+        if (filterFreq !== undefined)
+          state.delay.filterFreq = parseFloat(filterFreq);
+        if (pingPong !== undefined) {
+          state.delay.pingPong =
+            pingPong === "1" || pingPong === true || pingPong === 1;
+        }
+
+        // Convert parameters to angles
+        const minTime = 0.01; // 10ms
+        const maxTime = 2.0; // 2000ms
+        const timeNormalized =
+          (state.delay.time - minTime) / (maxTime - minTime);
+        const timeAngle = 225 + timeNormalized * 270;
+        const feedbackAngle = 225 + state.delay.feedback * 270;
+        const mixAngle = 225 + state.delay.mix * 270;
+
+        // Update knob rotations
+        document.getElementById(
+          "timeIndicator"
+        ).style.transform = `translate(-50%, -100%) rotate(${timeAngle}deg)`;
+        document.getElementById(
+          "feedbackIndicator"
+        ).style.transform = `translate(-50%, -100%) rotate(${feedbackAngle}deg)`;
+        document.getElementById(
+          "mixDelayIndicator"
+        ).style.transform = `translate(-50%, -100%) rotate(${mixAngle}deg)`;
+
+        // Update display values
+        document.getElementById("timeValue").textContent = `${Math.round(
+          state.delay.time * 1000
+        )}ms`;
+        document.getElementById("feedbackValue").textContent = `${Math.round(
+          state.delay.feedback * 100
+        )}%`;
+        document.getElementById("mixDelayValue").textContent = `${Math.round(
+          state.delay.mix * 100
+        )}%`;
+
+        // Update filter slider and value
+        document.getElementById("filterSlider").value = state.delay.filterFreq;
+        updateFilterValueDisplay(state.delay.filterFreq);
+
+        // Update ping-pong toggle
+        document.getElementById("pingPongToggle").checked =
+          state.delay.pingPong;
+      }
+
+      function updateFilterValueDisplay(freq) {
+        let displayValue;
+        if (freq >= 1000) {
+          displayValue = (freq / 1000).toFixed(1) + " kHz";
+        } else {
+          displayValue = Math.round(freq) + " Hz";
+        }
+        document.getElementById("filterValue").textContent = displayValue;
+      }
+
+      // Set up delay knobs
+      function setupDelayKnob(knobId, paramName, minValue, maxValue) {
+        const knob = document.getElementById(knobId);
+
+        knob.addEventListener("mousedown", function (e) {
+          e.preventDefault();
+          isDragging = true;
+          activeKnob = paramName;
+          const startY = e.clientY;
+          let startValue;
+
+          switch (paramName) {
+            case "time":
+              startValue = state.delay.time;
+              break;
+            case "feedback":
+              startValue = state.delay.feedback;
+              break;
+            case "mix":
+              startValue = state.delay.mix;
+              break;
+          }
+
+          function handleMove(moveEvent) {
+            moveEvent.preventDefault();
+            const deltaY = startY - moveEvent.clientY;
+
+            let newValue;
+            if (paramName === "time") {
+              // Logarithmic scaling for time
+              const sensitivity = 0.003;
+              newValue = startValue * Math.exp(deltaY * sensitivity);
+            } else {
+              // Linear scaling for other parameters
+              const sensitivity = 0.01;
+              newValue = startValue + deltaY * sensitivity;
+            }
+
+            // Clamp to range
+            newValue = Math.max(minValue, Math.min(maxValue, newValue));
+
+            // Update state and send to C++
+            switch (paramName) {
+              case "time":
+                state.delay.time = newValue;
+                break;
+              case "feedback":
+                state.delay.feedback = newValue;
+                break;
+              case "mix":
+                state.delay.mix = newValue;
+                break;
+            }
+
+            window.valueChanged("delay", paramName, newValue);
+            updateDelayUI();
+          }
+
+          document.addEventListener("mousemove", handleMove);
+          document.addEventListener(
+            "mouseup",
+            () => {
+              document.removeEventListener("mousemove", handleMove);
+              isDragging = false;
+              activeKnob = null;
+            },
+            { once: true }
+          );
+        });
+      }
+
+      setupDelayKnob("timeKnob", "time", 0.01, 2.0);
+      setupDelayKnob("feedbackKnob", "feedback", 0.0, 1.0);
+      setupDelayKnob("mixDelayKnob", "mix", 0.0, 1.0);
+
+      // Set up filter slider
+      document
+        .getElementById("filterSlider")
+        .addEventListener("input", function () {
+          const value = parseFloat(this.value);
+          state.delay.filterFreq = value;
+          updateFilterValueDisplay(value);
+          window.valueChanged("delay", "filter", value);
+        });
+
+      // Set up ping-pong toggle
+      document
+        .getElementById("pingPongToggle")
+        .addEventListener("change", function () {
+          state.delay.pingPong = this.checked;
+          window.valueChanged(
+            "delay",
+            "pingpong",
+            state.delay.pingPong ? 1 : 0
+          );
+        });
+
+      // =======================
+      // Meters Section
+      // =======================
+
+      const tooltip = document.getElementById("tooltip");
+
+      function showTooltip(event, text, knobElement = null) {
+        tooltip.textContent = text;
+        tooltip.style.opacity = "1";
+        tooltip.style.left = "0px";
+        tooltip.style.top = "0px";
+
+        const tooltipWidth = tooltip.offsetWidth;
+        const tooltipHeight = tooltip.offsetHeight;
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        let leftPos, topPos;
+
+        if (knobElement) {
+          const rect = knobElement.getBoundingClientRect();
+          leftPos = rect.left + rect.width / 2 - tooltipWidth / 2;
+          topPos = rect.top - tooltipHeight - 5;
+        } else {
+          leftPos = event.clientX + 10;
+          topPos = event.clientY - tooltipHeight - 5;
+        }
+
+        // Adjust if tooltip would go off edges
+        if (leftPos + tooltipWidth > viewportWidth) {
+          leftPos = viewportWidth - tooltipWidth - 5;
+        }
+        if (leftPos < 5) {
+          leftPos = 5;
+        }
+        if (topPos < 5) {
+          topPos = knobElement
+            ? knobElement.getBoundingClientRect().bottom + 5
+            : event.clientY + 15;
+        }
+        if (topPos + tooltipHeight > viewportHeight) {
+          topPos = viewportHeight - tooltipHeight - 5;
+        }
+
+        tooltip.style.left = leftPos + "px";
+        tooltip.style.top = topPos + "px";
+      }
+
+      function hideTooltip() {
+        if (!isDragging) {
+          tooltip.style.opacity = "0";
+        }
+      }
+
+      function setAudioLevels(inLeft, inRight, outLeft, outRight) {
+        // Ensure minimum value is 0 instead of default minimums
+        inLeft = parseFloat(inLeft) || 0;
+        inRight = parseFloat(inRight) || 0;
+        outLeft = parseFloat(outLeft) || 0;
+        outRight = parseFloat(outRight) || 0;
+
+        // Store the levels
+        state.meters.lastLeftLevel = inLeft;
+        state.meters.lastRightLevel = inRight;
+        state.meters.outLeftLevel = outLeft;
+        state.meters.outRightLevel = outRight;
+
+        // Update input meters
+        document.getElementById("leftBar").style.height =
+          inLeft <= 0.01 ? "0" : inLeft + "%";
+        document.getElementById("rightBar").style.height =
+          inRight <= 0.01 ? "0" : inRight + "%";
+
+        // Update output meters
+        document.getElementById("outLeftBar").style.height =
+          outLeft <= 0.01 ? "0" : outLeft + "%";
+        document.getElementById("outRightBar").style.height =
+          outRight <= 0.01 ? "0" : outRight + "%";
+      }
+
+      function updateMeterVisuals() {
+        // Map dB range (-12 to +12) to angle (225 to 45 degrees)
+        const inputAngle = 225 + ((state.meters.inputGain + 12) / 24) * 270;
+        const outputAngle = 225 + ((state.meters.outputGain + 12) / 24) * 270;
+
+        // Rotate the knob indicators
+        document.getElementById(
+          "inputGainIndicator"
+        ).style.transform = `translate(-50%, -100%) rotate(${inputAngle}deg)`;
+        document.getElementById(
+          "outputGainIndicator"
+        ).style.transform = `translate(-50%, -100%) rotate(${outputAngle}deg)`;
+
+        // Update tooltip if dragging
+        if (
+          isDragging &&
+          (activeKnob === "inputGain" || activeKnob === "outputGain")
+        ) {
+          const value =
+            activeKnob === "inputGain"
+              ? state.meters.inputGain
+              : state.meters.outputGain;
+          const displayValue = `${value > 0 ? "+" : ""}${value.toFixed(1)} dB`;
+          const knobElement = document.getElementById(
+            activeKnob === "inputGain" ? "inputGainKnob" : "outputGainKnob"
+          );
+          showTooltip(null, displayValue, knobElement);
+        }
+      }
+
+      // Set up meter knobs
+      function setupMeterKnob(knobId, paramName) {
+        const knob = document.getElementById(knobId);
+
+        // Tooltip for hover
+        knob.addEventListener("mouseenter", function (e) {
+          if (!isDragging) {
+            const value =
+              paramName === "inputGain"
+                ? state.meters.inputGain
+                : state.meters.outputGain;
+            const displayValue = `${value > 0 ? "+" : ""}${value.toFixed(
+              1
+            )} dB`;
+            showTooltip(e, displayValue, this);
+          }
+        });
+
+        knob.addEventListener("mousemove", function (e) {
+          if (!isDragging) {
+            const value =
+              paramName === "inputGain"
+                ? state.meters.inputGain
+                : state.meters.outputGain;
+            const displayValue = `${value > 0 ? "+" : ""}${value.toFixed(
+              1
+            )} dB`;
+            showTooltip(e, displayValue, this);
+          }
+        });
+
+        knob.addEventListener("mouseleave", function () {
+          if (!isDragging) {
+            hideTooltip();
+          }
+        });
+
+        // Click handler for instant position or double-click reset
+        knob.addEventListener("mousedown", function (e) {
+          // Check for double-click
+          const currentTime = new Date().getTime();
+          const isDouble = currentTime - lastClickTime < 300;
+          lastClickTime = currentTime;
+
+          if (isDouble) {
+            e.preventDefault();
+            // Reset to 0dB
+            const newValue = 0;
+
+            if (paramName === "inputGain") {
+              state.meters.inputGain = newValue;
+            } else {
+              state.meters.outputGain = newValue;
+            }
+
+            window.valueChanged("meters", paramName, newValue);
+            updateMeterVisuals();
+
+            showTooltip(e, "0.0 dB", this);
+            setTimeout(hideTooltip, 1000);
+            return;
+          }
+
+          // For single click, prepare for dragging
+          e.preventDefault();
+          isDragging = true;
+          activeKnob = paramName;
+          const startY = e.clientY;
+          const startValue =
+            paramName === "inputGain"
+              ? state.meters.inputGain
+              : state.meters.outputGain;
+
+          // Show tooltip
+          const value =
+            paramName === "inputGain"
+              ? state.meters.inputGain
+              : state.meters.outputGain;
+          const displayValue = `${value > 0 ? "+" : ""}${value.toFixed(1)} dB`;
+          showTooltip(e, displayValue, this);
+
+          function handleMove(moveEvent) {
+            moveEvent.preventDefault();
+            const deltaY = (startY - moveEvent.clientY) * 0.1;
+            const newValue = Math.max(-12, Math.min(12, startValue + deltaY));
+
+            if (paramName === "inputGain") {
+              state.meters.inputGain = newValue;
+            } else {
+              state.meters.outputGain = newValue;
+            }
+
+            window.valueChanged("meters", paramName, newValue);
+            updateMeterVisuals();
+          }
+
+          document.addEventListener("mousemove", handleMove);
+          document.addEventListener(
+            "mouseup",
+            function () {
+              document.removeEventListener("mousemove", handleMove);
+              isDragging = false;
+              activeKnob = null;
+              hideTooltip();
+            },
+            { once: true }
+          );
+        });
+      }
+
+      setupMeterKnob("inputGainKnob", "inputGain");
+      setupMeterKnob("outputGainKnob", "outputGain");
+
+      // =======================
+      // Oscilloscope Module
+      // =======================
+
+      const canvas = document.getElementById("oscilloscopeCanvas");
+      const ctx = canvas.getContext("2d", { alpha: true });
+      let canvasSize = 0;
+
+      // Default buffer size for the oscilloscope
+      const BUFFER_SIZE = 256;
+
+      // Initialize with empty data
+      state.oscilloscope.data = Array(BUFFER_SIZE).fill(0);
+
+      function resizeOscilloscopeCanvas() {
+        const container = document.querySelector(".oscilloscope-container");
+        canvasSize = Math.min(container.clientWidth, container.clientHeight);
+
+        canvas.width = canvasSize;
+        canvas.height = canvasSize;
+
+        drawOscilloscope();
+      }
+
+      function drawOscilloscope() {
+        if (!ctx || canvasSize === 0) return;
+
+        // Clear canvas with transparency
+        ctx.clearRect(0, 0, canvasSize, canvasSize);
+
+        const centerX = canvasSize / 2;
+        const centerY = canvasSize / 2;
+        const radius = canvasSize / 2 - 2;
+        const innerRadius = radius - 3;
+
+        // Create clipping path
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, innerRadius, 0, Math.PI * 2);
+        ctx.clip();
+
+        // Draw 0dB reference line
+        ctx.beginPath();
+        ctx.moveTo(centerX - innerRadius, centerY);
+        ctx.lineTo(centerX + innerRadius, centerY);
+        ctx.strokeStyle = "#666666";
+        ctx.lineWidth = 1;
+        ctx.setLineDash([2, 2]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Draw the waveform
+        if (state.oscilloscope.data.length > 0) {
+          ctx.beginPath();
+
+          // Apply scaling to the amplitude
+          function scaleAmplitude(value) {
+            const sign = Math.sign(value);
+            const absValue = Math.abs(value);
+            return sign * Math.pow(absValue, 0.8) * 0.6;
+          }
+
+          // Calculate horizontal space for waveform
+          const waveWidth = innerRadius * 2;
+          const firstX = centerX - innerRadius;
+          const firstY =
+            centerY + scaleAmplitude(state.oscilloscope.data[0]) * innerRadius;
+          ctx.moveTo(firstX, firstY);
+
+          // Draw waveform from left to right
+          for (let i = 1; i < state.oscilloscope.data.length; i++) {
+            const x =
+              firstX + (i / (state.oscilloscope.data.length - 1)) * waveWidth;
+            const scaledValue = scaleAmplitude(state.oscilloscope.data[i]);
+            const y = centerY + scaledValue * innerRadius;
+            ctx.lineTo(x, y);
+          }
+
+          ctx.strokeStyle = "#e73c0c";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+
+        // Restore context and draw border
+        ctx.restore();
+
+        // Draw circular border after the waveform
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.strokeStyle = "#333333";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      }
+
+      // =======================
+      // Public Methods for C++ to call
+      // =======================
+
+      // Method for C++ to update oscilloscope data
+      window.updateOscilloscopeData = function (dataArray) {
+        try {
+          if (typeof dataArray === "string") {
+            // Parse if it's a JSON string
+            state.oscilloscope.data = JSON.parse(dataArray);
+          } else {
+            state.oscilloscope.data = dataArray;
+          }
+          drawOscilloscope();
+        } catch (e) {
+          console.error("Error updating oscilloscope data:", e);
+        }
+      };
+
+      // Method for C++ to update distortion parameters
+      window.setDistortionValues = function (drive, mix, alg) {
+        updateDistortionUI(drive, mix, alg);
+      };
+
+      // Method for C++ to update delay parameters
+      window.setDelayValues = function (time, fb, mx, freq, pp) {
+        updateDelayUI(time, fb, mx, freq, pp);
+      };
+
+      // Method for C++ to set audio levels and gains
+      window.setAudioState = function (
+        inLeft,
+        inRight,
+        outLeft,
+        outRight,
+        inGain,
+        outGain
+      ) {
+        state.meters.inputGain = parseFloat(inGain);
+        state.meters.outputGain = parseFloat(outGain);
+
+        setAudioLevels(
+          parseFloat(inLeft),
+          parseFloat(inRight),
+          parseFloat(outLeft),
+          parseFloat(outRight)
+        );
+
+        updateMeterVisuals();
+        return true;
+      };
+
+      // Initialize the UI components
+      window.addEventListener("load", function () {
+        // Initialize oscilloscope
+        resizeOscilloscopeCanvas();
+        window.addEventListener("resize", resizeOscilloscopeCanvas);
+
+        // Initialize distortion values
+        updateDistortionUI(0.5, 0.5, "soft_clip");
+
+        // Initialize delay values
+        updateDelayUI(0.5, 0.4, 0.3, 5000, false);
+
+        // Initialize meter visuals
+        updateMeterVisuals();
+
+        // Force an initial update with explicit zero values
+        setAudioLevels(0, 0, 0, 0);
+      });
+    </script>
+  </body>
+</html>

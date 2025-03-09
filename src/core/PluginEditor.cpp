@@ -3,21 +3,16 @@
 OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
     : AudioProcessorEditor(&p),
       audioProcessor(p),
-      controlPanel(p.getDistortionProcessor()),
-      delayControlPanel(p.getDelayProcessor()),
-      oscilloscopeView(p.getDistortionProcessor())
+      layoutView(p.getDistortionProcessor(), p.getDelayProcessor())
 {
     addAndMakeVisible(background);
-    addAndMakeVisible(headerView);
-    addAndMakeVisible(meterView);
-    addAndMakeVisible(oscilloscopeView);
-    addAndMakeVisible(controlPanel);
-    addAndMakeVisible(delayControlPanel);
+    addAndMakeVisible(layoutView);
 
-    // Oscilloscope update (in timerCallback)
-    oscilloscopeView.updateBuffer(p.getOutputBuffer());
+    // Initialize the layout view with the output buffer for oscilloscope
+    layoutView.updateBuffer(p.getOutputBuffer());
 
-    headerView.onPresetSelected = [this](const juce::String &presetName)
+    // Set up preset selection callback
+    layoutView.onPresetSelected = [this](const juce::String &presetName)
     {
         if (presetName == "light_drive")
         {
@@ -61,31 +56,30 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
         }
 
         // Update the UI to reflect the new values
-        meterView.setInputGain(audioProcessor.getDistortionProcessor().getInputGain());
-        meterView.setOutputGain(audioProcessor.getDistortionProcessor().getOutputGain());
+        layoutView.setInputGain(audioProcessor.getDistortionProcessor().getInputGain());
+        layoutView.setOutputGain(audioProcessor.getDistortionProcessor().getOutputGain());
     };
 
-    headerView.onSaveClicked = [this]()
+    layoutView.onSaveClicked = [this]()
     {
         // Here you would implement saving the current settings
-        // For example, you could show a file save dialog
-        // and save the current state as a preset file
+        // For example, show a file save dialog and save the current state
     };
 
     // Set up callbacks for input/output gain changes from the UI
-    meterView.onInputGainChanged = [this](float newGain)
+    layoutView.onInputGainChanged = [this](float newGain)
     {
         audioProcessor.getDistortionProcessor().setInputGain(newGain);
     };
 
-    meterView.onOutputGainChanged = [this](float newGain)
+    layoutView.onOutputGainChanged = [this](float newGain)
     {
         audioProcessor.getDistortionProcessor().setOutputGain(newGain);
     };
 
-    // Initialize the meter with the current gain values
-    meterView.setInputGain(audioProcessor.getDistortionProcessor().getInputGain());
-    meterView.setOutputGain(audioProcessor.getDistortionProcessor().getOutputGain());
+    // Initialize with the current gain values
+    layoutView.setInputGain(audioProcessor.getDistortionProcessor().getInputGain());
+    layoutView.setOutputGain(audioProcessor.getDistortionProcessor().getOutputGain());
 
     // Start the timer for meter updates
     startTimerHz(30);
@@ -108,25 +102,11 @@ void OxideAudioProcessorEditor::resized()
 {
     auto bounds = getLocalBounds();
 
-    // LAYOUT
+    // Set the background to cover the entire window
     background.setBounds(bounds);
-    auto headerHeight = 60;
-    headerView.setBounds(bounds.removeFromTop(headerHeight));
-    // meterView.setBounds(bounds);
 
-    // OSCILLOSCOPE
-    int oscilloscopeSize = std::min(bounds.getHeight(), bounds.getWidth() / 4);
-    int oscilloscopeX = bounds.getX() + (bounds.getWidth() - oscilloscopeSize) / 2;
-    int oscilloscopeY = bounds.getY() + (bounds.getHeight() - oscilloscopeSize) * 0.33;
-    oscilloscopeView.setBounds(oscilloscopeX, oscilloscopeY, oscilloscopeSize, oscilloscopeSize);
-
-    // // DISTORTION
-    // auto controlHeight = 150;
-    // controlPanel.setBounds(bounds.removeFromBottom(controlHeight + 10));
-
-    // DELAY
-    auto delayHeight = 150;
-    delayControlPanel.setBounds(bounds.removeFromBottom(delayHeight + 50));
+    // Set the layout view to cover the entire window as well
+    layoutView.setBounds(bounds);
 }
 
 void OxideAudioProcessorEditor::timerCallback()
@@ -153,9 +133,9 @@ void OxideAudioProcessorEditor::timerCallback()
     if (rightLevel < 0.1f)
         rightLevel = 0.0f;
 
-    // Update the meter display
-    meterView.updateLevels(leftLevel, rightLevel);
+    // Update the levels in the layout view
+    layoutView.updateLevels(leftLevel, rightLevel);
 
     // Update the oscilloscope with latest audio buffer
-    oscilloscopeView.updateBuffer(audioProcessor.getOutputBuffer());
+    layoutView.updateBuffer(audioProcessor.getOutputBuffer());
 }
