@@ -3,7 +3,7 @@
 OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
     : AudioProcessorEditor(&p),
       audioProcessor(p),
-      layoutView(p.getDistortionProcessor(), p.getDelayProcessor())
+      layoutView(p.getDistortionProcessor(), p.getDelayProcessor(), p.getFilterProcessor())
 {
     addAndMakeVisible(background);
     addAndMakeVisible(layoutView);
@@ -21,6 +21,11 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
             audioProcessor.getDistortionProcessor().setInputGain(0.0f);
             audioProcessor.getDistortionProcessor().setOutputGain(0.0f);
             audioProcessor.getDistortionProcessor().setAlgorithm(DistortionAlgorithm::SoftClip);
+
+            // Add filter preset values
+            audioProcessor.getFilterProcessor().setFilterType(FilterType::LowPass);
+            audioProcessor.getFilterProcessor().setFrequency(1200.0f);
+            audioProcessor.getFilterProcessor().setResonance(0.5f);
         }
         else if (presetName == "heavy_metal")
         {
@@ -29,6 +34,11 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
             audioProcessor.getDistortionProcessor().setInputGain(3.0f);
             audioProcessor.getDistortionProcessor().setOutputGain(2.0f);
             audioProcessor.getDistortionProcessor().setAlgorithm(DistortionAlgorithm::HardClip);
+
+            // Add filter preset values
+            audioProcessor.getFilterProcessor().setFilterType(FilterType::LowPass);
+            audioProcessor.getFilterProcessor().setFrequency(2000.0f);
+            audioProcessor.getFilterProcessor().setResonance(1.2f);
         }
         else if (presetName == "fuzz")
         {
@@ -37,6 +47,11 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
             audioProcessor.getDistortionProcessor().setInputGain(6.0f);
             audioProcessor.getDistortionProcessor().setOutputGain(-3.0f);
             audioProcessor.getDistortionProcessor().setAlgorithm(DistortionAlgorithm::Foldback);
+
+            // Add filter preset values
+            audioProcessor.getFilterProcessor().setFilterType(FilterType::HighPass);
+            audioProcessor.getFilterProcessor().setFrequency(500.0f);
+            audioProcessor.getFilterProcessor().setResonance(0.8f);
         }
         else if (presetName == "warm_tape")
         {
@@ -45,6 +60,11 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
             audioProcessor.getDistortionProcessor().setInputGain(1.5f);
             audioProcessor.getDistortionProcessor().setOutputGain(0.0f);
             audioProcessor.getDistortionProcessor().setAlgorithm(DistortionAlgorithm::Waveshaper);
+
+            // Add filter preset values
+            audioProcessor.getFilterProcessor().setFilterType(FilterType::BandPass);
+            audioProcessor.getFilterProcessor().setFrequency(1500.0f);
+            audioProcessor.getFilterProcessor().setResonance(2.0f);
         }
         else
         { // default
@@ -53,6 +73,11 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
             audioProcessor.getDistortionProcessor().setInputGain(0.0f);
             audioProcessor.getDistortionProcessor().setOutputGain(0.0f);
             audioProcessor.getDistortionProcessor().setAlgorithm(DistortionAlgorithm::SoftClip);
+
+            // Add filter preset values
+            audioProcessor.getFilterProcessor().setFilterType(FilterType::LowPass);
+            audioProcessor.getFilterProcessor().setFrequency(1000.0f);
+            audioProcessor.getFilterProcessor().setResonance(0.7f);
         }
 
         // Update the UI to reflect the new values
@@ -85,7 +110,7 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
     startTimerHz(30);
 
     // Set initial size
-    setSize(800, 600);
+    setSize(1000, 600); // Increased width to accommodate the filter section
 }
 
 OxideAudioProcessorEditor::~OxideAudioProcessorEditor()

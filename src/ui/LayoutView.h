@@ -3,13 +3,15 @@
 #include <JuceHeader.h>
 #include "DistortionProcessor.h"
 #include "DelayProcessor.h"
+#include "FilterProcessor.h"
 
 class LayoutView : public juce::Component,
                    private juce::Timer
 {
 public:
     LayoutView(DistortionProcessor &distortionProcessor,
-               DelayProcessor &delayProcessor);
+               DelayProcessor &delayProcessor,
+               FilterProcessor &filterProcessor);
     ~LayoutView() override;
 
     void paint(juce::Graphics &g) override;
@@ -32,11 +34,10 @@ public:
     std::function<void()> onSaveClicked;
 
 private:
-    // Processors
     DistortionProcessor &distortionProcessor;
     DelayProcessor &delayProcessor;
+    FilterProcessor &filterProcessor;
 
-    // WebView
     std::unique_ptr<juce::WebBrowserComponent> webView;
 
     // State tracking variables
@@ -44,19 +45,27 @@ private:
     juce::CriticalSection bufferLock;
     juce::AudioBuffer<float> latestBuffer;
 
-    // Current parameter values
+    // Input/Output
     float inputGain;
     float outputGain;
     float lastLeftLevel;
     float lastRightLevel;
+
+    // Distortion
     float lastDrive;
     float lastMix;
     juce::String lastAlgorithm;
+
+    // Delay
     float lastDelayTime;
     float lastFeedback;
     float lastDelayMix;
-    float lastFilterFreq;
     bool lastPingPong;
+
+    // Filter
+    juce::String lastFilterType;
+    float lastFilterFreq;
+    float lastResonance;
 
     // Timer callback for UI updates
     void timerCallback() override;

@@ -5,6 +5,7 @@
     "*.sqlbook": "sql",
     "*.ndjson": "jsonl",
     "*.dbclient-js": "javascript",
-    "*.mm": "cpp"
+    "*.mm": "cpp",
+    "complex": "cpp"
   }
 }

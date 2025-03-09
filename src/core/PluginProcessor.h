@@ -3,6 +3,7 @@
 #include <JuceHeader.h>
 #include "DistortionProcessor.h"
 #include "DelayProcessor.h"
+#include "FilterProcessor.h"
 
 class OxideAudioProcessor : public juce::AudioProcessor
 {
@@ -38,6 +39,7 @@ public:
 
     DistortionProcessor &getDistortionProcessor() { return distortionProcessor; }
     DelayProcessor &getDelayProcessor() { return delayProcessor; }
+    FilterProcessor &getFilterProcessor() { return filterProcessor; }
 
     float getLeftLevel() const { return levelLeft.getCurrentValue(); }
     float getRightLevel() const { return levelRight.getCurrentValue(); }
@@ -51,6 +53,8 @@ public:
 private:
     DelayProcessor delayProcessor;
     DistortionProcessor distortionProcessor;
+    FilterProcessor filterProcessor;
+
     juce::LinearSmoothedValue<float> levelLeft, levelRight;
 
     // Buffer for oscilloscope

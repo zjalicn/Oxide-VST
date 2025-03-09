@@ -65,13 +65,17 @@ void OxideAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     levelLeft.reset(sampleRate, 0.1); // Smooth over 100ms
     levelRight.reset(sampleRate, 0.1);
 
-    distortionProcessor.prepare(sampleRate);
+    // Prepare DSP components in signal chain order
     delayProcessor.prepare(sampleRate, samplesPerBlock);
+    distortionProcessor.prepare(sampleRate);
+    filterProcessor.prepare(sampleRate, samplesPerBlock);
 }
 
 void OxideAudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this to free up any resources
+    // When playback stops, release all resources
+    delayProcessor.reset();
+    filterProcessor.reset();
 }
 
 bool OxideAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts) const
@@ -109,9 +113,10 @@ void OxideAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::M
     levelLeft.skip(buffer.getNumSamples());
     levelRight.skip(buffer.getNumSamples());
 
-    // Process audio
-    distortionProcessor.processBlock(buffer);
-    delayProcessor.processBlock(buffer);
+    // Process audio through signal chain
+    delayProcessor.processBlock(buffer);      // First delay
+    distortionProcessor.processBlock(buffer); // Then distortion
+    filterProcessor.processBlock(buffer);     // Then filter
 
     // Store post-processed buffer for oscilloscope
     {
@@ -132,27 +137,82 @@ juce::AudioProcessorEditor *OxideAudioProcessor::createEditor()
 
 void OxideAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
 {
-    // Store plugin state (parameters) here
+    // Store plugin state (parameters)
     juce::MemoryOutputStream stream(destData, true);
 
+    // Store distortion parameters
     stream.writeFloat(distortionProcessor.getDrive());
     stream.writeFloat(distortionProcessor.getMix());
     stream.writeFloat(distortionProcessor.getInputGain());
     stream.writeFloat(distortionProcessor.getOutputGain());
 
-    // Store the algorithm as an integer value
+    // Store the distortion algorithm as an integer value
     int algorithmValue = static_cast<int>(distortionProcessor.getAlgorithm());
     stream.writeInt(algorithmValue);
+
+    // Store delay parameters
+    stream.writeFloat(delayProcessor.getDelayTime());
+    stream.writeFloat(delayProcessor.getFeedback());
+    stream.writeFloat(delayProcessor.getMix());
+    stream.writeInt(delayProcessor.getPingPong() ? 1 : 0);
+
+    // Store filter parameters
+    stream.writeFloat(filterProcessor.getFrequency());
+    stream.writeFloat(filterProcessor.getResonance());
+    stream.writeInt(static_cast<int>(filterProcessor.getFilterType()));
 }
 
 void OxideAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
 {
-    // Restore plugin state (parameters) here
+    // Restore plugin state (parameters)
     juce::MemoryInputStream stream(data, static_cast<size_t>(sizeInBytes), false);
 
-    if (stream.getNumBytesRemaining() >= sizeof(float) * 4 + sizeof(int))
+    // Check how much data we have available
+    const int bytesAvailable = stream.getNumBytesRemaining();
+
+    if (bytesAvailable >= sizeof(float) * 4 + sizeof(int) + sizeof(float) * 4 + sizeof(int) * 3)
     {
-        // Full state with algorithm information
+        // Full state with all processor parameters
+
+        // Distortion parameters
+        float drive = stream.readFloat();
+        float mix = stream.readFloat();
+        float inputGain = stream.readFloat();
+        float outputGain = stream.readFloat();
+        int algorithmValue = stream.readInt();
+
+        // Delay parameters
+        float delayTime = stream.readFloat();
+        float feedback = stream.readFloat();
+        float delayMix = stream.readFloat();
+        bool pingPong = stream.readInt() > 0;
+
+        // Filter parameters
+        float filterFreq = stream.readFloat();
+        float resonance = stream.readFloat();
+        int filterTypeValue = stream.readInt();
+
+        // Apply distortion parameters
+        distortionProcessor.setDrive(drive);
+        distortionProcessor.setMix(mix);
+        distortionProcessor.setInputGain(inputGain);
+        distortionProcessor.setOutputGain(outputGain);
+        distortionProcessor.setAlgorithm(static_cast<DistortionAlgorithm>(algorithmValue));
+
+        // Apply delay parameters
+        delayProcessor.setDelayTime(delayTime);
+        delayProcessor.setFeedback(feedback);
+        delayProcessor.setMix(delayMix);
+        delayProcessor.setPingPong(pingPong);
+
+        // Apply filter parameters
+        filterProcessor.setFrequency(filterFreq);
+        filterProcessor.setResonance(resonance);
+        filterProcessor.setFilterType(static_cast<FilterType>(filterTypeValue));
+    }
+    else if (bytesAvailable >= sizeof(float) * 4 + sizeof(int))
+    {
+        // State with just distortion parameters (backward compatibility)
         float drive = stream.readFloat();
         float mix = stream.readFloat();
         float inputGain = stream.readFloat();
@@ -164,8 +224,10 @@ void OxideAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
         distortionProcessor.setInputGain(inputGain);
         distortionProcessor.setOutputGain(outputGain);
         distortionProcessor.setAlgorithm(static_cast<DistortionAlgorithm>(algorithmValue));
+
+        // Use default values for delay and filter
     }
-    else if (stream.getNumBytesRemaining() >= sizeof(float) * 4)
+    else if (bytesAvailable >= sizeof(float) * 4)
     {
         // State without algorithm (backward compatibility)
         float drive = stream.readFloat();
@@ -179,8 +241,10 @@ void OxideAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
         distortionProcessor.setOutputGain(outputGain);
         // Use default algorithm
         distortionProcessor.setAlgorithm(DistortionAlgorithm::SoftClip);
+
+        // Use default values for delay and filter
     }
-    else if (stream.getNumBytesRemaining() >= sizeof(float) * 2)
+    else if (bytesAvailable >= sizeof(float) * 2)
     {
         // Even older version with just drive and mix
         float drive = stream.readFloat();
@@ -191,6 +255,8 @@ void OxideAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
         distortionProcessor.setInputGain(0.0f);
         distortionProcessor.setOutputGain(0.0f);
         distortionProcessor.setAlgorithm(DistortionAlgorithm::SoftClip);
+
+        // Use default values for delay and filter
     }
 }
 

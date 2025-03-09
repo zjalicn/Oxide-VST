@@ -88,16 +88,34 @@ bool LayoutView::LayoutMessageHandler::pageAboutToLoad(const juce::String &url)
                 ownerView.delayProcessor.setMix(value);
                 return false;
             }
-            else if (params.startsWith("filter="))
-            {
-                float value = params.fromFirstOccurrenceOf("filter=", false, true).getFloatValue();
-                ownerView.delayProcessor.setFilterFreq(value);
-                return false;
-            }
             else if (params.startsWith("pingpong="))
             {
                 int value = params.fromFirstOccurrenceOf("pingpong=", false, true).getIntValue();
                 ownerView.delayProcessor.setPingPong(value > 0);
+                return false;
+            }
+        }
+        // Handle filter parameters
+        else if (params.startsWith("filter:"))
+        {
+            params = params.fromFirstOccurrenceOf("filter:", false, true);
+
+            if (params.startsWith("type="))
+            {
+                juce::String value = params.fromFirstOccurrenceOf("type=", false, true);
+                ownerView.filterProcessor.setFilterType(value);
+                return false;
+            }
+            else if (params.startsWith("frequency="))
+            {
+                float value = params.fromFirstOccurrenceOf("frequency=", false, true).getFloatValue();
+                ownerView.filterProcessor.setFrequency(value);
+                return false;
+            }
+            else if (params.startsWith("resonance="))
+            {
+                float value = params.fromFirstOccurrenceOf("resonance=", false, true).getFloatValue();
+                ownerView.filterProcessor.setResonance(value);
                 return false;
             }
         }
@@ -109,9 +127,10 @@ bool LayoutView::LayoutMessageHandler::pageAboutToLoad(const juce::String &url)
 }
 
 // Main LayoutView implementation
-LayoutView::LayoutView(DistortionProcessor &distProc, DelayProcessor &delayProc)
+LayoutView::LayoutView(DistortionProcessor &distProc, DelayProcessor &delayProc, FilterProcessor &filterProc)
     : distortionProcessor(distProc),
       delayProcessor(delayProc),
+      filterProcessor(filterProc),
       pageLoaded(false),
       inputGain(0.0f),
       outputGain(0.0f),
@@ -123,8 +142,10 @@ LayoutView::LayoutView(DistortionProcessor &distProc, DelayProcessor &delayProc)
       lastDelayTime(delayProc.getDelayTime()),
       lastFeedback(delayProc.getFeedback()),
       lastDelayMix(delayProc.getMix()),
-      lastFilterFreq(delayProc.getFilterFreq()),
-      lastPingPong(delayProc.getPingPong())
+      lastPingPong(delayProc.getPingPong()),
+      lastFilterType(filterProc.getFilterTypeName()),
+      lastFilterFreq(filterProc.getFrequency()),
+      lastResonance(filterProc.getResonance())
 {
     auto browser = new LayoutMessageHandler(*this);
     webView.reset(browser);
@@ -209,13 +230,11 @@ void LayoutView::timerCallback()
     float delayTime = delayProcessor.getDelayTime();
     float feedback = delayProcessor.getFeedback();
     float delayMix = delayProcessor.getMix();
-    float filterFreq = delayProcessor.getFilterFreq();
     bool pingPong = delayProcessor.getPingPong();
 
     bool delayChanged = std::abs(delayTime - lastDelayTime) > 0.001f ||
                         std::abs(feedback - lastFeedback) > 0.001f ||
                         std::abs(delayMix - lastDelayMix) > 0.001f ||
-                        std::abs(filterFreq - lastFilterFreq) > 0.001f ||
                         pingPong != lastPingPong;
 
     if (delayChanged)
@@ -225,15 +244,36 @@ void LayoutView::timerCallback()
                               juce::String(delayTime) + ", " +
                               juce::String(feedback) + ", " +
                               juce::String(delayMix) + ", " +
-                              juce::String(filterFreq) + ", " +
                               juce::String(pingPong ? "1" : "0") + ")";
         webView->evaluateJavascript(script);
 
         lastDelayTime = delayTime;
         lastFeedback = feedback;
         lastDelayMix = delayMix;
-        lastFilterFreq = filterFreq;
         lastPingPong = pingPong;
+    }
+
+    // Check for parameter changes in filter processor
+    juce::String filterType = filterProcessor.getFilterTypeName();
+    float filterFreq = filterProcessor.getFrequency();
+    float resonance = filterProcessor.getResonance();
+
+    bool filterChanged = filterType != lastFilterType ||
+                         std::abs(filterFreq - lastFilterFreq) > 0.001f ||
+                         std::abs(resonance - lastResonance) > 0.001f;
+
+    if (filterChanged)
+    {
+        // Update filter UI with current values
+        juce::String script = "window.setFilterValues('" +
+                              filterType + "', " +
+                              juce::String(filterFreq) + ", " +
+                              juce::String(resonance) + ")";
+        webView->evaluateJavascript(script);
+
+        lastFilterType = filterType;
+        lastFilterFreq = filterFreq;
+        lastResonance = resonance;
     }
 
     // Update oscilloscope if there's new audio data

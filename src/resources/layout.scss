@@ -647,3 +647,83 @@ input:checked + .toggle-slider:before {
   z-index: 1000;
   white-space: nowrap;
 }
+
+// =======================
+// Filter
+// =======================
+
+.filter-panel {
+  background: linear-gradient(145deg, $background-dark, $surface-color);
+  border: $border-width solid $border-color;
+  border-radius: $border-radius-sm;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  padding: $spacing-xs;
+  margin: $spacing-xs auto;
+  box-sizing: border-box;
+  display: inline-block;
+  max-width: 240px;
+  min-width: 200px;
+  width: 240px;
+  flex: 0 0 auto;
+}
+
+.filter-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: $spacing-xs;
+  height: 20px;
+}
+
+.filter-title {
+  font-size: 10px;
+  font-weight: bold;
+  color: $primary-color;
+  margin-left: $spacing-xs;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+.filter-type-selector {
+  display: flex;
+  justify-content: center;
+  margin: $spacing-sm 0;
+}
+
+.filter-type-dropdown {
+  background-color: $background-darker;
+  color: $text-primary;
+  border: $border-width solid $border-color;
+  padding: 2px 4px;
+  border-radius: $border-radius-sm;
+  font-size: 9px;
+  width: 120px;
+  outline: none;
+  cursor: pointer;
+  text-align: center;
+}
+
+.filter-type-dropdown:focus {
+  border-color: $primary-color;
+}
+
+.filter-knobs-row {
+  display: flex;
+  justify-content: center;
+  gap: $spacing-md;
+  padding-top: $spacing-xs;
+  align-items: flex-start;
+  margin-bottom: $spacing-xs;
+}
+
+.filter-display-container {
+  margin-top: $spacing-sm;
+  width: 100%;
+  height: 60px;
+  background-color: rgba($background-darker, 0.7);
+  border-radius: $border-radius-sm;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

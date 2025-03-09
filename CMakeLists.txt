@@ -77,6 +77,8 @@ target_sources(Oxide
         src/dsp/distortion/DistortionProcessor.h
         src/dsp/delay/DelayProcessor.cpp
         src/dsp/delay/DelayProcessor.h
+        src/dsp/filter/FilterProcessor.cpp
+        src/dsp/filter/FilterProcessor.h
 )
 
 target_include_directories(Oxide
@@ -86,6 +88,7 @@ target_include_directories(Oxide
         ${CMAKE_CURRENT_SOURCE_DIR}/src/ui
         ${CMAKE_CURRENT_SOURCE_DIR}/src/dsp/distortion
         ${CMAKE_CURRENT_SOURCE_DIR}/src/dsp/delay
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/dsp/filter
 )
 
 target_compile_definitions(Oxide
