@@ -1,26 +1,41 @@
-@use "theme" as *;
-
-.container {
-  padding: 150px 5px 0 5px;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  background-color: transparent;
-}
+// =======================
+// Meters Styles
+// =======================
 
 .meters-column {
   display: flex;
   flex-direction: column;
   align-items: center;
+  height: 100%;
+}
+
+.input-meters,
+.output-meters {
+  justify-content: center;
+}
+
+.meters-label {
+  font-size: $font-size-micro;
+  font-weight: bold;
+  color: $text-secondary;
+  text-align: center;
+  margin-bottom: $spacing-xs;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.knob-label-small {
+  font-size: 8px;
+  color: $text-secondary;
+  text-align: center;
+  margin-top: $spacing-xs;
 }
 
 .meters {
   display: flex;
   position: relative;
-  gap: 0;
+  gap: 4px;
+  height: 180px;
 }
 
 .meter {

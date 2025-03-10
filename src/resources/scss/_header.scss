@@ -1,11 +1,13 @@
-@use "theme" as *;
+// =======================
+// Header Styles
+// =======================
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  height: 100%;
+  height: $header-height;
   padding: 0 $spacing-lg;
   box-sizing: border-box;
   background-color: $background-dark;

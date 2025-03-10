@@ -1,5 +1,3 @@
-@use "theme" as *;
-
 .toggle-label {
   font-size: $font-size-small;
   color: $text-secondary;
@@ -42,4 +40,12 @@
   background-color: $text-primary;
   transition: $transition-standard;
   border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+  background-color: $primary-color;
+}
+
+input:checked + .toggle-slider:before {
+  transform: translateX(16px);
 }

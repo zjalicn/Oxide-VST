@@ -1,3 +1,7 @@
+// =======================
+// Theme Variables
+// =======================
+
 // Color Palette
 $primary-color: #e73c0c; // Main accent color (red-orange)
 $primary-hover: #ff4d23; // Lighter red-orange for hover states
@@ -23,7 +27,6 @@ $meter-gradient: linear-gradient(
   $success-color 55%,
   $warning-color 60%,
   #ff3300 70%,
-  // More red-orange in the middle
   $danger-color 75%,
   $danger-color 100%
 );
@@ -37,7 +40,7 @@ $knob-shadow: rgba(0, 0, 0, 0.3);
 // UI Element Dimensions
 $header-height: 60px;
 $control-panel-height: 150px;
-$knob-size-large: 60px;
+$knob-size-large: 32px;
 $knob-size-small: 10px;
 $meter-width: 8px;
 $meter-height: 180px;
@@ -48,6 +51,7 @@ $font-size-title: 24px;
 $font-size-label: 14px;
 $font-size-small: 12px;
 $font-size-tiny: 10px;
+$font-size-micro: 8px;
 
 // Spacing
 $spacing-xs: 4px;
