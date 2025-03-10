@@ -121,9 +121,9 @@
           </div>
         </div>
 
-        <!-- Bottom Row: Effects Chain (Delay → Distortion → Filter) -->
+        <!-- Bottom Row: Effects Chain -->
         <div class="fx-chain">
-          <!-- Delay Control Panel (First in the chain) -->
+          <!-- Delay Control Panel -->
           <div class="delay-panel">
             <div class="delay-header">
               <div class="delay-title">DELAY</div>
@@ -160,10 +160,10 @@
             </div>
           </div>
 
-          <!-- Distortion Control Panel (Second in the chain) -->
+          <!-- Distortion Control Panel -->
           <div class="distortion-section">
             <div class="distortion-header">
-              <div class="distortion-title">DIST.</div>
+              <div class="distortion-title">DISTORTION</div>
               <select class="algorithm-selector" id="algorithmSelector">
                 <option value="soft_clip">Soft Clip</option>
                 <option value="hard_clip">Hard Clip</option>
@@ -190,7 +190,7 @@
             </div>
           </div>
 
-          <!-- Filter Control Panel (Third in the chain) -->
+          <!-- Filter Control Panel -->
           <div class="filter-panel">
             <div class="filter-header">
               <div class="filter-title">FILTER</div>
@@ -223,6 +223,23 @@
                 height="40"
               ></canvas>
             </div>
+          </div>
+
+          <!-- Pulse Control Panel -->
+          <div class="pulse-panel" id="pulsePanel">
+            <div class="pulse-header">
+              <div class="pulse-title">PULSE</div>
+            </div>
+            <div class="pulse-knob-row">
+              <div class="knob-container">
+                <div class="knob" id="pulseKnob">
+                  <div id="pulseIndicator" class="knob-indicator"></div>
+                </div>
+                <div class="knob-label">Amount</div>
+                <div id="pulseValue" class="knob-value">0%</div>
+              </div>
+            </div>
+            <div class="pulse-beat-indicator" id="pulseIndicatorLight"></div>
           </div>
         </div>
       </div>
@@ -284,6 +301,8 @@
             url = "oxide:delay:" + param + "=" + value;
           } else if (module === "filter") {
             url = "oxide:filter:" + param + "=" + value;
+          } else if (module === "pulse") {
+            url = "oxide:pulse:" + param + "=" + value;
           } else {
             url = "oxide:" + param + "=" + value;
           }
@@ -1211,7 +1230,6 @@
         return true;
       };
 
-      // Initialize the UI components
       window.addEventListener("load", function () {
         // Initialize oscilloscope
         resizeOscilloscopeCanvas();
@@ -1226,12 +1244,91 @@
         // Initialize filter values
         updateFilterUI("lowpass", 1000, 0.7);
 
+        // Initialize pulse values
+        updatePulseUI(0.0);
+
         // Initialize meter visuals
         updateMeterVisuals();
 
         // Force an initial update with explicit zero values
         setAudioLevels(0, 0, 0, 0);
       });
+
+      // =======================
+      // Pulse Module
+      // =======================
+
+      // Initialize pulse state
+      state.pulse = {
+        mix: 0.0, // Start with no effect
+        isActive: false, // For visual feedback
+        lastBeatTime: 0,
+      };
+
+      function updatePulseUI(mix) {
+        if (mix !== undefined) state.pulse.mix = parseFloat(mix);
+
+        // Map 0-1 range to 225-45 degrees (7 o'clock to 3 o'clock)
+        const pulseAngle = 225 + state.pulse.mix * 270;
+
+        // Update knob rotation
+        document.getElementById(
+          "pulseIndicator"
+        ).style.transform = `translate(-50%, -100%) rotate(${pulseAngle}deg)`;
+
+        // Update value display
+        document.getElementById("pulseValue").textContent = `${Math.round(
+          state.pulse.mix * 100
+        )}%`;
+
+        // Update active state of the panel - add/remove active class
+        const pulsePanel = document.getElementById("pulsePanel");
+        if (state.pulse.mix > 0.01) {
+          pulsePanel.classList.add("pulse-active");
+        } else {
+          pulsePanel.classList.remove("pulse-active");
+        }
+      }
+
+      // Set up pulse knob
+      document
+        .getElementById("pulseKnob")
+        .addEventListener("mousedown", function (e) {
+          e.preventDefault();
+          isDragging = true;
+          activeKnob = "pulse";
+          const startY = e.clientY;
+          const startValue = state.pulse.mix;
+
+          function handleMove(moveEvent) {
+            moveEvent.preventDefault();
+            const deltaY = startY - moveEvent.clientY;
+            const newValue = Math.max(
+              0,
+              Math.min(1, startValue + deltaY / 100)
+            );
+
+            state.pulse.mix = newValue;
+            window.valueChanged("pulse", "mix", newValue);
+            updatePulseUI();
+          }
+
+          document.addEventListener("mousemove", handleMove);
+          document.addEventListener(
+            "mouseup",
+            () => {
+              document.removeEventListener("mousemove", handleMove);
+              isDragging = false;
+              activeKnob = null;
+            },
+            { once: true }
+          );
+        });
+
+      // Method for C++ to update pulse parameters
+      window.setPulseValues = function (mix) {
+        updatePulseUI(mix);
+      };
     </script>
   </body>
 </html>

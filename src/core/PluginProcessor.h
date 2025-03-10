@@ -4,6 +4,7 @@
 #include "DistortionProcessor.h"
 #include "DelayProcessor.h"
 #include "FilterProcessor.h"
+#include "PulseProcessor.h"
 
 class OxideAudioProcessor : public juce::AudioProcessor
 {
@@ -40,6 +41,7 @@ public:
     DistortionProcessor &getDistortionProcessor() { return distortionProcessor; }
     DelayProcessor &getDelayProcessor() { return delayProcessor; }
     FilterProcessor &getFilterProcessor() { return filterProcessor; }
+    PulseProcessor &getPulseProcessor() { return pulseProcessor; }
 
     float getLeftLevel() const { return levelLeft.getCurrentValue(); }
     float getRightLevel() const { return levelRight.getCurrentValue(); }
@@ -54,6 +56,7 @@ private:
     DelayProcessor delayProcessor;
     DistortionProcessor distortionProcessor;
     FilterProcessor filterProcessor;
+    PulseProcessor pulseProcessor;
 
     juce::LinearSmoothedValue<float> levelLeft, levelRight;
 

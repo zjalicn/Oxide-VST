@@ -170,6 +170,7 @@ body {
   box-sizing: border-box;
   position: relative;
   gap: $spacing-lg;
+  justify-content: center;
 }
 
 // =======================
@@ -181,8 +182,6 @@ body {
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  margin-top: $spacing-md;
-  height: 240px;
 }
 
 // =======================
@@ -319,18 +318,11 @@ body {
 
 .fx-chain {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: $spacing-md * 2;
   padding: $spacing-md 0;
-  width: 100%;
 }
 
 .distortion-section,
 .delay-panel {
-  max-width: 240px;
-  min-width: 200px;
-  width: 240px;
   flex: 0 0 auto;
 }
 
@@ -440,7 +432,7 @@ body {
   border: $border-width solid $border-color;
   border-radius: $border-radius-sm;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  padding: $spacing-xs;
+  padding: $spacing-sm;
   margin: $spacing-xs auto;
   box-sizing: border-box;
   display: inline-block;
@@ -461,6 +453,8 @@ body {
   margin-left: $spacing-xs;
   letter-spacing: 1px;
   flex-shrink: 0;
+  text-transform: uppercase;
+  margin-right: $spacing-md;
 }
 
 .algorithm-selector {
@@ -496,7 +490,7 @@ body {
   border: $border-width solid $border-color;
   border-radius: $border-radius-sm;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  padding: $spacing-xs;
+  padding: $spacing-sm;
   margin: $spacing-xs auto;
   box-sizing: border-box;
   display: inline-block;
@@ -517,6 +511,7 @@ body {
   margin-left: $spacing-xs;
   letter-spacing: 1px;
   flex-shrink: 0;
+  text-transform: uppercase;
 }
 
 .delay-toggle {
@@ -580,55 +575,6 @@ input:checked + .toggle-slider:before {
   transform: translateX(16px);
 }
 
-// Filter Slider
-.filter-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: $spacing-sm;
-  gap: $spacing-md;
-}
-
-.filter-label {
-  font-size: $font-size-small;
-  color: $text-secondary;
-}
-
-.filter-slider {
-  -webkit-appearance: none;
-  width: 120px;
-  height: 3px;
-  background: $background-darker;
-  outline: none;
-  border-radius: 3px;
-  border: 1px solid $border-color;
-}
-
-.filter-slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 10px;
-  height: 16px;
-  border-radius: 2px;
-  background: $primary-color;
-  cursor: pointer;
-}
-
-.filter-slider::-moz-range-thumb {
-  width: 10px;
-  height: 16px;
-  border-radius: 2px;
-  background: $primary-color;
-  cursor: pointer;
-}
-
-.filter-value {
-  font-size: $font-size-tiny;
-  color: $text-muted;
-  min-width: 50px;
-  text-align: center;
-}
-
 // =======================
 // Tooltip
 // =======================
@@ -656,13 +602,10 @@ input:checked + .toggle-slider:before {
   border: $border-width solid $border-color;
   border-radius: $border-radius-sm;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  padding: $spacing-xs;
+  padding: $spacing-sm;
   margin: $spacing-xs auto;
   box-sizing: border-box;
   display: inline-block;
-  max-width: 240px;
-  min-width: 200px;
-  width: 240px;
   flex: 0 0 auto;
 }
 
@@ -681,6 +624,8 @@ input:checked + .toggle-slider:before {
   margin-left: $spacing-xs;
   letter-spacing: 1px;
   flex-shrink: 0;
+  text-transform: uppercase;
+  margin-right: $spacing-md;
 }
 
 .filter-type-selector {
@@ -725,4 +670,70 @@ input:checked + .toggle-slider:before {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+// =======================
+// Pulse
+// =======================
+
+.pulse-panel {
+  background: linear-gradient(145deg, $background-dark, $surface-color);
+  border: $border-width solid $border-color;
+  border-radius: $border-radius-sm;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  padding: $spacing-sm;
+  margin: $spacing-xs auto;
+  box-sizing: border-box;
+  min-width: 100px;
+  flex: 0 0 auto;
+}
+
+.pulse-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: $spacing-xs;
+  height: 20px;
+}
+
+.pulse-title {
+  font-size: 10px;
+  font-weight: bold;
+  color: $primary-color;
+  margin-left: $spacing-xs;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.pulse-knob-row {
+  display: flex;
+  justify-content: center;
+  padding-top: $spacing-xs;
+  align-items: flex-start;
+  margin-bottom: $spacing-xs;
+}
+
+.pulse-beat-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: $primary-color;
+  margin: 5px auto;
+  animation: pulse-beat 500ms infinite alternate;
+  opacity: 0;
+}
+
+.pulse-active .pulse-beat-indicator {
+  opacity: 0.5;
+}
+
+@keyframes pulse-beat {
+  from {
+    opacity: 0.5;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1.1);
+  }
 }

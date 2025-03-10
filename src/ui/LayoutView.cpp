@@ -119,6 +119,18 @@ bool LayoutView::LayoutMessageHandler::pageAboutToLoad(const juce::String &url)
                 return false;
             }
         }
+        // Handle pulse parameters
+        else if (params.startsWith("pulse:"))
+        {
+            params = params.fromFirstOccurrenceOf("pulse:", false, true);
+
+            if (params.startsWith("mix="))
+            {
+                float value = params.fromFirstOccurrenceOf("mix=", false, true).getFloatValue();
+                ownerView.pulseProcessor.setMix(value);
+                return false;
+            }
+        }
 
         return false; // We handled this URL
     }
@@ -127,10 +139,11 @@ bool LayoutView::LayoutMessageHandler::pageAboutToLoad(const juce::String &url)
 }
 
 // Main LayoutView implementation
-LayoutView::LayoutView(DistortionProcessor &distProc, DelayProcessor &delayProc, FilterProcessor &filterProc)
+LayoutView::LayoutView(DistortionProcessor &distProc, DelayProcessor &delayProc, FilterProcessor &filterProc, PulseProcessor &pulseProc)
     : distortionProcessor(distProc),
       delayProcessor(delayProc),
       filterProcessor(filterProc),
+      pulseProcessor(pulseProc),
       pageLoaded(false),
       inputGain(0.0f),
       outputGain(0.0f),
@@ -145,7 +158,8 @@ LayoutView::LayoutView(DistortionProcessor &distProc, DelayProcessor &delayProc,
       lastPingPong(delayProc.getPingPong()),
       lastFilterType(filterProc.getFilterTypeName()),
       lastFilterFreq(filterProc.getFrequency()),
-      lastResonance(filterProc.getResonance())
+      lastResonance(filterProc.getResonance()),
+      lastPulseMix(pulseProc.getMix())
 {
     auto browser = new LayoutMessageHandler(*this);
     webView.reset(browser);
@@ -274,6 +288,21 @@ void LayoutView::timerCallback()
         lastFilterType = filterType;
         lastFilterFreq = filterFreq;
         lastResonance = resonance;
+    }
+
+    // Check for parameter changes in pulse processor
+    float pulseMix = pulseProcessor.getMix();
+
+    bool pulseChanged = std::abs(pulseMix - lastPulseMix) > 0.001f;
+
+    if (pulseChanged)
+    {
+        // Update pulse UI with current values
+        juce::String script = "window.setPulseValues(" +
+                              juce::String(pulseMix) + ")";
+        webView->evaluateJavascript(script);
+
+        lastPulseMix = pulseMix;
     }
 
     // Update oscilloscope if there's new audio data

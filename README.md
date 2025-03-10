@@ -4,60 +4,56 @@
 
 ## Oxide
 
-Oxide is a distortion + delay plugin that combines classic analog-style saturation with repeating echoes. Built with surgical precision using JUCE's DSP modules, it offers five distinct distortion algorithms and comprehensive sound shaping capabilities.
+Oxide is a distorted delay plugin that combines analog-style saturation with repeating echoes; colored by five different distortion algorithms, reliable filtering, and volume pulsing effects to create unique 3D spaces in your mixes.
 
-- Built in C++ using JUCE framework
-- Compiled with CMake
-- WebView Component Integration for UI
-- SASS for better organization and a templated theming system
-
-### Features
+### Plugin Features
 
 - 0ms latency
 - Five distortion algorithms: Soft Clip, Hard Clip, Foldback, Waveshaper, and Bitcrusher
-- Real-time waveform and spectrum visualization
+- Delaying echoes synced by frequency (hz) or note values (based on DAW bpm), options for triplet or dotted note values, ping-pong effect,
+- Three filter types: Lowpass, Highpass, Bandpass with resonance control
+- Real-time oscilloscope to display output audio
 - Input/Output gain staging
 
-### Future Features
+### Repository
 
-##### Tech
+- Built in C++ with JUCE 8
+- Compilation with CMake into VST3 format
+- WebView Component Integration for UI
+- SASS for better organization and a templated theming system
 
-- templated html
+### Future
+
+##### Tech Features
+
+- Templated HTML
   - knockout? or some caveman simple option
   - react-juce?
   - transparent webview components?
 
-##### Features
+##### Plugin Features
 
 - Pre and post filters with variable resonance
 - Modulation system with LFO and envelope follower
 - Mid/Side processing with stereo width control
+- compile for other formats besides vst3
 
-Ideally delay -> chorus OR reverb -> distortion -> ducking
+## Build & Installation
 
-## Installation
-
-1. Clone the repository
-2. Run
+1. After cloning the repository run
 
    ```
    git submodule add https://github.com/juce-framework/JUCE.git
    git submodule update --init --recursive
    ```
 
-3. Build the project
+2. Build the project
 
    ```
-   cmake -B build (first time only i think?)
+   cmake -B build # first time only
    cmake --build build
    ```
 
-4. Copy the plugin to your VST folder
+3. Copy the plugin to your VST folder (Optional)
 
-5. Afterwards, Clean and Rebuild with:
-
-   ```
-   rm -rf build
-   cmake -B build
-   cmake --build build
-   ```
+   - The project is auto copying to the default vst folder for me. I'm using a Mac but if you're on Windows it should copy to `C:\Program Files\Common Files\VST3` or Linux `~/.vst3`. If not do it manually.

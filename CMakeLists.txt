@@ -17,12 +17,8 @@ add_custom_target(CompileSCSS
     COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/compile_scss.sh
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT "Compiling SCSS to CSS"
-    BYPRODUCTS 
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/resources/css/header.css
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/resources/css/control-panel.css
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/resources/css/fx-delay.css
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/resources/css/meters.css
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/resources/css/oscilloscope.css
+    BYPRODUCTS # TODO: Don't think this is working how i thought at first, i kinda fixed it to make sense for now
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/resources/layout.css
 )
 
 juce_add_binary_data(OxideResources 
@@ -79,6 +75,8 @@ target_sources(Oxide
         src/dsp/delay/DelayProcessor.h
         src/dsp/filter/FilterProcessor.cpp
         src/dsp/filter/FilterProcessor.h
+        src/dsp/pulse/PulseProcessor.cpp
+        src/dsp/pulse/PulseProcessor.h
 )
 
 target_include_directories(Oxide
@@ -89,6 +87,7 @@ target_include_directories(Oxide
         ${CMAKE_CURRENT_SOURCE_DIR}/src/dsp/distortion
         ${CMAKE_CURRENT_SOURCE_DIR}/src/dsp/delay
         ${CMAKE_CURRENT_SOURCE_DIR}/src/dsp/filter
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/dsp/pulse
 )
 
 target_compile_definitions(Oxide

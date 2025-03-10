@@ -69,6 +69,7 @@ void OxideAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     delayProcessor.prepare(sampleRate, samplesPerBlock);
     distortionProcessor.prepare(sampleRate);
     filterProcessor.prepare(sampleRate, samplesPerBlock);
+    pulseProcessor.prepare(sampleRate, samplesPerBlock);
 }
 
 void OxideAudioProcessor::releaseResources()
@@ -76,6 +77,7 @@ void OxideAudioProcessor::releaseResources()
     // When playback stops, release all resources
     delayProcessor.reset();
     filterProcessor.reset();
+    pulseProcessor.reset();
 }
 
 bool OxideAudioProcessor::isBusesLayoutSupported(const BusesLayout &layouts) const
@@ -113,10 +115,25 @@ void OxideAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::M
     levelLeft.skip(buffer.getNumSamples());
     levelRight.skip(buffer.getNumSamples());
 
+    // Get the current BPM from the host
+    double currentBpm = 120.0; // Default value
+    if (auto *playHead = getPlayHead())
+    {
+        juce::AudioPlayHead::CurrentPositionInfo positionInfo;
+        if (playHead->getCurrentPosition(positionInfo))
+        {
+            currentBpm = positionInfo.bpm;
+        }
+    }
+
+    // Update pulse processor BPM
+    pulseProcessor.setBpm(currentBpm);
+
     // Process audio through signal chain
     delayProcessor.processBlock(buffer);      // First delay
     distortionProcessor.processBlock(buffer); // Then distortion
     filterProcessor.processBlock(buffer);     // Then filter
+    pulseProcessor.processBlock(buffer);      // Finally pulse effect
 
     // Store post-processed buffer for oscilloscope
     {
@@ -160,6 +177,9 @@ void OxideAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
     stream.writeFloat(filterProcessor.getFrequency());
     stream.writeFloat(filterProcessor.getResonance());
     stream.writeInt(static_cast<int>(filterProcessor.getFilterType()));
+
+    // Store pulse parameters
+    stream.writeFloat(pulseProcessor.getMix());
 }
 
 void OxideAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
@@ -170,9 +190,55 @@ void OxideAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
     // Check how much data we have available
     const int bytesAvailable = stream.getNumBytesRemaining();
 
-    if (bytesAvailable >= sizeof(float) * 4 + sizeof(int) + sizeof(float) * 4 + sizeof(int) * 3)
+    if (bytesAvailable >= sizeof(float) * 4 + sizeof(int) + sizeof(float) * 4 + sizeof(int) * 3 + sizeof(float))
     {
-        // Full state with all processor parameters
+        // Full state with all processor parameters including pulse
+
+        // Distortion parameters
+        float drive = stream.readFloat();
+        float mix = stream.readFloat();
+        float inputGain = stream.readFloat();
+        float outputGain = stream.readFloat();
+        int algorithmValue = stream.readInt();
+
+        // Delay parameters
+        float delayTime = stream.readFloat();
+        float feedback = stream.readFloat();
+        float delayMix = stream.readFloat();
+        bool pingPong = stream.readInt() > 0;
+
+        // Filter parameters
+        float filterFreq = stream.readFloat();
+        float resonance = stream.readFloat();
+        int filterTypeValue = stream.readInt();
+
+        // Pulse parameters
+        float pulseMix = stream.readFloat();
+
+        // Apply distortion parameters
+        distortionProcessor.setDrive(drive);
+        distortionProcessor.setMix(mix);
+        distortionProcessor.setInputGain(inputGain);
+        distortionProcessor.setOutputGain(outputGain);
+        distortionProcessor.setAlgorithm(static_cast<DistortionAlgorithm>(algorithmValue));
+
+        // Apply delay parameters
+        delayProcessor.setDelayTime(delayTime);
+        delayProcessor.setFeedback(feedback);
+        delayProcessor.setMix(delayMix);
+        delayProcessor.setPingPong(pingPong);
+
+        // Apply filter parameters
+        filterProcessor.setFrequency(filterFreq);
+        filterProcessor.setResonance(resonance);
+        filterProcessor.setFilterType(static_cast<FilterType>(filterTypeValue));
+
+        // Apply pulse parameters
+        pulseProcessor.setMix(pulseMix);
+    }
+    else if (bytesAvailable >= sizeof(float) * 4 + sizeof(int) + sizeof(float) * 4 + sizeof(int) * 3)
+    {
+        // Full state with all processor parameters but no pulse
 
         // Distortion parameters
         float drive = stream.readFloat();
@@ -209,6 +275,9 @@ void OxideAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
         filterProcessor.setFrequency(filterFreq);
         filterProcessor.setResonance(resonance);
         filterProcessor.setFilterType(static_cast<FilterType>(filterTypeValue));
+
+        // Use default for pulse
+        pulseProcessor.setMix(0.0f);
     }
     else if (bytesAvailable >= sizeof(float) * 4 + sizeof(int))
     {
@@ -226,6 +295,8 @@ void OxideAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
         distortionProcessor.setAlgorithm(static_cast<DistortionAlgorithm>(algorithmValue));
 
         // Use default values for delay and filter
+        // Use default for pulse
+        pulseProcessor.setMix(0.0f);
     }
     else if (bytesAvailable >= sizeof(float) * 4)
     {
@@ -243,6 +314,8 @@ void OxideAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
         distortionProcessor.setAlgorithm(DistortionAlgorithm::SoftClip);
 
         // Use default values for delay and filter
+        // Use default for pulse
+        pulseProcessor.setMix(0.0f);
     }
     else if (bytesAvailable >= sizeof(float) * 2)
     {
@@ -257,10 +330,13 @@ void OxideAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
         distortionProcessor.setAlgorithm(DistortionAlgorithm::SoftClip);
 
         // Use default values for delay and filter
+        // Use default for pulse
+        pulseProcessor.setMix(0.0f);
     }
 }
 
 juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter()
 {
-    return static_cast<juce::AudioProcessor *>(new OxideAudioProcessor());
+    // return static_cast<juce::AudioProcessor *>(new OxideAudioProcessor());
+    return new OxideAudioProcessor();
 }

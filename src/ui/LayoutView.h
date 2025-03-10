@@ -4,6 +4,7 @@
 #include "DistortionProcessor.h"
 #include "DelayProcessor.h"
 #include "FilterProcessor.h"
+#include "PulseProcessor.h"
 
 class LayoutView : public juce::Component,
                    private juce::Timer
@@ -11,7 +12,8 @@ class LayoutView : public juce::Component,
 public:
     LayoutView(DistortionProcessor &distortionProcessor,
                DelayProcessor &delayProcessor,
-               FilterProcessor &filterProcessor);
+               FilterProcessor &filterProcessor,
+               PulseProcessor &pulseProcessor);
     ~LayoutView() override;
 
     void paint(juce::Graphics &g) override;
@@ -37,6 +39,7 @@ private:
     DistortionProcessor &distortionProcessor;
     DelayProcessor &delayProcessor;
     FilterProcessor &filterProcessor;
+    PulseProcessor &pulseProcessor;
 
     std::unique_ptr<juce::WebBrowserComponent> webView;
 
@@ -66,6 +69,9 @@ private:
     juce::String lastFilterType;
     float lastFilterFreq;
     float lastResonance;
+
+    // Pulse
+    float lastPulseMix;
 
     // Timer callback for UI updates
     void timerCallback() override;
