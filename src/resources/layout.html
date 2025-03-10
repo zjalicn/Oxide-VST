@@ -192,8 +192,6 @@
           <div class="filter-panel">
             <div class="filter-header">
               <div class="filter-title">FILTER</div>
-            </div>
-            <div class="filter-type-selector">
               <select class="filter-type-dropdown" id="filterTypeSelector">
                 <option value="lowpass">Low Pass</option>
                 <option value="bandpass">Band Pass</option>
@@ -219,8 +217,8 @@
             <div class="filter-display-container">
               <canvas
                 id="filterResponseCanvas"
-                width="180"
-                height="60"
+                width="160"
+                height="40"
               ></canvas>
             </div>
           </div>
@@ -676,9 +674,14 @@
                 1 / Math.sqrt(1 + Math.pow(1 / normalizedFreq, 2 * q));
               break;
             case "bandpass":
-              // Simple bandpass approximation
-              const bw = 1 / q;
-              magnitude = 1 / (1 + Math.pow((normalizedFreq - 1) / bw, 2));
+              // Corrected bandpass approximation using second-order BPF response
+              const bandwidth = 1.0 / q;
+              // This is a more accurate bandpass representation with proper roll-off on both sides
+              const factorSq = Math.pow(
+                (normalizedFreq - 1.0 / normalizedFreq) / bandwidth,
+                2
+              );
+              magnitude = 1.0 / Math.sqrt(1.0 + factorSq);
               break;
             default:
               magnitude = 1 / Math.sqrt(1 + Math.pow(normalizedFreq, 2 * q));
@@ -736,7 +739,6 @@
         filterCtx.lineTo(width, y3db);
         filterCtx.stroke();
       }
-
       // Set up filter type dropdown handler
       document
         .getElementById("filterTypeSelector")
@@ -778,12 +780,25 @@
 
             let newValue;
             if (isLogarithmic) {
-              // Logarithmic scaling
-              const sensitivity = 0.003;
-              newValue = startValue * Math.exp(deltaY * sensitivity);
+              // For frequency which has a wide logarithmic range, use normalized position
+              // Get the normalized position between 0 and 1
+              const normalizedStart =
+                (Math.log10(startValue) - Math.log10(minValue)) /
+                (Math.log10(maxValue) - Math.log10(minValue));
+
+              // Apply a consistent sensitivity similar to other knobs
+              const sensitivity = 0.01; // Match other knobs
+              const normalizedNew = normalizedStart + deltaY * sensitivity;
+
+              // Convert normalized position back to actual value
+              newValue = Math.pow(
+                10,
+                normalizedNew * (Math.log10(maxValue) - Math.log10(minValue)) +
+                  Math.log10(minValue)
+              );
             } else {
-              // Linear scaling
-              const sensitivity = 0.01;
+              // For resonance and other linear parameters
+              const sensitivity = 0.01; // Match other knobs
               newValue = startValue + deltaY * sensitivity;
             }
 
@@ -816,7 +831,6 @@
           );
         });
       }
-
       // Set up knobs for frequency and resonance
       setupFilterKnob("filterFreqKnob", "frequency", 20, 20000, true);
       setupFilterKnob("resonanceKnob", "resonance", 0.1, 10, true);
