@@ -125,7 +125,7 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
     startTimerHz(30);
 
     // Set initial size
-    setSize(1000, 600);
+    setSize(CANVAS_WIDTH, CANVAS_HEIGHT);
 }
 
 OxideAudioProcessorEditor::~OxideAudioProcessorEditor()
