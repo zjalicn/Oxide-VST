@@ -28,6 +28,7 @@
 
 .top-row {
   display: flex;
+  flex: 1;
   justify-content: space-between;
   width: 100%;
 }
@@ -308,4 +309,58 @@
     opacity: 1;
     transform: scale(1.1);
   }
+}
+
+// =======================
+// New Control Styles
+// =======================
+
+.controls-left,
+.controls-right {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.controls-left-top,
+.controls-right-top,
+.controls-left-bottom,
+.controls-right-bottom {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  .controls-title {
+    font-size: $font-size-tiny;
+    font-weight: bold;
+    color: $primary-color;
+    margin-left: $spacing-xs;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: $spacing-sm;
+  }
+}
+
+.controls-left-top,
+.controls-left-bottom {
+  .controls-title {
+    text-align: right;
+  }
+}
+
+.controls-separator {
+  display: flex;
+  justify-content: center;
+  flex: 0 0 auto;
+  height: 1px;
+  width: 90%;
+  background-color: $border-color;
+  margin: 0 auto;
+}
+
+.controls-knobs {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
 }

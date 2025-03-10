@@ -1,6 +1,4 @@
-// =======================
-// Header Styles
-// =======================
+@use "../theme" as *;
 
 .header {
   display: flex;
@@ -10,8 +8,6 @@
   height: $header-height;
   padding: 0 $spacing-lg;
   box-sizing: border-box;
-  background-color: $background-dark;
-  border-bottom: $border-width solid $border-color;
 }
 
 .title {
