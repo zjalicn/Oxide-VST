@@ -51,6 +51,7 @@ $font-size-title: 24px;
 $font-size-label: 14px;
 $font-size-small: 12px;
 $font-size-tiny: 10px;
+$font-size-micro: 8px;
 
 // Spacing
 $spacing-xs: 4px;
@@ -224,12 +225,13 @@ body {
 }
 
 .meters-label {
-  font-size: $font-size-tiny;
+  font-size: $font-size-micro;
   font-weight: bold;
   color: $text-secondary;
   text-align: center;
   margin-bottom: $spacing-xs;
   letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 .knob-label-small {
