@@ -544,7 +544,6 @@
           state.delay.pingPong;
       }
 
-      // Set up delay knobs
       function setupDelayKnob(knobId, paramName, minValue, maxValue) {
         const knob = document.getElementById(knobId);
 
@@ -573,9 +572,19 @@
 
             let newValue;
             if (paramName === "time") {
-              // Logarithmic scaling for time
-              const sensitivity = 0.003;
+              // Improved logarithmic scaling for time with higher sensitivity
+              const sensitivity = 0.01; // Increased from 0.003 to match other knobs
+
+              // Option 1: Better exponential approach that's more responsive
               newValue = startValue * Math.exp(deltaY * sensitivity);
+
+              // Option 2: Alternative approach using linear scaling but considering the range
+              // const range = maxValue - minValue;
+              // const normalizedStart = (Math.log(startValue) - Math.log(minValue)) /
+              //                        (Math.log(maxValue) - Math.log(minValue));
+              // const normalizedNew = normalizedStart + deltaY * 0.01;
+              // newValue = Math.exp(normalizedNew * (Math.log(maxValue) - Math.log(minValue)) +
+              //                     Math.log(minValue));
             } else {
               // Linear scaling for other parameters
               const sensitivity = 0.01;
@@ -1270,7 +1279,7 @@
         updateFilterUI("lowpass", 1000, 0.7);
 
         // Initialize pulse values
-        updatePulseUI(0.0);
+        updatePulseUI(0.0, "1/4", 120);
 
         // Initialize meter visuals
         updateMeterVisuals();
@@ -1291,7 +1300,7 @@
         lastBeatTime: 0,
       };
 
-      function updatePulseUI(mix, rate) {
+      function updatePulseUI(mix, rate, bpm) {
         // First update the state with the new values if provided
         if (mix !== undefined) state.pulse.mix = parseFloat(mix);
         if (rate !== undefined) state.pulse.rate = rate;
@@ -1369,13 +1378,13 @@
           pulseIndicator.style.animationDuration = animationDuration + "ms";
         }
 
-        // Update active state of the panel - add/remove active class
-        const pulsePanel = document.getElementById("pulsePanel");
-        if (state.pulse.mix > 0.01) {
-          pulsePanel.classList.add("pulse-active");
-        } else {
-          pulsePanel.classList.remove("pulse-active");
-        }
+        // // Update active state of the panel - add/remove active class
+        // const pulsePanel = document.getElementById("pulsePanel");
+        // if (state.pulse.mix > 0.01) {
+        //   pulsePanel.classList.add("pulse-active");
+        // } else {
+        //   pulsePanel.classList.remove("pulse-active");
+        // }
       }
 
       document
