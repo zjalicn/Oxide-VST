@@ -1283,21 +1283,36 @@
       // Pulse Module
       // =======================
 
-      // Initialize pulse state
       state.pulse = {
-        mix: 0.0, // Start with no effect
+        mix: 0.0,
         rate: "1/4",
-        isActive: false, // For visual feedback
+        bpm: 120,
+        isActive: false,
         lastBeatTime: 0,
       };
 
-      function updatePulseUI(mix) {
+      function updatePulseUI(mix, rate) {
+        // First update the state with the new values if provided
         if (mix !== undefined) state.pulse.mix = parseFloat(mix);
         if (rate !== undefined) state.pulse.rate = rate;
+        if (bpm !== undefined) state.pulse.bpm = parseFloat(bpm);
 
-        // [existing mix knob code]
+        if (!state.pulse.bpm) state.pulse.bpm = 120;
 
-        // Map rate value to angle (3 positions)
+        // Calculate mix knob angle
+        const pulseAngle = 225 + state.pulse.mix * 270;
+
+        // Update mix knob rotation
+        document.getElementById(
+          "pulseIndicator"
+        ).style.transform = `translate(-50%, -100%) rotate(${pulseAngle}deg)`;
+
+        // Update mix value display
+        document.getElementById("pulseValue").textContent = `${Math.round(
+          state.pulse.mix * 100
+        )}%`;
+
+        // Calculate rate knob angle based on position
         let rateAngle;
         switch (state.pulse.rate) {
           case "1/2":
@@ -1322,10 +1337,37 @@
         document.getElementById("pulseRateValue").textContent =
           state.pulse.rate;
 
-        // Update mix value display
-        document.getElementById("pulseValue").textContent = `${Math.round(
-          state.pulse.mix * 100
-        )}%`;
+        // Calculate animation duration based on BPM and selected rate
+        const pulseIndicator = document.getElementById("pulseIndicatorLight");
+        if (pulseIndicator) {
+          // Calculate beats per second
+          const beatsPerSecond = state.pulse.bpm / 60;
+
+          // Calculate duration in milliseconds for one beat
+          const beatDuration = 1000 / beatsPerSecond;
+
+          // Apply note value multiplier
+          let noteDurationMultiplier;
+          switch (state.pulse.rate) {
+            case "1/2":
+              noteDurationMultiplier = 2.0; // Half note = 2 beats
+              break;
+            case "1/4":
+              noteDurationMultiplier = 1.0; // Quarter note = 1 beat
+              break;
+            case "1/8":
+              noteDurationMultiplier = 0.5; // Eighth note = 1/2 beat
+              break;
+            default:
+              noteDurationMultiplier = 1.0;
+          }
+
+          // Calculate final animation duration
+          const animationDuration = beatDuration * noteDurationMultiplier;
+
+          // Set the animation duration
+          pulseIndicator.style.animationDuration = animationDuration + "ms";
+        }
 
         // Update active state of the panel - add/remove active class
         const pulsePanel = document.getElementById("pulsePanel");
@@ -1336,7 +1378,6 @@
         }
       }
 
-      // Set up pulse knob
       document
         .getElementById("pulseKnob")
         .addEventListener("mousedown", function (e) {
@@ -1356,7 +1397,7 @@
 
             state.pulse.mix = newValue;
             window.valueChanged("pulse", "mix", newValue);
-            updatePulseUI();
+            updatePulseUI(newValue); // Make sure we pass only the mix value here
           }
 
           document.addEventListener("mousemove", handleMove);
@@ -1371,8 +1412,8 @@
           );
         });
 
-      window.setPulseValues = function (mix, rate) {
-        updatePulseUI(mix, rate);
+      window.setPulseValues = function (mix, rate, bpm) {
+        updatePulseUI(mix, rate, bpm);
       };
 
       document

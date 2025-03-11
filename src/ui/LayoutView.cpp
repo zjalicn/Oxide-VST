@@ -308,7 +308,8 @@ void LayoutView::timerCallback()
         // Update pulse UI with current values
         juce::String script = "window.setPulseValues(" +
                               juce::String(pulseMix) + ", '" +
-                              pulseRate + "')";
+                              pulseRate + "', " +
+                              juce::String(pulseProcessor.getBpm()) + ")";
         webView->evaluateJavascript(script);
 
         lastPulseMix = pulseMix;

@@ -262,6 +262,7 @@
   border-radius: 50%;
   background-color: $primary-color;
   animation: pulse-beat 500ms infinite alternate;
+  animation-duration: 500ms; /* Add this again to override with js */
   opacity: 0;
   margin-right: auto;
 }
