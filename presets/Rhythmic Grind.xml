@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OxidePreset name="Rhythmic Grind" version="1.0">
+  <Distortion drive="0.7" mix="0.8" inputGain="2.5" outputGain="-1.5" algorithm="hard_clip"/>
+  <Delay time="0.25" feedback="0.6" mix="0.5" pingPong="1"/>
+  <Filter type="bandpass" frequency="1200.0" resonance="3.0"/>
+  <Pulse mix="0.8" rate="1/8"/>
+</OxidePreset>

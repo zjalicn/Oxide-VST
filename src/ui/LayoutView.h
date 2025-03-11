@@ -23,7 +23,7 @@ public:
     void updateBuffer(const juce::AudioBuffer<float> &buffer);
 
     // Update levels for meters
-    void updateLevels(float leftLevel, float rightLevel);
+    void updateLevels(float leftLevel, float rightLevel, float outLeftLevel, float outRightLevel);
 
     // Set input/output gain values
     void setInputGain(float newGain);

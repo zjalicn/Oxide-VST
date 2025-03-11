@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OxidePreset name="Subtle Texture" version="1.0">
+  <Distortion drive="0.25" mix="0.35" inputGain="1.0" outputGain="0.0" algorithm="waveshaper"/>
+  <Delay time="0.2" feedback="0.25" mix="0.2" pingPong="1"/>
+  <Filter type="highpass" frequency="400.0" resonance="0.5"/>
+  <Pulse mix="0.15" rate="1/8"/>
+</OxidePreset>

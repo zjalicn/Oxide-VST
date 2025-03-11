@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OxidePreset name="Ambient Wash" version="1.0">
+  <Distortion drive="0.4" mix="0.6" inputGain="1.0" outputGain="0.5" algorithm="soft_clip"/>
+  <Delay time="0.9" feedback="0.75" mix="0.8" pingPong="1"/>
+  <Filter type="lowpass" frequency="3000.0" resonance="0.3"/>
+  <Pulse mix="0.2" rate="1/2"/>
+</OxidePreset>

@@ -161,6 +161,8 @@ void OxideAudioProcessorEditor::timerCallback()
     // Regular meter updates
     float leftLevel = audioProcessor.getLeftLevel();
     float rightLevel = audioProcessor.getRightLevel();
+    float outLeftLevel = audioProcessor.getOutputLeftLevel();
+    float outRightLevel = audioProcessor.getOutputRightLevel();
 
     // Apply input gain to the displayed levels to match the actual processing
     float inputGainLinear = std::pow(10.0f, audioProcessor.getDistortionProcessor().getInputGain() / 20.0f);
@@ -170,19 +172,27 @@ void OxideAudioProcessorEditor::timerCallback()
     // Scale for display - convert RMS values to percentage heights
     leftLevel = std::pow(leftLevel * 100.0f, 0.5f) * 10.0f;
     rightLevel = std::pow(rightLevel * 100.0f, 0.5f) * 10.0f;
+    outLeftLevel = std::pow(outLeftLevel * 100.0f, 0.5f) * 10.0f;
+    outRightLevel = std::pow(outRightLevel * 100.0f, 0.5f) * 10.0f;
 
     // Ensure values are in range
     leftLevel = juce::jlimit(0.0f, 100.0f, leftLevel);
     rightLevel = juce::jlimit(0.0f, 100.0f, rightLevel);
+    outLeftLevel = juce::jlimit(0.0f, 100.0f, outLeftLevel);
+    outRightLevel = juce::jlimit(0.0f, 100.0f, outRightLevel);
 
     // Allow small values to show as completely empty
     if (leftLevel < 0.1f)
         leftLevel = 0.0f;
     if (rightLevel < 0.1f)
         rightLevel = 0.0f;
+    if (outLeftLevel < 0.1f)
+        outLeftLevel = 0.0f;
+    if (outRightLevel < 0.1f)
+        outRightLevel = 0.0f;
 
     // Update the levels in the layout view
-    layoutView.updateLevels(leftLevel, rightLevel);
+    layoutView.updateLevels(leftLevel, rightLevel, outLeftLevel, outRightLevel);
 
     // Update the oscilloscope with latest audio buffer
     layoutView.updateBuffer(audioProcessor.getOutputBuffer());

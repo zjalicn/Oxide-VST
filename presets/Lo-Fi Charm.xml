@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OxidePreset name="Lo-Fi Charm" version="1.0">
+  <Distortion drive="0.6" mix="0.75" inputGain="2.0" outputGain="-1.0" algorithm="bitcrusher"/>
+  <Delay time="0.35" feedback="0.45" mix="0.4" pingPong="1"/>
+  <Filter type="lowpass" frequency="2400.0" resonance="0.4"/>
+  <Pulse mix="0.3" rate="1/8"/>
+</OxidePreset>

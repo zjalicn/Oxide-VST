@@ -290,20 +290,21 @@ void PresetManager::createDefaultPresetsIfNeeded()
     };
 
     PresetData presets[] = {
-        // Default preset
         {"Default", 0.5f, 0.5f, 0.0f, 0.0f, "soft_clip", 0.5f, 0.4f, 0.3f, false, "lowpass", 1000.0f, 0.7f, 0.0f, "1/4"},
-
-        // Light Drive preset
         {"Light Drive", 0.3f, 0.5f, 0.2f, 0.5f, "soft_clip", 0.5f, 0.4f, 0.3f, false, "lowpass", 1200.0f, 0.5f, 0.2f, "1/4"},
-
-        // Heavy Metal preset
         {"Heavy Metal", 0.8f, 0.7f, 3.0f, 2.0f, "hard_clip", 0.5f, 0.5f, 0.5f, true, "lowpass", 2000.0f, 1.2f, 0.4f, "1/4"},
-
-        // Fuzz preset
         {"Fuzz", 1.0f, 1.0f, 6.0f, -3.0f, "foldback", 0.7f, 0.7f, 0.6f, false, "highpass", 500.0f, 0.8f, 1.0f, "1/4"},
-
-        // Warm Tape preset
-        {"Warm Tape", 0.5f, 0.4f, 1.5f, 0.0f, "waveshaper", 0.3f, 0.6f, 0.4f, true, "bandpass", 1500.0f, 2.0f, 0.6f, "1/4"}};
+        {"Warm Tape", 0.5f, 0.4f, 1.5f, 0.0f, "waveshaper", 0.3f, 0.6f, 0.4f, true, "bandpass", 1500.0f, 2.0f, 0.6f, "1/4"},
+        {"Subtle Texture", 0.25f, 0.35f, 1.0f, 0.0f, "waveshaper", 0.2f, 0.25f, 0.2f, true, "highpass", 400.0f, 0.5f, 0.15f, "1/8"},
+        {"Rhythmic Grind", 0.7f, 0.8f, 2.5f, -1.5f, "hard_clip", 0.25f, 0.6f, 0.5f, true, "bandpass", 1200.0f, 3.0f, 0.8f, "1/8"},
+        {"Analog Crush", 0.9f, 0.65f, 4.0f, -2.0f, "bitcrusher", 0.15f, 0.3f, 0.25f, false, "lowpass", 1800.0f, 1.0f, 0.3f, "1/4"},
+        {"Ambient Wash", 0.4f, 0.6f, 1.0f, 0.5f, "soft_clip", 0.9f, 0.75f, 0.8f, true, "lowpass", 3000.0f, 0.3f, 0.2f, "1/2"},
+        {"Bass Thickener", 0.35f, 0.55f, 3.0f, -1.0f, "foldback", 0.1f, 0.2f, 0.15f, false, "lowpass", 500.0f, 1.7f, 0.4f, "1/4"},
+        {"Lo-Fi Charm", 0.6f, 0.75f, 2.0f, -1.0f, "bitcrusher", 0.35f, 0.45f, 0.4f, true, "lowpass", 2400.0f, 0.4f, 0.3f, "1/8"},
+        {"Synth Destroyer", 0.85f, 0.9f, 5.0f, -2.5f, "foldback", 0.18f, 0.65f, 0.55f, true, "bandpass", 900.0f, 4.0f, 0.7f, "1/4"},
+        {"Vocal Enhancer", 0.2f, 0.3f, 1.5f, 0.0f, "soft_clip", 0.22f, 0.3f, 0.25f, true, "highpass", 300.0f, 0.3f, 0.0f, "1/4"},
+        {"Guitar Sizzle", 0.55f, 0.7f, 3.0f, -1.0f, "waveshaper", 0.4f, 0.5f, 0.35f, false, "bandpass", 1600.0f, 1.8f, 0.2f, "1/4"},
+        {"Drum Cruncher", 0.45f, 0.6f, 2.5f, -0.5f, "hard_clip", 0.12f, 0.2f, 0.15f, false, "lowpass", 4000.0f, 0.9f, 0.5f, "1/8"}};
 
     // Reference to processors
     auto &distortion = processorRef.getDistortionProcessor();

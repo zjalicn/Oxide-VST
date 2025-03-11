@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OxidePreset name="Analog Crush" version="1.0">
+  <Distortion drive="0.9" mix="0.65" inputGain="4.0" outputGain="-2.0" algorithm="bitcrusher"/>
+  <Delay time="0.15" feedback="0.3" mix="0.25" pingPong="0"/>
+  <Filter type="lowpass" frequency="1800.0" resonance="1.0"/>
+  <Pulse mix="0.3" rate="1/4"/>
+</OxidePreset>

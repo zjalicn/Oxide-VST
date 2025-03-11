@@ -6,7 +6,6 @@
 #include "dsp/filter/FilterProcessor.h"
 #include "dsp/pulse/PulseProcessor.h"
 
-// Forward declare PresetManager
 class PresetManager;
 
 class OxideAudioProcessor : public juce::AudioProcessor
@@ -41,17 +40,16 @@ public:
     void getStateInformation(juce::MemoryBlock &destData) override;
     void setStateInformation(const void *data, int sizeInBytes) override;
 
-    // Accessors for DSP processors
     DistortionProcessor &getDistortionProcessor() { return distortionProcessor; }
     DelayProcessor &getDelayProcessor() { return delayProcessor; }
     FilterProcessor &getFilterProcessor() { return filterProcessor; }
     PulseProcessor &getPulseProcessor() { return pulseProcessor; }
-
-    // Accessor for PresetManager - might return nullptr if not initialized yet
-    PresetManager *getPresetManager();
+    PresetManager *getPresetManager(); // might return nullptr if not initialized yet
 
     float getLeftLevel() const { return levelLeft.getCurrentValue(); }
     float getRightLevel() const { return levelRight.getCurrentValue(); }
+    float getOutputLeftLevel() const { return outputLevelLeft.getCurrentValue(); }
+    float getOutputRightLevel() const { return outputLevelRight.getCurrentValue(); }
 
     juce::AudioBuffer<float> getOutputBuffer()
     {
@@ -60,17 +58,16 @@ public:
     }
 
 private:
-    // Initialize DSP processors first
     DelayProcessor delayProcessor;
     DistortionProcessor distortionProcessor;
     FilterProcessor filterProcessor;
     PulseProcessor pulseProcessor;
 
-    // Initialize PresetManager after all processors are set up
     std::unique_ptr<PresetManager> presetManager;
     bool presetManagerInitialized = false;
 
     juce::LinearSmoothedValue<float> levelLeft, levelRight;
+    juce::LinearSmoothedValue<float> outputLevelLeft, outputLevelRight;
 
     // Buffer for oscilloscope
     juce::AudioBuffer<float> outputBuffer;

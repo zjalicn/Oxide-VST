@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OxidePreset name="Synth Destroyer" version="1.0">
+  <Distortion drive="0.85" mix="0.9" inputGain="5.0" outputGain="-2.5" algorithm="foldback"/>
+  <Delay time="0.18" feedback="0.65" mix="0.55" pingPong="1"/>
+  <Filter type="bandpass" frequency="900.0" resonance="4.0"/>
+  <Pulse mix="0.7" rate="1/4"/>
+</OxidePreset>

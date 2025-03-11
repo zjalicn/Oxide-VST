@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OxidePreset name="Guitar Sizzle" version="1.0">
+  <Distortion drive="0.55" mix="0.7" inputGain="3.0" outputGain="-1.0" algorithm="waveshaper"/>
+  <Delay time="0.4" feedback="0.5" mix="0.35" pingPong="0"/>
+  <Filter type="bandpass" frequency="1600.0" resonance="1.8"/>
+  <Pulse mix="0.2" rate="1/4"/>
+</OxidePreset>

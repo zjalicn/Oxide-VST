@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OxidePreset name="Vocal Enhancer" version="1.0">
+  <Distortion drive="0.2" mix="0.3" inputGain="1.5" outputGain="0.0" algorithm="soft_clip"/>
+  <Delay time="0.22" feedback="0.3" mix="0.25" pingPong="1"/>
+  <Filter type="highpass" frequency="300.0" resonance="0.3"/>
+  <Pulse mix="0.0" rate="1/4"/>
+</OxidePreset>

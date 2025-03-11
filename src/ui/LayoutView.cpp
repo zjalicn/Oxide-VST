@@ -338,7 +338,7 @@ void LayoutView::updateBuffer(const juce::AudioBuffer<float> &buffer)
     latestBuffer.makeCopyOf(buffer);
 }
 
-void LayoutView::updateLevels(float leftLevel, float rightLevel)
+void LayoutView::updateLevels(float leftLevel, float rightLevel, float outLeftLevel, float outRightLevel)
 {
     if (!pageLoaded)
         return;
@@ -352,21 +352,10 @@ void LayoutView::updateLevels(float leftLevel, float rightLevel)
         leftLevel = 0.0f;
     if (rightLevel < 0.01f)
         rightLevel = 0.0f;
-
-    // Calculate output levels based on input levels and output gain
-    float gainMultiplier = std::pow(10.0f, outputGain / 20.0f);
-    float outLeftLevel = leftLevel * gainMultiplier;
-    float outRightLevel = rightLevel * gainMultiplier;
-
-    // Also ensure output can be completely empty
     if (outLeftLevel < 0.01f)
         outLeftLevel = 0.0f;
     if (outRightLevel < 0.01f)
         outRightLevel = 0.0f;
-
-    // Clamp output levels to 0-100%
-    outLeftLevel = juce::jlimit(0.0f, 100.0f, outLeftLevel);
-    outRightLevel = juce::jlimit(0.0f, 100.0f, outRightLevel);
 
     try
     {
@@ -392,14 +381,14 @@ void LayoutView::setInputGain(float newGain)
 {
     inputGain = newGain;
     // Force an update of the UI with current levels but new gain settings
-    updateLevels(lastLeftLevel, lastRightLevel);
+    updateLevels(lastLeftLevel, lastRightLevel, 0.0f, 0.0f);
 }
 
 void LayoutView::setOutputGain(float newGain)
 {
     outputGain = newGain;
     // Force an update of the UI with current levels but new gain settings
-    updateLevels(lastLeftLevel, lastRightLevel);
+    updateLevels(lastLeftLevel, lastRightLevel, 0.0f, 0.0f);
 }
 
 juce::String LayoutView::prepareWaveformData()
@@ -609,5 +598,5 @@ void LayoutView::refreshAllParameters()
     }
 
     // Update levels
-    updateLevels(lastLeftLevel, lastRightLevel);
+    updateLevels(lastLeftLevel, lastRightLevel, 0.0f, 0.0f);
 }

@@ -10,6 +10,7 @@ Oxide is a distorted delay plugin that combines analog-style saturation with rep
 - Three filter types: Lowpass, Highpass, Bandpass with resonance control
 - Time synced volume pulsing effect
 - Real-time oscilloscope to display output audio
+- Preset manager with ability to save and load presets
 - Input/Output gain staging
 
 ### Repository

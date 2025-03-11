@@ -89,6 +89,8 @@ void OxideAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     levelLeft.reset(sampleRate, 0.1); // Smooth over 100ms
     levelRight.reset(sampleRate, 0.1);
+    outputLevelLeft.reset(sampleRate, 0.1);
+    outputLevelRight.reset(sampleRate, 0.1);
 
     // Prepare DSP components in signal chain order
     delayProcessor.prepare(sampleRate, samplesPerBlock);
@@ -159,6 +161,18 @@ void OxideAudioProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::M
     distortionProcessor.processBlock(buffer); // Then distortion
     filterProcessor.processBlock(buffer);     // Then filter
     pulseProcessor.processBlock(buffer);      // Finally pulse effect
+
+    // Calculate output levels after all processing
+    float newOutputLevelLeft = 0.0f;
+    float newOutputLevelRight = 0.0f;
+    if (totalNumOutputChannels > 0)
+        newOutputLevelLeft = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
+    if (totalNumOutputChannels > 1)
+        newOutputLevelRight = buffer.getRMSLevel(1, 0, buffer.getNumSamples());
+    outputLevelLeft.setTargetValue(newOutputLevelLeft);
+    outputLevelRight.setTargetValue(newOutputLevelRight);
+    outputLevelLeft.skip(buffer.getNumSamples());
+    outputLevelRight.skip(buffer.getNumSamples());
 
     // Store post-processed buffer for oscilloscope
     {

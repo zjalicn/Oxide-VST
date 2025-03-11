@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OxidePreset name="Drum Cruncher" version="1.0">
+  <Distortion drive="0.45" mix="0.6" inputGain="2.5" outputGain="-0.5" algorithm="hard_clip"/>
+  <Delay time="0.12" feedback="0.2" mix="0.15" pingPong="0"/>
+  <Filter type="lowpass" frequency="4000.0" resonance="0.9"/>
+  <Pulse mix="0.5" rate="1/8"/>
+</OxidePreset>
