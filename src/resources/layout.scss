@@ -34,18 +34,8 @@
 }
 
 // =======================
-// FX Chain Layout
+// Controls Section
 // =======================
-
-.fx-chain {
-  display: flex;
-  gap: $spacing-sm;
-}
-
-.distortion-section,
-.delay-panel {
-  flex: 0 0 auto;
-}
 
 .delay-knobs-row {
   display: flex;
@@ -55,10 +45,6 @@
   align-items: flex-start;
   margin-bottom: $spacing-xs;
 }
-
-// =======================
-// Controls Section
-// =======================
 
 .controls-section {
   display: flex;
@@ -88,29 +74,18 @@
   height: 20px;
 }
 
-.distortion-title {
-  font-size: 10px;
-  font-weight: bold;
-  color: $primary-color;
-  margin-left: $spacing-xs;
-  letter-spacing: 1px;
-  flex-shrink: 0;
-  text-transform: uppercase;
-  margin-right: $spacing-md;
-}
-
 .algorithm-selector {
   background-color: $background-darker;
   color: $text-primary;
   border: $border-width solid $border-color;
   padding: 2px 4px;
   border-radius: $border-radius-sm;
-  font-size: 9px;
+  font-size: $font-size-tiny;
   width: 75px;
+  height: 20px;
   outline: none;
   cursor: pointer;
-  margin-left: auto;
-  margin-right: $spacing-xs;
+  margin-left: $spacing-sm + 2px;
 }
 
 .algorithm-selector:focus {
@@ -159,9 +134,7 @@
 .delay-toggle {
   display: flex;
   align-items: center;
-  margin-top: $spacing-sm;
-  margin-bottom: $spacing-xs;
-  justify-content: center;
+  margin-left: $spacing-sm + 2px;
 }
 
 // =======================
@@ -211,11 +184,12 @@
   border: $border-width solid $border-color;
   padding: 2px 4px;
   border-radius: $border-radius-sm;
-  font-size: 9px;
-  width: 120px;
+  font-size: $font-size-tiny;
+  width: 70px;
   outline: none;
   cursor: pointer;
   text-align: center;
+  margin-right: $spacing-sm + 2px;
 }
 
 .filter-type-dropdown:focus {
@@ -224,23 +198,26 @@
 
 .filter-knobs-row {
   display: flex;
-  justify-content: center;
   gap: $spacing-md;
   padding-top: $spacing-xs;
   align-items: flex-start;
   margin-bottom: $spacing-xs;
+  width: 100%;
 }
 
-.filter-display-container {
-  margin-top: 8px;
+.filter-display-wrapper {
   width: 100%;
+}
+
+.filter-display {
+  margin-bottom: $spacing-xs;
   height: 40px;
-  background-color: rgba(18, 18, 18, 0.7);
+  width: fit-content;
   border-radius: 3px;
   overflow: hidden;
   display: flex;
-  justify-content: center;
   align-items: center;
+  border: $border-width solid $border-color;
 }
 
 // =======================
@@ -279,7 +256,7 @@
 
 .pulse-knob-row {
   display: flex;
-  justify-content: center;
+  width: 100%;
   padding-top: $spacing-xs;
   align-items: flex-start;
   margin-bottom: $spacing-xs;
@@ -290,10 +267,9 @@
   height: 10px;
   border-radius: 50%;
   background-color: $primary-color;
-  margin: 5px auto;
   animation: pulse-beat 500ms infinite alternate;
   opacity: 0;
-  margin: 0;
+  margin-right: auto;
 }
 
 .pulse-active .pulse-beat-indicator {
@@ -329,16 +305,15 @@
   display: flex;
   flex-direction: column;
   flex: 1;
+}
 
-  .controls-title {
-    font-size: $font-size-tiny;
-    font-weight: bold;
-    color: $primary-color;
-    margin-left: $spacing-xs;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    padding: $spacing-sm;
-  }
+.controls-left-top {
+  align-items: end;
+}
+
+.controls-left-top,
+.controls-right-top {
+  justify-content: flex-end;
 }
 
 .controls-left-top,
@@ -346,6 +321,23 @@
   .controls-title {
     text-align: right;
   }
+}
+
+.controls-title-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.controls-title {
+  font-size: $font-size-tiny;
+  font-weight: bold;
+  color: $primary-color;
+  margin-left: $spacing-xs;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: $spacing-sm;
 }
 
 .controls-separator {
@@ -358,9 +350,17 @@
   margin: 0 auto;
 }
 
-.controls-knobs {
+.control-knobs {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  align-items: end;
   flex: 1;
+  flex-direction: column;
+}
+
+.control-knobs-down {
+  justify-content: flex-end;
+}
+
+.control-knobs-up {
+  justify-content: flex-start;
 }

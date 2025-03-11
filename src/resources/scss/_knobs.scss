@@ -65,12 +65,12 @@
 
 .knob-label {
   margin-top: $spacing-sm + 2;
-  font-size: $font-size-small;
+  font-size: $font-size-tiny;
   color: $text-secondary;
 }
 
 .knob-value {
   margin-top: $spacing-xs + 1;
-  font-size: $font-size-tiny;
+  font-size: $font-size-micro;
   color: $text-muted;
 }

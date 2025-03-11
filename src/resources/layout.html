@@ -76,14 +76,75 @@
 
           <!-- Left Side Controls -->
           <div class="controls-left">
+            <!-- Delay Section -->
             <div class="controls-left-top">
-              <div class="controls-knobs"></div>
-              <div class="controls-title">DELAY</div>
+              <div class="control-knobs control-knobs-down">
+                <div class="delay-knobs-row">
+                  <div class="knob-container">
+                    <div class="knob" id="timeKnob">
+                      <div id="timeIndicator" class="knob-indicator"></div>
+                    </div>
+                    <div class="knob-label">Time</div>
+                    <div id="timeValue" class="knob-value">500ms</div>
+                  </div>
+                  <div class="knob-container">
+                    <div class="knob" id="feedbackKnob">
+                      <div id="feedbackIndicator" class="knob-indicator"></div>
+                    </div>
+                    <div class="knob-label">Feedback</div>
+                    <div id="feedbackValue" class="knob-value">40%</div>
+                  </div>
+                  <div class="knob-container">
+                    <div class="knob" id="mixDelayKnob">
+                      <div id="mixDelayIndicator" class="knob-indicator"></div>
+                    </div>
+                    <div class="knob-label">Mix</div>
+                    <div id="mixDelayValue" class="knob-value">30%</div>
+                  </div>
+                </div>
+              </div>
+              <div class="controls-title-wrapper">
+                <div class="delay-toggle">
+                  <div class="toggle-label">Ping Pong</div>
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="pingPongToggle" />
+                    <span class="toggle-slider"></span>
+                  </label>
+                </div>
+                <div class="controls-title">DELAY</div>
+              </div>
             </div>
             <div class="controls-separator"></div>
+            <!-- Distortion Section -->
             <div class="controls-left-bottom">
-              <div class="controls-title">DISTORTION</div>
-              <div class="controls-knobs"></div>
+              <div class="controls-title-wrapper">
+                <select class="algorithm-selector" id="algorithmSelector">
+                  <option value="soft_clip">Soft Clip</option>
+                  <option value="hard_clip">Hard Clip</option>
+                  <option value="foldback">Foldback</option>
+                  <option value="waveshaper">Waveshaper</option>
+                  <option value="bitcrusher">Bitcrusher</option>
+                </select>
+                <div class="controls-title">DISTORTION</div>
+              </div>
+              <div class="control-knobs control-knobs-up">
+                <div class="knobs-row">
+                  <div class="knob-container">
+                    <div class="knob" id="driveKnob">
+                      <div id="driveIndicator" class="knob-indicator"></div>
+                    </div>
+                    <div class="knob-label">Drive</div>
+                    <div id="driveValue" class="knob-value">50%</div>
+                  </div>
+                  <div class="knob-container">
+                    <div class="knob" id="mixKnob">
+                      <div id="mixIndicator" class="knob-indicator"></div>
+                    </div>
+                    <div class="knob-label">Mix</div>
+                    <div id="mixValue" class="knob-value">50%</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -96,14 +157,67 @@
 
           <!-- Right Side Controls -->
           <div class="controls-right">
+            <!-- Filter Section -->
             <div class="controls-right-top">
-              <div class="controls-knobs"></div>
-              <div class="controls-title">FILTER</div>
+              <div class="control-knobs control-knobs-down">
+                <div class="filter-knobs-row">
+                  <div class="knob-container">
+                    <div class="knob" id="filterFreqKnob">
+                      <div
+                        id="filterFreqIndicator"
+                        class="knob-indicator"
+                      ></div>
+                    </div>
+                    <div class="knob-label">Frequency</div>
+                    <div id="filterFreqValue" class="knob-value">1.0 kHz</div>
+                  </div>
+                  <div class="knob-container">
+                    <div class="knob" id="resonanceKnob">
+                      <div id="resonanceIndicator" class="knob-indicator"></div>
+                    </div>
+                    <div class="knob-label">Resonance</div>
+                    <div id="resonanceValue" class="knob-value">0.7</div>
+                  </div>
+                  <div class="filter-display-wrapper">
+                    <div class="filter-display">
+                      <canvas
+                        id="filterResponseCanvas"
+                        width="160"
+                        height="40"
+                      ></canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="controls-title-wrapper">
+                <div class="controls-title">FILTER</div>
+                <select class="filter-type-dropdown" id="filterTypeSelector">
+                  <option value="lowpass">Low Pass</option>
+                  <option value="bandpass">Band Pass</option>
+                  <option value="highpass">High Pass</option>
+                </select>
+              </div>
             </div>
             <div class="controls-separator"></div>
             <div class="controls-right-bottom">
-              <div class="controls-title">PULSE</div>
-              <div class="controls-knobs"></div>
+              <div class="controls-title-wrapper">
+                <div class="controls-title">PULSE</div>
+                <div
+                  class="pulse-beat-indicator"
+                  id="pulseIndicatorLight"
+                ></div>
+              </div>
+              <div class="control-knobs control-knobs-up">
+                <div class="pulse-knob-row">
+                  <div class="knob-container">
+                    <div class="knob" id="pulseKnob">
+                      <div id="pulseIndicator" class="knob-indicator"></div>
+                    </div>
+                    <div class="knob-label">Amount</div>
+                    <div id="pulseValue" class="knob-value">0%</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -142,128 +256,6 @@
                     class="knob-indicator-small"
                   ></div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bottom Row: Effects Chain -->
-        <div class="fx-chain">
-          <!-- Delay Control Panel -->
-          <div class="delay-panel">
-            <div class="delay-header">
-              <div class="delay-title">DELAY</div>
-            </div>
-            <div class="delay-knobs-row">
-              <div class="knob-container">
-                <div class="knob" id="timeKnob">
-                  <div id="timeIndicator" class="knob-indicator"></div>
-                </div>
-                <div class="knob-label">Time</div>
-                <div id="timeValue" class="knob-value">500ms</div>
-              </div>
-              <div class="knob-container">
-                <div class="knob" id="feedbackKnob">
-                  <div id="feedbackIndicator" class="knob-indicator"></div>
-                </div>
-                <div class="knob-label">Feedback</div>
-                <div id="feedbackValue" class="knob-value">40%</div>
-              </div>
-              <div class="knob-container">
-                <div class="knob" id="mixDelayKnob">
-                  <div id="mixDelayIndicator" class="knob-indicator"></div>
-                </div>
-                <div class="knob-label">Mix</div>
-                <div id="mixDelayValue" class="knob-value">30%</div>
-              </div>
-            </div>
-            <div class="delay-toggle">
-              <div class="toggle-label">Ping Pong</div>
-              <label class="toggle-switch">
-                <input type="checkbox" id="pingPongToggle" />
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-          </div>
-
-          <!-- Distortion Control Panel -->
-          <div class="distortion-section">
-            <div class="distortion-header">
-              <div class="distortion-title">DISTORTION</div>
-              <select class="algorithm-selector" id="algorithmSelector">
-                <option value="soft_clip">Soft Clip</option>
-                <option value="hard_clip">Hard Clip</option>
-                <option value="foldback">Foldback</option>
-                <option value="waveshaper">Waveshaper</option>
-                <option value="bitcrusher">Bitcrusher</option>
-              </select>
-            </div>
-            <div class="knobs-row">
-              <div class="knob-container">
-                <div class="knob" id="driveKnob">
-                  <div id="driveIndicator" class="knob-indicator"></div>
-                </div>
-                <div class="knob-label">Drive</div>
-                <div id="driveValue" class="knob-value">50%</div>
-              </div>
-              <div class="knob-container">
-                <div class="knob" id="mixKnob">
-                  <div id="mixIndicator" class="knob-indicator"></div>
-                </div>
-                <div class="knob-label">Mix</div>
-                <div id="mixValue" class="knob-value">50%</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Filter Control Panel -->
-          <div class="filter-panel">
-            <div class="filter-header">
-              <div class="filter-title">FILTER</div>
-              <select class="filter-type-dropdown" id="filterTypeSelector">
-                <option value="lowpass">Low Pass</option>
-                <option value="bandpass">Band Pass</option>
-                <option value="highpass">High Pass</option>
-              </select>
-            </div>
-            <div class="filter-knobs-row">
-              <div class="knob-container">
-                <div class="knob" id="filterFreqKnob">
-                  <div id="filterFreqIndicator" class="knob-indicator"></div>
-                </div>
-                <div class="knob-label">Frequency</div>
-                <div id="filterFreqValue" class="knob-value">1.0 kHz</div>
-              </div>
-              <div class="knob-container">
-                <div class="knob" id="resonanceKnob">
-                  <div id="resonanceIndicator" class="knob-indicator"></div>
-                </div>
-                <div class="knob-label">Resonance</div>
-                <div id="resonanceValue" class="knob-value">0.7</div>
-              </div>
-            </div>
-            <div class="filter-display-container">
-              <canvas
-                id="filterResponseCanvas"
-                width="160"
-                height="40"
-              ></canvas>
-            </div>
-          </div>
-
-          <!-- Pulse Control Panel -->
-          <div class="pulse-panel" id="pulsePanel">
-            <div class="pulse-header">
-              <div class="pulse-title">PULSE</div>
-              <div class="pulse-beat-indicator" id="pulseIndicatorLight"></div>
-            </div>
-            <div class="pulse-knob-row">
-              <div class="knob-container">
-                <div class="knob" id="pulseKnob">
-                  <div id="pulseIndicator" class="knob-indicator"></div>
-                </div>
-                <div class="knob-label">Amount</div>
-                <div id="pulseValue" class="knob-value">0%</div>
               </div>
             </div>
           </div>
