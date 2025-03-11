@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OxidePreset name="Warm Tape" version="1.0">
+  <Distortion drive="0.5" mix="0.4" inputGain="1.5" outputGain="0.0" algorithm="waveshaper"/>
+  <Delay time="0.3" feedback="0.6" mix="0.4" pingPong="1"/>
+  <Filter type="bandpass" frequency="1500.0" resonance="2.0"/>
+  <Pulse mix="0.6" rate="1/4"/>
+</OxidePreset>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OxidePreset name="Heavy Metal" version="1.0">
+  <Distortion drive="0.8" mix="0.7" inputGain="3.0" outputGain="2.0" algorithm="hard_clip"/>
+  <Delay time="0.5" feedback="0.5" mix="0.5" pingPong="1"/>
+  <Filter type="lowpass" frequency="2000.0" resonance="1.2"/>
+  <Pulse mix="0.4" rate="1/4"/>
+</OxidePreset>

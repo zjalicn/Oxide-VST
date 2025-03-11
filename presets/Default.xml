@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OxidePreset name="Default" version="1.0">
+  <Distortion drive="0.5" mix="0.5" inputGain="0.0" outputGain="0.0" algorithm="soft_clip"/>
+  <Delay time="0.5" feedback="0.4" mix="0.3" pingPong="0"/>
+  <Filter type="lowpass" frequency="1000.0" resonance="0.7"/>
+  <Pulse mix="0.0" rate="1/4"/>
+</OxidePreset>

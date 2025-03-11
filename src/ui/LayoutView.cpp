@@ -518,7 +518,7 @@ void LayoutView::updatePresetList(const juce::StringArray &presets)
             jsArrayString + ";\n"
                             "presets.forEach(preset => {\n"
                             "    const option = document.createElement('option');\n"
-                            "    option.value = preset;\n"
+                            "    option.value = preset;\n" // Use exact preset name as value
                             "    option.text = preset;\n"
                             "    presetDropdown.appendChild(option);\n"
                             "});\n";

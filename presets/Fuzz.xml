@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OxidePreset name="Fuzz" version="1.0">
+  <Distortion drive="1.0" mix="1.0" inputGain="6.0" outputGain="-3.0" algorithm="foldback"/>
+  <Delay time="0.7" feedback="0.7" mix="0.6" pingPong="0"/>
+  <Filter type="highpass" frequency="500.0" resonance="0.8"/>
+  <Pulse mix="1.0" rate="1/4"/>
+</OxidePreset>
