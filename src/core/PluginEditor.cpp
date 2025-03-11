@@ -1,4 +1,5 @@
 #include "PluginEditor.h"
+#include "PresetManager.h"
 
 OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
     : AudioProcessorEditor(&p),
@@ -11,104 +12,71 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
     // Initialize the layout view with the output buffer for oscilloscope
     layoutView.updateBuffer(p.getOutputBuffer());
 
+    // Get the PresetManager safely
+    auto *presetManager = audioProcessor.getPresetManager();
+
     // Set up preset selection callback
     layoutView.onPresetSelected = [this](const juce::String &presetName)
     {
-        if (presetName == "light_drive")
+        // Get the PresetManager safely
+        auto *presetManager = audioProcessor.getPresetManager();
+        if (presetManager && presetManager->loadPreset(presetName))
         {
-            audioProcessor.getDistortionProcessor().setDrive(0.3f);
-            audioProcessor.getDistortionProcessor().setMix(0.5f);
-            audioProcessor.getDistortionProcessor().setInputGain(0.0f);
-            audioProcessor.getDistortionProcessor().setOutputGain(0.0f);
-            audioProcessor.getDistortionProcessor().setAlgorithm(DistortionAlgorithm::SoftClip);
-
-            // Add filter preset values
-            audioProcessor.getFilterProcessor().setFilterType(FilterType::LowPass);
-            audioProcessor.getFilterProcessor().setFrequency(1200.0f);
-            audioProcessor.getFilterProcessor().setResonance(0.5f);
-
-            // Add pulse preset values
-            audioProcessor.getPulseProcessor().setMix(0.2f);
-            audioProcessor.getPulseProcessor().setRate(Rate::Quarter);
+            updateUIAfterPresetLoad();
         }
-        else if (presetName == "heavy_metal")
-        {
-            audioProcessor.getDistortionProcessor().setDrive(0.8f);
-            audioProcessor.getDistortionProcessor().setMix(0.7f);
-            audioProcessor.getDistortionProcessor().setInputGain(3.0f);
-            audioProcessor.getDistortionProcessor().setOutputGain(2.0f);
-            audioProcessor.getDistortionProcessor().setAlgorithm(DistortionAlgorithm::HardClip);
-
-            // Add filter preset values
-            audioProcessor.getFilterProcessor().setFilterType(FilterType::LowPass);
-            audioProcessor.getFilterProcessor().setFrequency(2000.0f);
-            audioProcessor.getFilterProcessor().setResonance(1.2f);
-
-            // Add pulse preset values
-            audioProcessor.getPulseProcessor().setMix(0.4f);
-            audioProcessor.getPulseProcessor().setRate(Rate::Quarter);
-        }
-        else if (presetName == "fuzz")
-        {
-            audioProcessor.getDistortionProcessor().setDrive(1.0f);
-            audioProcessor.getDistortionProcessor().setMix(1.0f);
-            audioProcessor.getDistortionProcessor().setInputGain(6.0f);
-            audioProcessor.getDistortionProcessor().setOutputGain(-3.0f);
-            audioProcessor.getDistortionProcessor().setAlgorithm(DistortionAlgorithm::Foldback);
-
-            // Add filter preset values
-            audioProcessor.getFilterProcessor().setFilterType(FilterType::HighPass);
-            audioProcessor.getFilterProcessor().setFrequency(500.0f);
-            audioProcessor.getFilterProcessor().setResonance(0.8f);
-
-            // Add pulse preset values
-            audioProcessor.getPulseProcessor().setMix(1.0f);
-            audioProcessor.getPulseProcessor().setRate(Rate::Quarter);
-        }
-        else if (presetName == "warm_tape")
-        {
-            audioProcessor.getDistortionProcessor().setDrive(0.5f);
-            audioProcessor.getDistortionProcessor().setMix(0.4f);
-            audioProcessor.getDistortionProcessor().setInputGain(1.5f);
-            audioProcessor.getDistortionProcessor().setOutputGain(0.0f);
-            audioProcessor.getDistortionProcessor().setAlgorithm(DistortionAlgorithm::Waveshaper);
-
-            // Add filter preset values
-            audioProcessor.getFilterProcessor().setFilterType(FilterType::BandPass);
-            audioProcessor.getFilterProcessor().setFrequency(1500.0f);
-            audioProcessor.getFilterProcessor().setResonance(2.0f);
-
-            // Add pulse preset values
-            audioProcessor.getPulseProcessor().setMix(0.6f);
-            audioProcessor.getPulseProcessor().setRate(Rate::Quarter);
-        }
-        else // default preset
-        {
-            audioProcessor.getDistortionProcessor().setDrive(0.5f);
-            audioProcessor.getDistortionProcessor().setMix(0.5f);
-            audioProcessor.getDistortionProcessor().setInputGain(0.0f);
-            audioProcessor.getDistortionProcessor().setOutputGain(0.0f);
-            audioProcessor.getDistortionProcessor().setAlgorithm(DistortionAlgorithm::SoftClip);
-
-            // Add filter preset values
-            audioProcessor.getFilterProcessor().setFilterType(FilterType::LowPass);
-            audioProcessor.getFilterProcessor().setFrequency(1000.0f);
-            audioProcessor.getFilterProcessor().setResonance(0.7f);
-
-            // Add pulse preset values
-            audioProcessor.getPulseProcessor().setMix(0.0f);
-            audioProcessor.getPulseProcessor().setRate(Rate::Quarter);
-        }
-
-        // Update the UI to reflect the new values
-        layoutView.setInputGain(audioProcessor.getDistortionProcessor().getInputGain());
-        layoutView.setOutputGain(audioProcessor.getDistortionProcessor().getOutputGain());
     };
+
+    // Update the preset dropdown with available presets
+    if (presetManager != nullptr)
+    {
+        layoutView.updatePresetList(presetManager->getPresetList());
+    }
+    else
+    {
+        // Provide a default preset list if PresetManager isn't available
+        juce::StringArray defaultList;
+        defaultList.add("Default");
+        layoutView.updatePresetList(defaultList);
+    }
 
     layoutView.onSaveClicked = [this]()
     {
-        // Here you would implement saving the current settings
-        // For example, show a file save dialog and save the current state
+        // Get the PresetManager safely
+        auto *presetManager = audioProcessor.getPresetManager();
+        if (presetManager == nullptr)
+        {
+            return;
+        }
+
+        // Use asynchronous alert window
+        auto saveDialog = std::make_unique<juce::AlertWindow>(
+            "Save Preset", "Enter a name for this preset:", juce::AlertWindow::QuestionIcon);
+
+        saveDialog->addTextEditor("presetName", "New Preset", "Preset Name:");
+        saveDialog->addButton("Save", 1, juce::KeyPress(juce::KeyPress::returnKey));
+        saveDialog->addButton("Cancel", 0, juce::KeyPress(juce::KeyPress::escapeKey));
+
+        // Use lambdas carefully to avoid capturing this pointer across threads
+        auto *pm = presetManager;
+        auto &lv = layoutView;
+
+        saveDialog->enterModalState(true, juce::ModalCallbackFunction::create(
+                                              [pm, &lv, saveDialogPtr = saveDialog.release()](int result)
+                                              {
+                                                  std::unique_ptr<juce::AlertWindow> ownedDialog(saveDialogPtr);
+
+                                                  if (result == 1)
+                                                  {
+                                                      juce::String presetName = ownedDialog->getTextEditorContents("presetName");
+                                                      if (presetName.isNotEmpty())
+                                                      {
+                                                          pm->savePreset(presetName);
+
+                                                          // Update the preset dropdown with the new list
+                                                          lv.updatePresetList(pm->getPresetList());
+                                                      }
+                                                  }
+                                              }));
     };
 
     // Set up callbacks for input/output gain changes from the UI
@@ -131,6 +99,16 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
 
     // Set initial size
     setSize(CANVAS_WIDTH, CANVAS_HEIGHT);
+}
+
+void OxideAudioProcessorEditor::updateUIAfterPresetLoad()
+{
+    // Update the input/output gain display
+    layoutView.setInputGain(audioProcessor.getDistortionProcessor().getInputGain());
+    layoutView.setOutputGain(audioProcessor.getDistortionProcessor().getOutputGain());
+
+    // Force a refresh of all UI parameters
+    layoutView.refreshAllParameters();
 }
 
 OxideAudioProcessorEditor::~OxideAudioProcessorEditor()

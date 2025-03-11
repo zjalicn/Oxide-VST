@@ -1,15 +1,40 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "PresetManager.h"
 
 OxideAudioProcessor::OxideAudioProcessor()
     : AudioProcessor(BusesProperties()
                          .withInput("Input", juce::AudioChannelSet::stereo(), true)
-                         .withOutput("Output", juce::AudioChannelSet::stereo(), true))
+                         .withOutput("Output", juce::AudioChannelSet::stereo(), true)),
+      presetManagerInitialized(false)
 {
+    // Defer PresetManager initialization to avoid constructor issues
+    // It will be created on first access via getPresetManager()
 }
 
 OxideAudioProcessor::~OxideAudioProcessor()
 {
+    // Destroy preset manager first (it has a reference to this processor)
+    presetManager.reset();
+}
+
+PresetManager *OxideAudioProcessor::getPresetManager()
+{
+    // Lazy initialization of the PresetManager to avoid constructor issues
+    if (!presetManagerInitialized)
+    {
+        try
+        {
+            presetManager = std::make_unique<PresetManager>(*this);
+            presetManagerInitialized = true;
+        }
+        catch (const std::exception &)
+        {
+            // Silently handle any initialization errors
+        }
+    }
+
+    return presetManager.get();
 }
 
 const juce::String OxideAudioProcessor::getName() const
@@ -338,6 +363,5 @@ void OxideAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
 
 juce::AudioProcessor *JUCE_CALLTYPE createPluginFilter()
 {
-    // return static_cast<juce::AudioProcessor *>(new OxideAudioProcessor());
     return new OxideAudioProcessor();
 }

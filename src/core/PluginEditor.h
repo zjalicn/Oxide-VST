@@ -25,6 +25,7 @@ private:
     LayoutView layoutView;
 
     void timerCallback() override;
+    void updateUIAfterPresetLoad();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OxideAudioProcessorEditor)
 };

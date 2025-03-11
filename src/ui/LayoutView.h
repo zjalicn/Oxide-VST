@@ -29,6 +29,12 @@ public:
     void setInputGain(float newGain);
     void setOutputGain(float newGain);
 
+    // Update the preset list in the dropdown
+    void updatePresetList(const juce::StringArray &presets);
+
+    // Force a refresh of all UI parameters
+    void refreshAllParameters();
+
     // Callback functions for parameter changes
     std::function<void(float)> onInputGainChanged;
     std::function<void(float)> onOutputGainChanged;
@@ -47,6 +53,7 @@ private:
     bool pageLoaded;
     juce::CriticalSection bufferLock;
     juce::AudioBuffer<float> latestBuffer;
+    juce::StringArray presetList;
 
     // Input/Output
     float inputGain;

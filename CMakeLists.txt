@@ -62,6 +62,8 @@ target_sources(Oxide
         src/core/PluginProcessor.h
         src/core/PluginEditor.cpp
         src/core/PluginEditor.h
+        src/core/PresetManager.cpp
+        src/core/PresetManager.h
 
         # UI
         src/ui/Background.h

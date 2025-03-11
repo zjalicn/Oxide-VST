@@ -484,3 +484,80 @@ juce::String LayoutView::prepareWaveformData()
     jsonArray += "]";
     return jsonArray;
 }
+
+void LayoutView::updatePresetList(const juce::StringArray &presets)
+{
+    // Store the preset list
+    presetList = presets;
+
+    // Only update if page is loaded
+    if (!pageLoaded)
+        return;
+
+    try
+    {
+        // Create a JavaScript array string for the presets
+        juce::String jsArrayString = "[";
+
+        for (int i = 0; i < presets.size(); ++i)
+        {
+            jsArrayString += "\"" + presets[i] + "\"";
+            if (i < presets.size() - 1)
+                jsArrayString += ", ";
+        }
+
+        jsArrayString += "]";
+
+        // Create JavaScript to update the dropdown
+        juce::String script =
+            "const presetDropdown = document.getElementById('presetDropdown');\n"
+            "// Clear existing options\n"
+            "presetDropdown.innerHTML = '';\n"
+            "\n"
+            "// Add new preset options\n"
+            "const presets = " +
+            jsArrayString + ";\n"
+                            "presets.forEach(preset => {\n"
+                            "    const option = document.createElement('option');\n"
+                            "    option.value = preset;\n"
+                            "    option.text = preset;\n"
+                            "    presetDropdown.appendChild(option);\n"
+                            "});\n";
+
+        // Evaluate the JavaScript to update the dropdown
+        webView->evaluateJavascript(script, nullptr);
+    }
+    catch (const std::exception &)
+    {
+        // Silently handle any JavaScript errors
+    }
+}
+
+void LayoutView::refreshAllParameters()
+{
+    // Force a refresh of all parameters from the processors
+    // by setting the last known values to values that will definitely
+    // be different from the current processor values
+
+    // Set distortion parameters to invalid values
+    lastDrive = -1.0f;
+    lastMix = -1.0f;
+    lastAlgorithm = "";
+
+    // Set delay parameters to invalid values
+    lastDelayTime = -1.0f;
+    lastFeedback = -1.0f;
+    lastDelayMix = -1.0f;
+    lastPingPong = !delayProcessor.getPingPong();
+
+    // Set filter parameters to invalid values
+    lastFilterType = "";
+    lastFilterFreq = -1.0f;
+    lastResonance = -1.0f;
+
+    // Set pulse parameters to invalid values
+    lastPulseMix = -1.0f;
+    lastPulseRate = "";
+
+    // The next timer callback will detect the mismatches and update all UI elements
+}
