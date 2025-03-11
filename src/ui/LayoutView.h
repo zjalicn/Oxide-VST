@@ -72,6 +72,7 @@ private:
 
     // Pulse
     float lastPulseMix;
+    juce::String lastPulseRate;
 
     // Timer callback for UI updates
     void timerCallback() override;

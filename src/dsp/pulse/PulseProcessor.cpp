@@ -1,8 +1,9 @@
 #include "PulseProcessor.h"
 
 PulseProcessor::PulseProcessor()
-    : mix(0.0f),         // Default to no effect
-      currentBpm(120.0), // Default 120 BPM
+    : mix(0.0f),                  // Default to no effect
+      currentRate(Rate::Quarter), // Default to quarter note
+      currentBpm(120.0),          // Default 120 BPM
       currentSampleRate(44100.0),
       bufferSize(0),
       phase(0.0),
@@ -108,9 +109,25 @@ float PulseProcessor::calculateEnvelope(double phasePosition) const
 void PulseProcessor::updatePhaseIncrement()
 {
     // Convert BPM to phase increment per sample
-    // One complete cycle (phase 0 to 1) equals one beat (quarter note)
     double beatsPerSecond = currentBpm / 60.0;
-    phaseIncrement = beatsPerSecond / currentSampleRate;
+
+    // Apply note value multiplier
+    double multiplier = 1.0;
+    switch (currentRate)
+    {
+    case Rate::Half:
+        multiplier = 0.5; // Half note: half the speed of quarter note
+        break;
+    case Rate::Quarter:
+        multiplier = 1.0; // Quarter note: standard beat
+        break;
+    case Rate::Eighth:
+        multiplier = 2.0; // Eighth note: twice the speed of quarter note
+        break;
+    }
+
+    // Apply multiplier to beats per second
+    phaseIncrement = (beatsPerSecond * multiplier) / currentSampleRate;
 }
 
 void PulseProcessor::setMix(float newMix)
@@ -132,4 +149,42 @@ float PulseProcessor::getMix() const
 double PulseProcessor::getBpm() const
 {
     return currentBpm;
+}
+
+void PulseProcessor::setRate(Rate value)
+{
+    currentRate = value;
+    updatePhaseIncrement();
+}
+
+void PulseProcessor::setRate(const juce::String &valueString)
+{
+    if (valueString == "1/2")
+        currentRate = Rate::Half;
+    else if (valueString == "1/8")
+        currentRate = Rate::Eighth;
+    else
+        currentRate = Rate::Quarter; // Default to quarter note (1/4)
+
+    updatePhaseIncrement();
+}
+
+Rate PulseProcessor::getRate() const
+{
+    return currentRate;
+}
+
+juce::String PulseProcessor::getRateString() const
+{
+    switch (currentRate)
+    {
+    case Rate::Half:
+        return "1/2";
+    case Rate::Quarter:
+        return "1/4";
+    case Rate::Eighth:
+        return "1/8";
+    default:
+        return "1/4";
+    }
 }

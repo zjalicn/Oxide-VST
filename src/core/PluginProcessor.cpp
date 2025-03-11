@@ -180,6 +180,7 @@ void OxideAudioProcessor::getStateInformation(juce::MemoryBlock &destData)
 
     // Store pulse parameters
     stream.writeFloat(pulseProcessor.getMix());
+    stream.writeInt(static_cast<int>(pulseProcessor.getRate()));
 }
 
 void OxideAudioProcessor::setStateInformation(const void *data, int sizeInBytes)

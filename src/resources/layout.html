@@ -216,6 +216,13 @@
                     <div class="knob-label">Amount</div>
                     <div id="pulseValue" class="knob-value">0%</div>
                   </div>
+                  <div class="knob-container">
+                    <div class="knob" id="pulseRateKnob">
+                      <div id="pulseRateIndicator" class="knob-indicator"></div>
+                    </div>
+                    <div class="knob-label">Rate</div>
+                    <div id="pulseRateValue" class="knob-value">1/4</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1279,22 +1286,43 @@
       // Initialize pulse state
       state.pulse = {
         mix: 0.0, // Start with no effect
+        rate: "1/4",
         isActive: false, // For visual feedback
         lastBeatTime: 0,
       };
 
       function updatePulseUI(mix) {
         if (mix !== undefined) state.pulse.mix = parseFloat(mix);
+        if (rate !== undefined) state.pulse.rate = rate;
 
-        // Map 0-1 range to 225-45 degrees (7 o'clock to 3 o'clock)
-        const pulseAngle = 225 + state.pulse.mix * 270;
+        // [existing mix knob code]
 
-        // Update knob rotation
+        // Map rate value to angle (3 positions)
+        let rateAngle;
+        switch (state.pulse.rate) {
+          case "1/2":
+            rateAngle = 225; // First position
+            break;
+          case "1/4":
+            rateAngle = 225 + 135; // Middle position
+            break;
+          case "1/8":
+            rateAngle = 225 + 270; // Last position
+            break;
+          default:
+            rateAngle = 225 + 135; // Default to 1/4
+        }
+
+        // Update rate knob rotation
         document.getElementById(
-          "pulseIndicator"
-        ).style.transform = `translate(-50%, -100%) rotate(${pulseAngle}deg)`;
+          "pulseRateIndicator"
+        ).style.transform = `translate(-50%, -100%) rotate(${rateAngle}deg)`;
 
-        // Update value display
+        // Update rate value display
+        document.getElementById("pulseRateValue").textContent =
+          state.pulse.rate;
+
+        // Update mix value display
         document.getElementById("pulseValue").textContent = `${Math.round(
           state.pulse.mix * 100
         )}%`;
@@ -1343,10 +1371,85 @@
           );
         });
 
-      // Method for C++ to update pulse parameters
-      window.setPulseValues = function (mix) {
-        updatePulseUI(mix);
+      window.setPulseValues = function (mix, rate) {
+        updatePulseUI(mix, rate);
       };
+
+      document
+        .getElementById("pulseRateKnob")
+        .addEventListener("mousedown", function (e) {
+          e.preventDefault();
+          isDragging = true;
+          activeKnob = "pulseRate";
+          const startY = e.clientY;
+          let startPosition;
+
+          // Get starting position
+          switch (state.pulse.rate) {
+            case "1/2":
+              startPosition = 0;
+              break;
+            case "1/4":
+              startPosition = 1;
+              break;
+            case "1/8":
+              startPosition = 2;
+              break;
+            default:
+              startPosition = 1; // Default to middle position
+          }
+
+          function handleMove(moveEvent) {
+            moveEvent.preventDefault();
+            const deltaY = startY - moveEvent.clientY;
+
+            // Calculate new position with snapping (0, 1, or 2)
+            // Use a threshold for movement to change position
+            const threshold = 20; // Pixel movement required to change position
+            let newPosition = startPosition;
+
+            if (deltaY > threshold) {
+              // Move up (increase rate)
+              newPosition = Math.min(2, startPosition + 1);
+            } else if (deltaY < -threshold) {
+              // Move down (decrease rate)
+              newPosition = Math.max(0, startPosition - 1);
+            }
+
+            // Map position to rate value
+            let newRate;
+            switch (newPosition) {
+              case 0:
+                newRate = "1/2";
+                break;
+              case 1:
+                newRate = "1/4";
+                break;
+              case 2:
+                newRate = "1/8";
+                break;
+              default:
+                newRate = "1/4";
+            }
+
+            if (newRate !== state.pulse.rate) {
+              state.pulse.rate = newRate;
+              window.valueChanged("pulse", "rate", newRate);
+              updatePulseUI(undefined, newRate);
+            }
+          }
+
+          document.addEventListener("mousemove", handleMove);
+          document.addEventListener(
+            "mouseup",
+            () => {
+              document.removeEventListener("mousemove", handleMove);
+              isDragging = false;
+              activeKnob = null;
+            },
+            { once: true }
+          );
+        });
     </script>
   </body>
 </html>

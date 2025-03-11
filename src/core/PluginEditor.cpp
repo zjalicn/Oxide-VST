@@ -29,6 +29,7 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
 
             // Add pulse preset values
             audioProcessor.getPulseProcessor().setMix(0.2f);
+            audioProcessor.getPulseProcessor().setRate(Rate::Quarter);
         }
         else if (presetName == "heavy_metal")
         {
@@ -45,6 +46,7 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
 
             // Add pulse preset values
             audioProcessor.getPulseProcessor().setMix(0.4f);
+            audioProcessor.getPulseProcessor().setRate(Rate::Quarter);
         }
         else if (presetName == "fuzz")
         {
@@ -61,6 +63,7 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
 
             // Add pulse preset values
             audioProcessor.getPulseProcessor().setMix(1.0f);
+            audioProcessor.getPulseProcessor().setRate(Rate::Quarter);
         }
         else if (presetName == "warm_tape")
         {
@@ -77,6 +80,7 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
 
             // Add pulse preset values
             audioProcessor.getPulseProcessor().setMix(0.6f);
+            audioProcessor.getPulseProcessor().setRate(Rate::Quarter);
         }
         else // default preset
         {
@@ -93,6 +97,7 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
 
             // Add pulse preset values
             audioProcessor.getPulseProcessor().setMix(0.0f);
+            audioProcessor.getPulseProcessor().setRate(Rate::Quarter);
         }
 
         // Update the UI to reflect the new values
