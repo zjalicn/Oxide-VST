@@ -31,6 +31,9 @@ private:
     double phase;
     double phaseIncrement;
 
+    // Smoothed envelope for anti-click transitions
+    juce::LinearSmoothedValue<float> smoothedEnvelope;
+
     // Calculate the pulse envelope value for a specific phase position
     float calculateEnvelope(double phasePosition) const;
 

@@ -19,6 +19,10 @@ void PulseProcessor::prepare(double sampleRate, int maxBlockSize)
     // Reset phase
     phase = 0.0;
 
+    // Configure the smoothed value to ramp over 10ms (good compromise between responsiveness and smoothness)
+    smoothedEnvelope.reset(sampleRate, 0.01);
+    smoothedEnvelope.setCurrentAndTargetValue(1.0f); // Start at full volume
+
     // Update phase increment for the new sample rate
     updatePhaseIncrement();
 }
@@ -39,8 +43,14 @@ void PulseProcessor::processBlock(juce::AudioBuffer<float> &buffer)
     // Process each sample
     for (int sample = 0; sample < numSamples; ++sample)
     {
-        // Calculate the pulse envelope value for this sample
-        float envelopeValue = calculateEnvelope(phase);
+        // Calculate the target envelope value for this phase
+        float targetEnvelope = calculateEnvelope(phase);
+
+        // Set the target for the smoothed value
+        smoothedEnvelope.setTargetValue(targetEnvelope);
+
+        // Get the current smoothed value
+        float envelopeValue = smoothedEnvelope.getNextValue();
 
         // Apply envelope to all channels
         for (int channel = 0; channel < numChannels; ++channel)
@@ -49,8 +59,6 @@ void PulseProcessor::processBlock(juce::AudioBuffer<float> &buffer)
             const float *dryData = dryBuffer.getReadPointer(channel);
 
             // Apply envelope with mix control
-            // At mix = 0: use dry signal
-            // At mix = 1: fully apply envelope
             float wetSignal = dryData[sample] * envelopeValue;
             channelData[sample] = (wetSignal * mix) + (dryData[sample] * (1.0f - mix));
         }
@@ -65,6 +73,7 @@ void PulseProcessor::processBlock(juce::AudioBuffer<float> &buffer)
 void PulseProcessor::reset()
 {
     phase = 0.0;
+    smoothedEnvelope.reset(currentSampleRate, 0.01);
 }
 
 float PulseProcessor::calculateEnvelope(double phasePosition) const
