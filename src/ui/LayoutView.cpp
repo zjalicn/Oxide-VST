@@ -500,7 +500,10 @@ void LayoutView::updatePresetList(const juce::StringArray &presets)
 
         for (int i = 0; i < presets.size(); ++i)
         {
-            jsArrayString += "\"" + presets[i] + "\"";
+            juce::String displayName = presets[i];
+            juce::String valueName = displayName.replaceCharacters(" ", "_").toLowerCase();
+
+            jsArrayString += "{\"value\":\"" + valueName + "\", \"text\":\"" + displayName + "\"}";
             if (i < presets.size() - 1)
                 jsArrayString += ", ";
         }
@@ -518,8 +521,8 @@ void LayoutView::updatePresetList(const juce::StringArray &presets)
             jsArrayString + ";\n"
                             "presets.forEach(preset => {\n"
                             "    const option = document.createElement('option');\n"
-                            "    option.value = preset;\n" // Use exact preset name as value
-                            "    option.text = preset;\n"
+                            "    option.value = preset.value;\n" // Use underscore value
+                            "    option.text = preset.text;\n"   // Use display text with spaces
                             "    presetDropdown.appendChild(option);\n"
                             "});\n";
 

@@ -65,6 +65,13 @@ bool PresetManager::loadPreset(const juce::String &presetName)
             presetFile = presetsDirectory.getChildFile(presetName);
         }
 
+        // Try with underscore instead of spaces for values like "light_drive"
+        if (!presetFile.existsAsFile() && presetName.contains("_"))
+        {
+            juce::String spacedName = presetName.replaceCharacters("_", " ");
+            presetFile = presetsDirectory.getChildFile(spacedName + ".xml");
+        }
+
         if (!presetFile.existsAsFile())
         {
             return false;
