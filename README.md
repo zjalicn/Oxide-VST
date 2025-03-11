@@ -1,7 +1,5 @@
 ![Oxide Img](./oxide.png)
 
-## 🩻 Oxide-VST
-
 Oxide is a distorted delay plugin that combines analog-style saturation with repeating echoes; colored by five different distortion algorithms, reliable filtering, and volume pulsing effects to create unique 3D spaces in your mixes.
 
 ### Plugin Features
