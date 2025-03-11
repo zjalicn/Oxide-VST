@@ -29,7 +29,7 @@ juce_add_binary_data(OxideResources
         src/resources/layout.css
         
         # Fonts
-        # src/resources/fonts/old_english_hearts.ttf
+        src/resources/fonts/old_english_hearts.ttf
 )
 add_dependencies(OxideResources CompileSCSS)
 

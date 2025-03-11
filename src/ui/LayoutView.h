@@ -41,6 +41,17 @@ public:
     std::function<void(const juce::String &)> onPresetSelected;
     std::function<void()> onSaveClicked;
 
+    // URL handler for callbacks from JS
+    class LayoutMessageHandler : public juce::WebBrowserComponent
+    {
+    public:
+        LayoutMessageHandler(LayoutView &owner);
+        bool pageAboutToLoad(const juce::String &url) override;
+
+    private:
+        LayoutView &ownerView;
+    };
+
 private:
     DistortionProcessor &distortionProcessor;
     DelayProcessor &delayProcessor;
@@ -86,17 +97,6 @@ private:
 
     // Prepare waveform data for oscilloscope
     juce::String prepareWaveformData();
-
-    // URL handler for callbacks from JS
-    class LayoutMessageHandler : public juce::WebBrowserComponent
-    {
-    public:
-        LayoutMessageHandler(LayoutView &owner);
-        bool pageAboutToLoad(const juce::String &url) override;
-
-    private:
-        LayoutView &ownerView;
-    };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(LayoutView)
 };

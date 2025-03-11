@@ -140,6 +140,35 @@ bool LayoutView::LayoutMessageHandler::pageAboutToLoad(const juce::String &url)
 
         return false; // We handled this URL
     }
+    // Handle custom font loading
+    else if (url.startsWith("BinaryData::"))
+    {
+        // This is our own resource URL format
+        juce::String resourceName = url.substring(12);
+        int size = 0;
+        const char *data = nullptr;
+
+        // Handle the font resource
+        if (resourceName == "old_english_hearts_ttf")
+        {
+            data = BinaryData::old_english_hearts_ttf;
+            size = BinaryData::old_english_hearts_ttfSize;
+
+            if (data != nullptr && size > 0)
+            {
+                // Convert binary data to base64
+                juce::MemoryBlock mb(data, size);
+                juce::String base64 = mb.toBase64Encoding();
+
+                // Create a data URL for the font
+                juce::String dataUrl = "data:font/ttf;base64," + base64;
+
+                // Now navigate to this data URL
+                this->goToURL(dataUrl);
+                return false; // We've handled this URL
+            }
+        }
+    }
 
     return true; // We didn't handle this URL
 }

@@ -8,6 +8,17 @@
 @use "scss/tooltip" as *;
 
 // =======================
+// Fonts
+// =======================
+
+@font-face {
+  font-family: "OldEnglishHearts";
+  src: url("BinaryData::old_english_hearts_ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+// =======================
 // Main Content Layout
 // =======================
 
@@ -195,7 +206,7 @@
 
 .filter-knobs-row {
   display: flex;
-  gap: $spacing-md;
+  gap: $spacing-sm;
   padding-top: $spacing-xs;
   align-items: flex-start;
   margin-bottom: $spacing-xs;

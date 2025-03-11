@@ -65,11 +65,45 @@ bool PresetManager::loadPreset(const juce::String &presetName)
             presetFile = presetsDirectory.getChildFile(presetName);
         }
 
-        // Try with underscore instead of spaces for values like "light_drive"
+        // Try with underscore instead of spaces
         if (!presetFile.existsAsFile() && presetName.contains("_"))
         {
             juce::String spacedName = presetName.replaceCharacters("_", " ");
             presetFile = presetsDirectory.getChildFile(spacedName + ".xml");
+
+            // If still not found, try case-insensitive search
+            if (!presetFile.existsAsFile())
+            {
+                // Get all XML files
+                juce::Array<juce::File> allXmlFiles = presetsDirectory.findChildFiles(
+                    juce::File::findFiles, false, "*.xml");
+
+                // Look for a case-insensitive match
+                for (const auto &file : allXmlFiles)
+                {
+                    if (file.getFileNameWithoutExtension().toLowerCase() == spacedName.toLowerCase())
+                    {
+                        presetFile = file;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!presetFile.existsAsFile())
+        {
+            // As a last resort, try direct case-insensitive search
+            juce::Array<juce::File> allXmlFiles = presetsDirectory.findChildFiles(
+                juce::File::findFiles, false, "*.xml");
+
+            for (const auto &file : allXmlFiles)
+            {
+                if (file.getFileNameWithoutExtension().toLowerCase() == presetName.toLowerCase())
+                {
+                    presetFile = file;
+                    break;
+                }
+            }
         }
 
         if (!presetFile.existsAsFile())

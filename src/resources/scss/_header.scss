@@ -11,10 +11,11 @@
 }
 
 .title {
+  font-family: $font-family-title;
   font-size: $font-size-title;
-  font-weight: bold;
   color: $primary-color;
-  padding: $spacing-sm + 2 0;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  letter-spacing: 1px;
 }
 
 .preset-container {
