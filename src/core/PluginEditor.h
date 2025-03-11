@@ -24,6 +24,9 @@ private:
     Background background;
     LayoutView layoutView;
 
+    // Counter for multiple UI refreshes after preset loading
+    int presetLoadRefreshCounter = -1;
+
     void timerCallback() override;
     void updateUIAfterPresetLoad();
 

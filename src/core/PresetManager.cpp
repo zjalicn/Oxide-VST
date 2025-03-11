@@ -199,7 +199,11 @@ void PresetManager::loadProcessorStateFromXml(const juce::XmlElement *xml)
             distortion.setOutputGain(distortionXml->getDoubleAttribute("outputGain"));
 
         if (distortionXml->hasAttribute("algorithm"))
-            distortion.setAlgorithm(distortionXml->getStringAttribute("algorithm"));
+        {
+            // Explicitly call the string version
+            juce::String algoStr = distortionXml->getStringAttribute("algorithm");
+            distortion.setAlgorithm(algoStr);
+        }
     }
 
     // Extract delay parameters
@@ -222,7 +226,11 @@ void PresetManager::loadProcessorStateFromXml(const juce::XmlElement *xml)
     if (auto *filterXml = xml->getChildByName("Filter"))
     {
         if (filterXml->hasAttribute("type"))
-            filter.setFilterType(filterXml->getStringAttribute("type"));
+        {
+            // Explicitly call the string version
+            juce::String typeStr = filterXml->getStringAttribute("type");
+            filter.setFilterType(typeStr);
+        }
 
         if (filterXml->hasAttribute("frequency"))
             filter.setFrequency(filterXml->getDoubleAttribute("frequency"));
@@ -279,7 +287,7 @@ void PresetManager::createDefaultPresetsIfNeeded()
         {"Default", 0.5f, 0.5f, 0.0f, 0.0f, "soft_clip", 0.5f, 0.4f, 0.3f, false, "lowpass", 1000.0f, 0.7f, 0.0f, "1/4"},
 
         // Light Drive preset
-        {"Light Drive", 0.3f, 0.5f, 0.0f, 0.0f, "soft_clip", 0.5f, 0.4f, 0.3f, false, "lowpass", 1200.0f, 0.5f, 0.2f, "1/4"},
+        {"Light Drive", 0.3f, 0.5f, 0.2f, 0.5f, "soft_clip", 0.5f, 0.4f, 0.3f, false, "lowpass", 1200.0f, 0.5f, 0.2f, "1/4"},
 
         // Heavy Metal preset
         {"Heavy Metal", 0.8f, 0.7f, 3.0f, 2.0f, "hard_clip", 0.5f, 0.5f, 0.5f, true, "lowpass", 2000.0f, 1.2f, 0.4f, "1/4"},
@@ -299,27 +307,42 @@ void PresetManager::createDefaultPresetsIfNeeded()
     // Create each preset
     for (const auto &preset : presets)
     {
-        // Set the parameters
+        // Make sure distortion parameters are set first
+        distortion.setAlgorithm(preset.algorithm); // Set algorithm first
         distortion.setDrive(preset.drive);
         distortion.setMix(preset.mix);
         distortion.setInputGain(preset.inputGain);
         distortion.setOutputGain(preset.outputGain);
-        distortion.setAlgorithm(preset.algorithm);
 
+        // Set delay parameters
         delay.setDelayTime(preset.delayTime);
         delay.setFeedback(preset.feedback);
         delay.setMix(preset.delayMix);
         delay.setPingPong(preset.pingPong);
 
+        // Set filter parameters
         filter.setFilterType(preset.filterType);
         filter.setFrequency(preset.frequency);
         filter.setResonance(preset.resonance);
 
+        // Set pulse parameters
         pulse.setMix(preset.pulseMix);
         pulse.setRate(preset.pulseRate);
 
-        // Save the preset
-        savePreset(preset.name);
+        // Create an XML element for this preset
+        auto presetXml = std::make_unique<juce::XmlElement>("OxidePreset");
+        presetXml->setAttribute("name", preset.name);
+        presetXml->setAttribute("version", "1.0");
+
+        // Save the current state to XML
+        saveProcessorStateToXml(presetXml.get());
+
+        // Save the preset file
+        juce::File presetFile = presetsDirectory.getChildFile(preset.name + ".xml");
+        presetXml->writeToFile(presetFile, "");
+
+        // Debug output
+        juce::Logger::writeToLog("Created preset: " + preset.name);
     }
 
     // Restore original state

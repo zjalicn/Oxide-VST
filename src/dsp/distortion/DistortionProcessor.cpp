@@ -190,11 +190,6 @@ float DistortionProcessor::getMix() const
     return mix;
 }
 
-void DistortionProcessor::setAlgorithm(DistortionAlgorithm newAlgorithm)
-{
-    currentAlgorithm = newAlgorithm;
-}
-
 void DistortionProcessor::setAlgorithm(const juce::String &algorithmName)
 {
     // Convert string to enum

@@ -4,7 +4,8 @@
 OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
     : AudioProcessorEditor(&p),
       audioProcessor(p),
-      layoutView(p.getDistortionProcessor(), p.getDelayProcessor(), p.getFilterProcessor(), p.getPulseProcessor())
+      layoutView(p.getDistortionProcessor(), p.getDelayProcessor(), p.getFilterProcessor(), p.getPulseProcessor()),
+      presetLoadRefreshCounter(0)
 {
     addAndMakeVisible(background);
     addAndMakeVisible(layoutView);
@@ -23,6 +24,10 @@ OxideAudioProcessorEditor::OxideAudioProcessorEditor(OxideAudioProcessor &p)
         if (presetManager && presetManager->loadPreset(presetName))
         {
             updateUIAfterPresetLoad();
+
+            // Start a separate timer for multiple refresh attempts after preset loading
+            presetLoadRefreshCounter = 0;
+            startTimer(50); // Refresh UI after a short delay
         }
     };
 
@@ -134,6 +139,26 @@ void OxideAudioProcessorEditor::resized()
 
 void OxideAudioProcessorEditor::timerCallback()
 {
+    // If in preset loading mode, do additional refreshes
+    if (presetLoadRefreshCounter >= 0 && presetLoadRefreshCounter < 5)
+    {
+        // Force multiple UI refreshes after preset loading
+        layoutView.refreshAllParameters();
+        presetLoadRefreshCounter++;
+
+        if (presetLoadRefreshCounter >= 5)
+        {
+            // Reset counter and return to normal update frequency
+            presetLoadRefreshCounter = -1;
+            stopTimer();
+            startTimerHz(30);
+        }
+
+        // Skip the regular updates during preset loading refresh cycle
+        return;
+    }
+
+    // Regular meter updates
     float leftLevel = audioProcessor.getLeftLevel();
     float rightLevel = audioProcessor.getRightLevel();
 

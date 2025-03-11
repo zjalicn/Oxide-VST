@@ -26,7 +26,6 @@ public:
     void setMix(float newMix);
     float getMix() const;
 
-    void setAlgorithm(DistortionAlgorithm newAlgorithm);
     void setAlgorithm(const juce::String &algorithmName);
     DistortionAlgorithm getAlgorithm() const;
     juce::String getAlgorithmName() const;

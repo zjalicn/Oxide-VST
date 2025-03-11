@@ -299,7 +299,6 @@ void LayoutView::timerCallback()
 
     // Check for parameter changes in pulse processor
     float pulseMix = pulseProcessor.getMix();
-
     juce::String pulseRate = pulseProcessor.getRateString();
     bool pulseChanged = std::abs(pulseMix - lastPulseMix) > 0.001f || pulseRate != lastPulseRate;
 
@@ -535,29 +534,77 @@ void LayoutView::updatePresetList(const juce::StringArray &presets)
 
 void LayoutView::refreshAllParameters()
 {
-    // Force a refresh of all parameters from the processors
-    // by setting the last known values to values that will definitely
-    // be different from the current processor values
+    // Force an immediate refresh of all parameters
 
-    // Set distortion parameters to invalid values
-    lastDrive = -1.0f;
-    lastMix = -1.0f;
-    lastAlgorithm = "";
+    // Distortion parameters
+    {
+        float drive = distortionProcessor.getDrive();
+        float mix = distortionProcessor.getMix();
+        juce::String algorithm = distortionProcessor.getAlgorithmName();
 
-    // Set delay parameters to invalid values
-    lastDelayTime = -1.0f;
-    lastFeedback = -1.0f;
-    lastDelayMix = -1.0f;
-    lastPingPong = !delayProcessor.getPingPong();
+        juce::String script = "window.setDistortionValues(" +
+                              juce::String(drive) + ", " +
+                              juce::String(mix) + ", '" +
+                              algorithm + "')";
+        webView->evaluateJavascript(script);
 
-    // Set filter parameters to invalid values
-    lastFilterType = "";
-    lastFilterFreq = -1.0f;
-    lastResonance = -1.0f;
+        lastDrive = drive;
+        lastMix = mix;
+        lastAlgorithm = algorithm;
+    }
 
-    // Set pulse parameters to invalid values
-    lastPulseMix = -1.0f;
-    lastPulseRate = "";
+    // Delay parameters
+    {
+        float delayTime = delayProcessor.getDelayTime();
+        float feedback = delayProcessor.getFeedback();
+        float delayMix = delayProcessor.getMix();
+        bool pingPong = delayProcessor.getPingPong();
 
-    // The next timer callback will detect the mismatches and update all UI elements
+        juce::String script = "window.setDelayValues(" +
+                              juce::String(delayTime) + ", " +
+                              juce::String(feedback) + ", " +
+                              juce::String(delayMix) + ", " +
+                              juce::String(pingPong ? "1" : "0") + ")";
+        webView->evaluateJavascript(script);
+
+        lastDelayTime = delayTime;
+        lastFeedback = feedback;
+        lastDelayMix = delayMix;
+        lastPingPong = pingPong;
+    }
+
+    // Filter parameters
+    {
+        juce::String filterType = filterProcessor.getFilterTypeName();
+        float filterFreq = filterProcessor.getFrequency();
+        float resonance = filterProcessor.getResonance();
+
+        juce::String script = "window.setFilterValues('" +
+                              filterType + "', " +
+                              juce::String(filterFreq) + ", " +
+                              juce::String(resonance) + ")";
+        webView->evaluateJavascript(script);
+
+        lastFilterType = filterType;
+        lastFilterFreq = filterFreq;
+        lastResonance = resonance;
+    }
+
+    // Pulse parameters
+    {
+        float pulseMix = pulseProcessor.getMix();
+        juce::String pulseRate = pulseProcessor.getRateString();
+
+        juce::String script = "window.setPulseValues(" +
+                              juce::String(pulseMix) + ", '" +
+                              pulseRate + "', " +
+                              juce::String(pulseProcessor.getBpm()) + ")";
+        webView->evaluateJavascript(script);
+
+        lastPulseMix = pulseMix;
+        lastPulseRate = pulseRate;
+    }
+
+    // Update levels
+    updateLevels(lastLeftLevel, lastRightLevel);
 }

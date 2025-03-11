@@ -246,7 +246,7 @@ void OxideAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
         distortionProcessor.setMix(mix);
         distortionProcessor.setInputGain(inputGain);
         distortionProcessor.setOutputGain(outputGain);
-        distortionProcessor.setAlgorithm(static_cast<DistortionAlgorithm>(algorithmValue));
+        distortionProcessor.setAlgorithm("soft_clip");
 
         // Apply delay parameters
         delayProcessor.setDelayTime(delayTime);
@@ -289,7 +289,7 @@ void OxideAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
         distortionProcessor.setMix(mix);
         distortionProcessor.setInputGain(inputGain);
         distortionProcessor.setOutputGain(outputGain);
-        distortionProcessor.setAlgorithm(static_cast<DistortionAlgorithm>(algorithmValue));
+        distortionProcessor.setAlgorithm("soft_clip");
 
         // Apply delay parameters
         delayProcessor.setDelayTime(delayTime);
@@ -318,7 +318,7 @@ void OxideAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
         distortionProcessor.setMix(mix);
         distortionProcessor.setInputGain(inputGain);
         distortionProcessor.setOutputGain(outputGain);
-        distortionProcessor.setAlgorithm(static_cast<DistortionAlgorithm>(algorithmValue));
+        distortionProcessor.setAlgorithm("soft_clip");
 
         // Use default values for delay and filter
         // Use default for pulse
@@ -337,7 +337,7 @@ void OxideAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
         distortionProcessor.setInputGain(inputGain);
         distortionProcessor.setOutputGain(outputGain);
         // Use default algorithm
-        distortionProcessor.setAlgorithm(DistortionAlgorithm::SoftClip);
+        distortionProcessor.setAlgorithm("soft_clip");
 
         // Use default values for delay and filter
         // Use default for pulse
@@ -353,7 +353,7 @@ void OxideAudioProcessor::setStateInformation(const void *data, int sizeInBytes)
         distortionProcessor.setMix(mix);
         distortionProcessor.setInputGain(0.0f);
         distortionProcessor.setOutputGain(0.0f);
-        distortionProcessor.setAlgorithm(DistortionAlgorithm::SoftClip);
+        distortionProcessor.setAlgorithm("soft_clip");
 
         // Use default values for delay and filter
         // Use default for pulse
