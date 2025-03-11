@@ -9,7 +9,7 @@ class OxideAudioProcessorEditor : public juce::AudioProcessorEditor,
                                   private juce::Timer
 {
 public:
-    static constexpr int CANVAS_WIDTH = 700;
+    static constexpr int CANVAS_WIDTH = 720;
     static constexpr int CANVAS_HEIGHT = 320;
 
     OxideAudioProcessorEditor(OxideAudioProcessor &);

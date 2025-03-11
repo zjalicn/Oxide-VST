@@ -1,8 +1,6 @@
-# 🩻 Oxide-VST
+![Oxide Img](./oxide.png)
 
-![Readme Img](./readme.jpg)
-
-## Oxide
+## 🩻 Oxide-VST
 
 Oxide is a distorted delay plugin that combines analog-style saturation with repeating echoes; colored by five different distortion algorithms, reliable filtering, and volume pulsing effects to create unique 3D spaces in your mixes.
 
@@ -57,3 +55,7 @@ Oxide is a distorted delay plugin that combines analog-style saturation with rep
 3. Copy the plugin to your VST folder (Optional)
 
    - The project is auto copying to the default vst folder for me. I'm using a Mac but if you're on Windows it should copy to `C:\Program Files\Common Files\VST3` or Linux `~/.vst3`. If not do it manually.
+
+---
+
+![Readme Img](./readme.jpg)
