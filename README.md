@@ -8,6 +8,7 @@ Oxide is a distorted delay plugin that combines analog-style saturation with rep
 - Five distortion algorithms: Soft Clip, Hard Clip, Foldback, Waveshaper, and Bitcrusher
 - Delaying echoes synced by frequency (hz) or note values (based on DAW bpm), options for triplet or dotted note values, ping-pong effect,
 - Three filter types: Lowpass, Highpass, Bandpass with resonance control
+- Time synced volume pulsing effect
 - Real-time oscilloscope to display output audio
 - Input/Output gain staging
 
