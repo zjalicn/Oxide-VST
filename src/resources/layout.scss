@@ -85,7 +85,6 @@
   height: 20px;
   outline: none;
   cursor: pointer;
-  margin-left: $spacing-sm + 2px;
 }
 
 .algorithm-selector:focus {
@@ -134,7 +133,6 @@
 .delay-toggle {
   display: flex;
   align-items: center;
-  margin-left: $spacing-sm + 2px;
 }
 
 // =======================
@@ -185,11 +183,10 @@
   padding: 2px 4px;
   border-radius: $border-radius-sm;
   font-size: $font-size-tiny;
-  width: 70px;
+  width: 80px;
   outline: none;
   cursor: pointer;
   text-align: center;
-  margin-right: $spacing-sm + 2px;
 }
 
 .filter-type-dropdown:focus {
@@ -205,14 +202,10 @@
   width: 100%;
 }
 
-.filter-display-wrapper {
-  width: 100%;
-}
-
 .filter-display {
   margin-bottom: $spacing-xs;
   height: 40px;
-  width: fit-content;
+  width: 80px;
   border-radius: 3px;
   overflow: hidden;
   display: flex;
